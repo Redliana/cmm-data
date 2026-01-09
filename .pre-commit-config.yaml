@@ -1,0 +1,130 @@
+# Pre-commit hooks for CMM Data
+# Install: pip install pre-commit && pre-commit install
+# Run manually: pre-commit run --all-files
+# Update hooks: pre-commit autoupdate
+
+repos:
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: check-yaml
+        name: Check YAML syntax
+      - id: check-toml
+        name: Check TOML syntax
+      - id: check-json
+        name: Check JSON syntax
+      - id: end-of-file-fixer
+        name: Fix end of files
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+      - id: check-case-conflict
+        name: Check case conflicts
+      - id: detect-private-key
+        name: Detect private keys
+      - id: debug-statements
+        name: Check for debug statements
+      - id: check-docstring-first
+        name: Check docstring is first
+
+  # Python code formatting with Ruff
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.9
+    hooks:
+      # Linter
+      - id: ruff
+        name: Ruff linter
+        args: [--fix, --exit-non-zero-on-fix]
+        types_or: [python, pyi]
+      # Formatter
+      - id: ruff-format
+        name: Ruff formatter
+        types_or: [python, pyi]
+
+  # Type checking with mypy (optional, can be slow)
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.8.0
+    hooks:
+      - id: mypy
+        name: Type check with mypy
+        additional_dependencies:
+          - pandas-stubs
+          - numpy
+          - types-requests
+        args: [--ignore-missing-imports, --no-strict-optional]
+        files: ^src/
+        pass_filenames: false
+
+  # Security checks
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.7
+    hooks:
+      - id: bandit
+        name: Security check with Bandit
+        args: [-c, pyproject.toml]
+        additional_dependencies: ["bandit[toml]"]
+        files: ^src/
+
+  # Docstring style
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        name: Check docstring style
+        args: [--convention=google, --add-ignore=D100,D104,D105,D107]
+        files: ^src/cmm_data/
+        exclude: ^src/cmm_data/__init__.py$
+
+  # Check for common Python issues
+  - repo: https://github.com/pre-commit/pygrep-hooks
+    rev: v1.10.0
+    hooks:
+      - id: python-check-blanket-noqa
+        name: Check blanket noqa
+      - id: python-check-blanket-type-ignore
+        name: Check blanket type ignore
+      - id: python-no-eval
+        name: No eval() usage
+      - id: python-use-type-annotations
+        name: Use type annotations
+
+  # Spell checking in comments and docstrings
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.6
+    hooks:
+      - id: codespell
+        name: Check spelling
+        args: [--skip, "*.csv,*.json,*.jsonl,*.lock", --ignore-words-list, "ist,nd,sur"]
+        types_or: [python, rst, markdown]
+
+  # Check RST documentation
+  - repo: https://github.com/rstcheck/rstcheck
+    rev: v6.2.0
+    hooks:
+      - id: rstcheck
+        name: Check RST syntax
+        additional_dependencies: [sphinx]
+        args: [--ignore-directives=automodule,autoclass,autofunction,toctree]
+
+  # Validate pyproject.toml
+  - repo: https://github.com/abravalheri/validate-pyproject
+    rev: v0.15
+    hooks:
+      - id: validate-pyproject
+        name: Validate pyproject.toml
+
+# Configuration for specific hooks
+ci:
+  autofix_commit_msg: |
+    [pre-commit.ci] auto fixes from pre-commit hooks
+  autofix_prs: true
+  autoupdate_branch: ''
+  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
+  autoupdate_schedule: weekly
+  skip: [mypy]  # Skip slow hooks in CI
+  submodules: false
