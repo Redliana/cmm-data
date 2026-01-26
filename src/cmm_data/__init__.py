@@ -35,6 +35,9 @@ def __getattr__(name):
     elif name == "OECDSupplyChainLoader":
         from .loaders.oecd_supply import OECDSupplyChainLoader
         return OECDSupplyChainLoader
+    elif name == "MindatLoader":
+        from .loaders.mindat import MindatLoader
+        return MindatLoader
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
@@ -126,6 +129,7 @@ __all__ = [
     "GAChronostratigraphicLoader",
     "NETLREECoalLoader",
     "OECDSupplyChainLoader",
+    "MindatLoader",
     # Convenience functions
     "load_usgs_commodity",
     "load_ore_deposits",

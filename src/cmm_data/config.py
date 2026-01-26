@@ -64,6 +64,7 @@ class CMMDataConfig:
     ga_chronostrat_dir: str = "GA_149923_Chronostratigraphic"
     netl_ree_dir: str = "NETL_REE_Coal"
     oecd_supply_dir: str = "OECD_Supply_Chain_Data"
+    mindat_dir: str = "Mindat"
 
     # Caching settings
     cache_enabled: bool = True
@@ -98,6 +99,7 @@ class CMMDataConfig:
             "netl": self.netl_ree_dir,
             "netl_ree": self.netl_ree_dir,
             "oecd": self.oecd_supply_dir,
+            "mindat": self.mindat_dir,
         }
 
         rel_path = path_map.get(dataset.lower())
@@ -115,7 +117,7 @@ class CMMDataConfig:
         """
         datasets = [
             "usgs_commodity", "usgs_ore", "osti", "preprocessed",
-            "ga_chronostrat", "netl_ree", "oecd"
+            "ga_chronostrat", "netl_ree", "oecd", "mindat"
         ]
 
         status = {}
