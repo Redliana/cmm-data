@@ -217,6 +217,29 @@ class MindatLoader(BaseLoader):
     # API Fetch Methods (requires openmindat and API key)
     # =========================================================================
 
+    def _filter_minerals_by_element(
+        self,
+        minerals: List[Dict[str, Any]],
+        element: str
+    ) -> List[Dict[str, Any]]:
+        """
+        Filter minerals to those containing a specific element.
+
+        Uses formula field to check for element presence.
+        """
+        import re
+        # Match element symbol at word boundary (e.g., "Li" but not "Cl")
+        # Element must be followed by subscript, parenthesis, space, or end
+        pattern = rf'\b{re.escape(element)}(?:<sub>|[0-9\(\)\s]|$)'
+
+        filtered = []
+        for mineral in minerals:
+            formula = mineral.get('mindat_formula', '') or mineral.get('ima_formula', '') or ''
+            if re.search(pattern, formula):
+                filtered.append(mineral)
+
+        return filtered
+
     def fetch_minerals_by_element(
         self,
         element: str,
@@ -234,7 +257,7 @@ class MindatLoader(BaseLoader):
             fields: Optional list of fields to retrieve
 
         Returns:
-            List of mineral dictionaries
+            List of mineral dictionaries containing the specified element
         """
         self._ensure_api_ready()
 
@@ -249,15 +272,27 @@ class MindatLoader(BaseLoader):
         if fields:
             retriever.fields(",".join(fields))
 
-        results = retriever.get_dict()
+        api_response = retriever.get_dict()
 
-        if save and results:
+        # Extract results from API response wrapper
+        if isinstance(api_response, dict) and 'results' in api_response:
+            minerals = api_response['results']
+        elif isinstance(api_response, list):
+            minerals = api_response
+        else:
+            minerals = []
+
+        # Filter to minerals actually containing the element
+        # (API elements_inc filter may not work as expected)
+        filtered_minerals = self._filter_minerals_by_element(minerals, element)
+
+        if save and filtered_minerals:
             identifier = f"element_{element}"
             if ima_only:
                 identifier += "_ima"
-            self._save_data(results, "geomaterials", identifier)
+            self._save_data(filtered_minerals, "geomaterials", identifier)
 
-        return results
+        return filtered_minerals
 
     def fetch_minerals_by_elements(
         self,
@@ -364,10 +399,45 @@ class MindatLoader(BaseLoader):
         from openmindat import MineralsIMARetriever
 
         retriever = MineralsIMARetriever()
-        results = retriever.get_dict()
+        api_response = retriever.get_dict()
 
-        if save and results:
-            self._save_data(results, "ima", "all_minerals")
+        # Extract results from API response wrapper
+        if isinstance(api_response, dict) and 'results' in api_response:
+            minerals = api_response['results']
+        elif isinstance(api_response, list):
+            minerals = api_response
+        else:
+            minerals = []
+
+        if save and minerals:
+            self._save_data(minerals, "ima", "all_minerals")
+
+        return minerals
+
+    def fetch_all_ima_and_filter_critical(self, save: bool = True) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Fetch all IMA minerals once and filter for each critical element.
+
+        This is more efficient than making separate API calls for each element.
+
+        Args:
+            save: If True, cache results locally (both full IMA list and per-element)
+
+        Returns:
+            Dictionary mapping element symbols to lists of minerals
+        """
+        # First fetch all IMA minerals
+        all_minerals = self.fetch_ima_minerals(save=save)
+
+        # Filter for each critical element
+        results = {}
+        for element in CRITICAL_ELEMENTS.keys():
+            filtered = self._filter_minerals_by_element(all_minerals, element)
+            results[element] = filtered
+
+            if save and filtered:
+                identifier = f"element_{element}_ima"
+                self._save_data(filtered, "geomaterials", identifier)
 
         return results
 
