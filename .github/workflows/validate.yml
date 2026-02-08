@@ -1,0 +1,56 @@
+name: Validate Corpus
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'Data/preprocessed/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Data/preprocessed/**'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Validate corpus integrity
+      run: |
+        cd Data/preprocessed
+        python3 validate_corpus.py
+
+    - name: Check corpus statistics
+      run: |
+        cd Data/preprocessed
+        echo "=== Corpus Statistics ==="
+        wc -l *.jsonl
+        echo ""
+        echo "=== File Sizes ==="
+        ls -lh *.jsonl
+
+    - name: Verify JSON validity
+      run: |
+        cd Data/preprocessed
+        for f in *.jsonl; do
+          echo "Checking $f..."
+          python3 -c "
+import json
+with open('$f') as f:
+    for i, line in enumerate(f, 1):
+        try:
+            json.loads(line)
+        except json.JSONDecodeError as e:
+            print(f'Error on line {i}: {e}')
+            exit(1)
+print('Valid JSON')
+"
+        done

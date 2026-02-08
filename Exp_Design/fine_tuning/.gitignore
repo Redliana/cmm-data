@@ -1,0 +1,15 @@
+# Generated data
+data/*.jsonl
+data/preparation_summary.json
+
+# Trained adapters
+adapters/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# IDE
+.vscode/
+.idea/

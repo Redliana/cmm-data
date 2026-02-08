@@ -1,0 +1,62 @@
+{
+  "collection_date": "2025-12-28T22:07:58.789825",
+  "methodology_document": "CMM_LLM_Baseline_Gold_QA_Methodology.md",
+  "focus": "Trade Flow questions (Q-TF sub-domain)",
+  "years_queried": [
+    2020,
+    2021,
+    2022,
+    2023,
+    2024
+  ],
+  "commodities": [
+    {
+      "name": "Heavy REE",
+      "total_records": 80,
+      "filepath": "gold_qa_data/heavy_ree_trade_data.csv",
+      "queries_executed": 0
+    },
+    {
+      "name": "Cobalt",
+      "total_records": 86,
+      "filepath": "gold_qa_data/cobalt_trade_data.csv",
+      "queries_executed": 0
+    },
+    {
+      "name": "Lithium",
+      "total_records": 175,
+      "filepath": "gold_qa_data/lithium_trade_data.csv",
+      "queries_executed": 0
+    },
+    {
+      "name": "Gallium",
+      "total_records": 40,
+      "filepath": "gold_qa_data/gallium_trade_data.csv",
+      "queries_executed": 0
+    },
+    {
+      "name": "Graphite",
+      "total_records": 80,
+      "filepath": "gold_qa_data/graphite_trade_data.csv",
+      "queries_executed": 0
+    },
+    {
+      "name": "Light REE",
+      "total_records": 80,
+      "filepath": "gold_qa_data/light_ree_trade_data.csv",
+      "queries_executed": 28
+    },
+    {
+      "name": "Nickel",
+      "total_records": 104,
+      "filepath": "gold_qa_data/nickel_trade_data.csv",
+      "queries_executed": 84
+    },
+    {
+      "name": "Copper",
+      "total_records": 75,
+      "filepath": "gold_qa_data/copper_trade_data.csv",
+      "queries_executed": 75
+    }
+  ]
+}

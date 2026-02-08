@@ -1,0 +1,9 @@
+# Environment variables (contains API keys)
+.env
+
+# Index files (can be regenerated)
+index/
+
+# Python
+__pycache__/
+*.pyc

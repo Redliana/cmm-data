@@ -1,0 +1,81 @@
+{
+  "COPPER": {
+    "item_id": "61ead310d34e8b818ad9f3a5",
+    "cmm_categories": [
+      "Copper"
+    ]
+  },
+  "NICKEL": {
+    "item_id": "61ead35bd34e8b818ad9f3e1",
+    "cmm_categories": [
+      "Nickel"
+    ]
+  },
+  "TUNGSTEN": {
+    "item_id": "61ead3a1d34e8b818ad9f421",
+    "cmm_categories": [
+      "Tungsten"
+    ]
+  },
+  "GERMANIUM": {
+    "item_id": "61ead322d34e8b818ad9f3b5",
+    "cmm_categories": [
+      "Germanium"
+    ]
+  },
+  "LITHIUM": {
+    "item_id": "61ead34ad34e8b818ad9f3d3",
+    "cmm_categories": [
+      "Lithium"
+    ]
+  },
+  "PLATINUM": {
+    "item_id": "61ead36cd34e8b818ad9f3ed",
+    "cmm_categories": [
+      "Platinum Group Metals"
+    ]
+  },
+  "MANGANESE": {
+    "item_id": "61ead34dd34e8b818ad9f3d5",
+    "cmm_categories": [
+      "Manganese"
+    ]
+  },
+  "COBALT": {
+    "item_id": "61ead30dd34e8b818ad9f3a3",
+    "cmm_categories": [
+      "Cobalt"
+    ]
+  },
+  "TITANIUM": {
+    "item_id": "61ead39bd34e8b818ad9f41d",
+    "cmm_categories": [
+      "Titanium"
+    ]
+  },
+  "GRAPHITE": {
+    "item_id": "61ead326d34e8b818ad9f3b9",
+    "cmm_categories": [
+      "Graphite"
+    ]
+  },
+  "GALLIUM": {
+    "item_id": "61ead31cd34e8b818ad9f3af",
+    "cmm_categories": [
+      "Gallium"
+    ]
+  },
+  "RARE EARTHS": {
+    "item_id": "61ead375d34e8b818ad9f3f5",
+    "cmm_categories": [
+      "Heavy REE",
+      "Light REE"
+    ]
+  },
+  "PALLADIUM": {
+    "item_id": "61ead36cd34e8b818ad9f3ed",
+    "cmm_categories": [
+      "Platinum Group Metals"
+    ]
+  }
+}

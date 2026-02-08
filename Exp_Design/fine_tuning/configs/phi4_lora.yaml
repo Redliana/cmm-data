@@ -1,0 +1,35 @@
+# Phi-4 LoRA fine-tuning config (bf16, M4 Max optimized)
+# Memory: ~28GB model + ~12GB activations + ~10GB overhead = ~50GB of 128GB
+model: mlx-community/phi-4-bf16
+data: data
+adapter_path: adapters/phi4_lora
+
+# LoRA hyperparameters
+lora_layers: 16
+lora_parameters:
+  rank: 16
+  alpha: 32.0
+  dropout: 0.05
+  scale: 2.0  # alpha / rank
+
+# Training
+batch_size: 4
+iters: 1000
+val_batches: 25
+steps_per_report: 10
+steps_per_eval: 100
+save_every: 200
+
+# Optimizer
+learning_rate: 1.0e-5
+lr_schedule:
+  name: cosine_decay
+  warmup: 100
+  arguments: [1.0e-5, 1000, 1.0e-7]
+
+# Memory optimization
+grad_checkpoint: true
+max_seq_length: 2048
+
+# Random seed
+seed: 42

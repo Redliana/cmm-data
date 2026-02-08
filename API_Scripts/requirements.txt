@@ -1,0 +1,7 @@
+# Requirements for UN Comtrade API Query Tool
+comtradeapicall>=0.1.0
+pandas>=1.5.0
+openpyxl>=3.0.0  # For Excel export support
+urllib3>=2.0.0  # Required by comtradeapicall
+requests>=2.25.0  # Required by comtradeapicall
+

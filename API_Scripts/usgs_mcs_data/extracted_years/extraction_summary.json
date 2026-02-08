@@ -1,0 +1,318 @@
+{
+  "2022": {
+    "manganese": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/manganese_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "rare": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/rare_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "graphite": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/graphite_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "germanium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/germanium_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "tungsten": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/tungsten_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "nickel": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/nickel_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "lithium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/lithium_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "titanium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/titanium_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "platinum": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/platinum_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "cobalt": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/cobalt_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "gallium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/gallium_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "copper": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2022/copper_salient_2022_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    }
+  },
+  "2023": {
+    "nickel": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/nickel_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "lithium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/lithium_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "heavy": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/heavy_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "germanium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/germanium_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "graphite": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/graphite_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "tungsten": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/tungsten_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "cobalt": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/cobalt_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "gallium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/gallium_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "copper": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/copper_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "light": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2023/light_salient_2023_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    }
+  },
+  "2024": {
+    "heavy": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/heavy_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "lithium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/lithium_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "nickel": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/nickel_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "tungsten": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/tungsten_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "germanium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/germanium_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "graphite": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/graphite_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "copper": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/copper_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020.0,
+          2021.0
+        ]
+      }
+    },
+    "gallium": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/gallium_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    },
+    "light": {
+      "salient": {
+        "file": "usgs_mcs_data/extracted_years/2024/light_salient_2024_release.csv",
+        "rows": 2,
+        "years": [
+          2020,
+          2021
+        ]
+      }
+    }
+  }
+}

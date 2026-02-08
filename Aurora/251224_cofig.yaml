@@ -1,0 +1,30 @@
+task: llm-sft
+base_model: meta-llama/Meta-Llama-3.1-8B-Instruct
+project_name: Llama-3-1-FT
+log: wandb
+backend: local
+data:
+  path: Path/to/the/training/dataset/folder
+  train_split: train
+  valid_split: null
+  chat_template: null
+  column_mapping:
+    text_column: text
+params:
+  block_size: 1024
+  model_max_length: 8192
+  epochs: 800
+  batch_size: 2
+  lr: 1e-5
+  peft: true
+  quantization: null
+  target_modules: all-linear
+  padding: right
+  optimizer: paged_adamw_8bit
+  scheduler: cosine
+  gradient_accumulation: 8
+  mixed_precision: bf16
+hub:
+  username: ***
+  token: hf_***
+  push_to_hub: true

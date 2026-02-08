@@ -1,0 +1,3 @@
+DataSource,Commodity,Year,USprod_Mine_t,USprod_Secondary_t,Imports_t,Exports_t,Consump_Estimated_t,Consump_Apparent_t,Price_Spot_dlb,Price_LME_dlb,Stocks_Industry_t,Stocks_LME_t,NIR_pct
+MCS2023,Cobalt,2020,600,2010,9740,3430,7260,8470,15.7,14.21,952,82,76
+MCS2023,Cobalt,2021,650,1800,9800,4930,7200,6600,24.21,23.17,1010,50,73

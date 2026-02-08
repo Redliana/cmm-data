@@ -1,0 +1,3 @@
+DataSource,Commodity,Year,USprod_Mine_kt,USprod_Refinery-primary_kt,USprod_Refinery-secondary_kt,USprod_Post-consumer_kt,Imports_Ores_kt,Imports_Refined_kt,Exports_Ores_kt,Exports_Refined_kt,Consump_Reported_kt,Consump_Apparent_kt,Price_US_ctslb,Price_COMEX_ctslb,Price_LME_ctslb,Stocks_kt,Employment_num,NIR_pct,Unnamed: 19,Unnamed: 20
+MCS2024,Copper,2020.0,1200.0,872.0,43.0,161,2.0,676.0,383.0,41.0,1680.0,1660.0,287.0,280.0,280.0,118.0,11000.0,38.0,,
+MCS2024,Copper,2021.0,1230.0,922.0,49.0,157,11.0,919.0,344.0,48.0,1750.0,1950.0,432.0,424.0,423.0,117.0,11400.0,45.0,,

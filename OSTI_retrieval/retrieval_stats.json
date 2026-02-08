@@ -1,0 +1,9 @@
+{
+  "queries_executed": 72,
+  "records_found": 3566,
+  "pdfs_downloaded": 1112,
+  "pdfs_skipped": 904,
+  "errors": 752,
+  "timestamp": "2025-12-30T14:50:11.123364",
+  "total_downloaded_ids": 1133
+}

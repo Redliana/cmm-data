@@ -1,0 +1,32 @@
+﻿Source,Year,Critical_mineral,Primary_prod,Secondary_prod,Prod_notes,Apparent_Consuption,Contsumption_Notes,Net_Import_Reliance,Primary_import_source,Import_source_notes,Leading_source_country,Leading_country_prod,World_total_prod,World_prod_notes,Leading_source_precent_world
+MCS2024,2023_estimated,Aluminum (bauxite),W,0,,1800000,Reported consumption.,>75,Jamaica,Average 2019 to 2022.,Australia,98000000,400000000,Excludes U.S. production.,25
+MCS2024,2023_estimated,Antimony,0,4000,,22000,,82,China,Average 2019 to 2022. Includes Hong Kong.,China,40000,83000,,48
+MCS2024,2023_estimated,Arsenic,0,NA,,6400,Estimated consumption.,100,China,Average 2019 to 2022. Includes Hong Kong.,Peru,27000,60000,Arsenic trioxide.,45
+MCS2024,2023_estimated,Barite,W,0,,W,,>75,India,Average 2019 to 2022.,India,2700000,8500000,Excludes U.S. production.,32
+MCS2024,2023_estimated,Beryllium,190,NA,,150,,NA,Kazakhstan,Average 2019 to 2022.,United States,190,330,,58
+MCS2024,2023_estimated,Bismuth,0,80,Refinery production.,1400,,94,China,Average 2019 to 2022. Includes Hong Kong.,China,16000,20000,,80
+MCS2024,2023_estimated,Chromium,0,100000,,380000,,74,South Africa,Average 2019 to 2022.,South Africa,18000000,41000000,,44
+MCS2024,2023_estimated,Cobalt,500,2100,,6400,,67,Norway,Average 2019 to 2022.,Congo (Kinshasa),170000,230000,,74
+MCS2024,2023_estimated,Fluorspar,NA,0,,370000,,100,Mexico,Average 2019 to 2022.,China,5700000,8800000,,65
+MCS2024,2023_estimated,Gallium,0,0,,19,Reported consumption.,100,Japan,Average 2019 to 2022.,China,600,610,,98
+MCS2024,2023_estimated,Germanium,0,NA,Refinery production.,NA,,>50,Belgium,Average 2019 to 2022.,China,NA,NA,,NA
+MCS2024,2023_estimated,Graphite (natural),0,0,,76000,,100,China,Average 2019 to 2022. Includes Hong Kong.,China,1230000,1600000,,77
+MCS2024,2023_estimated,Indium,0,0,Refinery production.,300,Estimated consumption.,100,Republic of Korea,Average 2019 to 2022.,China,650,990,,66
+MCS2024,2023_estimated,Lithium,W,NA,,W,,>25,Argentina,Average 2019 to 2022.,Australia,86000,180000,Excludes U.S. production.,48
+MCS2024,2023_estimated,Magnesium,W,100000,Refinery production.,55000,Reported consumption.,>50,Canada,Average 2019 to 2022.,China,830000,940000,Excludes U.S. production.,88
+MCS2024,2023_estimated,Manganese,0,0,,690000,,100,Gabon,Average 2019 to 2022.,South Africa,7200000,20000000,,36
+MCS2024,2023_estimated,Nickel,17000,W,,190000,Nickel in primary metal and secondary scrap. ,57,Canada,Average 2019 to 2022.,Indonesia,1800000,3600000,,50
+MCS2024,2023_estimated,Niobium,0,NA,,8400,,100,Brazil,Average 2019 to 2022.,Brazil,75000,83000,,90
+MCS2024,2023_estimated,Palladium,10,42,,82,,37,Russia,Average 2019 to 2022.,Russia,92,210,,44
+MCS2024,2023_estimated,Platinum,3,9,,70,,83,South Africa,Average 2019 to 2022.,South Africa,120,180,,67
+MCS2024,2023_estimated,Rare earths (compounds and metals),250,NA,"Data include lanthanides cerium, dysprosium, erbium, europium, gadolinium, holmium, lanthanum, lutetium, neodymium, praseodymium, samarium, terbium, thulium, and ytterbium. ",8800,,>95,China,Average 2019 to 2022. Includes Hong Kong.,China,240000,350000,,69
+MCS2024,2023_estimated,Scandium,0,0,,NA,,100,Japan,Average 2019 to 2022.,China,NA,NA,,NA
+MCS2024,2023_estimated,Tantalum,0,NA,,370,,100,China,Average 2019 to 2022. Includes Hong Kong.,Congo (Kinshasa),980,2400,,41
+MCS2024,2023_estimated,Tellurium,W,0,Refinery production.,W,,>25,Canada,Average 2019 to 2022.,China,430,640,Excludes U.S. production.,67
+MCS2024,2023_estimated,Tin,0,16900,,39000,,74,Peru,Average 2019 to 2022.,China,68000,290000,,23
+MCS2024,2023_estimated,Titanium (metal),W,W,Refinery production.,42000,Excludes U.S. production.,>95,Japan,Average 2019 to 2022.,China,220000,330000,Excludes U.S. production.,67
+MCS2024,2023_estimated,Tungsten,0,W,,W,,>50,China,Average 2019 to 2022. Includes Hong Kong.,China,63000,78000,,81
+MCS2024,2023_estimated,Vanadium,0,5700,,14000,,58,Canada,Average 2019 to 2022.,China,68000,100000,,68
+MCS2024,2023_estimated,Yttrium,NA,0,,200,,100,China,Average 2019 to 2022. Includes Hong Kong.,China,NA,NA,,NA
+MCS2024,2023_estimated,Zinc,220000,NA,Refinery production. Primary production includes both primary and secondary metal production.,970000,,77,Canada,Average 2019 to 2022.,NA,NA,NA,,NA
+MCS2024,2023_estimated,Zirconium (ores and concentrates),"<100,000",NA,,"<100,000",,<25,South Africa,Average 2019 to 2022.,Australia,500000,1600000,,31

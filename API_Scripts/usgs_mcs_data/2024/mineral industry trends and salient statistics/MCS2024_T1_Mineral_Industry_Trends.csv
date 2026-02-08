@@ -1,0 +1,6 @@
+﻿Source,Year,Mine_Production_Metals_mil_dols,Mine_Production_Industrial_mil_dols,Mine_Production_Coal_mil_dols,Employment_All_Coal_thsnds,Employment_All_Nonfuel_thsnds,Employment_Chemicals_thsnds,Employment_Stone_Clay_Glass_thsnds,Employment_Primary_Metal_thsnds,Avg_Weekly_Earnings_All_Coal_dols,Avg_Weekly_Earnings_dols,Avg_Weekly_Earnings_Stone_Clay_Glass_dols,Avg_Weekly_Earnings_Primary_Metal_dols,
+MCS2024,2019,26900,56500,25500,51,140,559,312,301,1617,1066,968,1027,
+MCS2024,2020,27600,54000,16800,40,136,537,296,272,1517,1065,981,1006,
+MCS2024,2021,36900,58200,21000,38,138,541,300,270,1618,1103,1017,1073,
+MCS2024,2022,35400,65300,32300,40,143,570,315,282,1762,1119,1086,1172,
+MCS2024,2023_estimated,34900,69900,31700,41,150,570,310,290,1800,1200,1100,1200,

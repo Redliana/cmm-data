@@ -1,0 +1,72 @@
+name: Preprocess Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Data source to preprocess'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - mcs2025_trends
+          - salient_commodities
+          - world_production
+          - mrds
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Preprocess MCS 2025 Trends
+      if: ${{ github.event.inputs.source == 'all' || github.event.inputs.source == 'mcs2025_trends' }}
+      run: |
+        cd Data/preprocessed
+        python3 preprocess_mcs2025_trends.py
+
+    - name: Preprocess Salient Commodities
+      if: ${{ github.event.inputs.source == 'all' || github.event.inputs.source == 'salient_commodities' }}
+      run: |
+        cd Data/preprocessed
+        python3 preprocess_salient_commodities.py
+
+    - name: Preprocess World Production
+      if: ${{ github.event.inputs.source == 'all' || github.event.inputs.source == 'world_production' }}
+      run: |
+        cd Data/preprocessed
+        python3 preprocess_world_production.py
+
+    - name: Preprocess MRDS
+      if: ${{ github.event.inputs.source == 'all' || github.event.inputs.source == 'mrds' }}
+      run: |
+        cd Data/preprocessed
+        python3 preprocess_mrds.py
+
+    - name: Consolidate Corpus
+      if: ${{ github.event.inputs.source == 'all' }}
+      run: |
+        cd Data/preprocessed
+        python3 consolidate_corpus.py
+
+    - name: Validate Output
+      run: |
+        cd Data/preprocessed
+        python3 validate_corpus.py
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: preprocessed-corpus
+        path: |
+          Data/preprocessed/*.jsonl
+          Data/preprocessed/*_summary.json
+        retention-days: 30

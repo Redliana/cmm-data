@@ -1,0 +1,3 @@
+DataSource,Commodity,Year,USprod_t,Imports_t,Exports_t,Consump_t,Price_Flake_t,Price_Lump_t,Price_Amorphous_t,NIR_pct
+MCS2022,Graphite (Natural),2020,0,36000,5930,30000,1540,2940,687,100
+MCS2022,Graphite (Natural),2021,0,53000,8400,45000,1600,2700,630,100

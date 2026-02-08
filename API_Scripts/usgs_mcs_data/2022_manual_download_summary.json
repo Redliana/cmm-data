@@ -1,0 +1,59 @@
+{
+  "year": 2022,
+  "commodities_downloaded": {
+    "Copper": [
+      "usgs_mcs_data/2022/individual_commodities/copper_mcs2022-coppe_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/copper_mcs2022-coppe_world.csv"
+    ],
+    "Nickel": [
+      "usgs_mcs_data/2022/individual_commodities/nickel_mcs2022-nicke_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/nickel_mcs2022-nicke_world.csv"
+    ],
+    "Tungsten": [
+      "usgs_mcs_data/2022/individual_commodities/tungsten_mcs2022-tungs_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/tungsten_mcs2022-tungs_world.csv"
+    ],
+    "Germanium": [
+      "usgs_mcs_data/2022/individual_commodities/germanium_mcs2022-germa_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/germanium_mcs2022-germa_world.csv"
+    ],
+    "Lithium": [
+      "usgs_mcs_data/2022/individual_commodities/lithium_mcs2022-lithi_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/lithium_mcs2022-lithi_world.csv"
+    ],
+    "Platinum Group Metals": [
+      "usgs_mcs_data/2022/individual_commodities/platinum_mcs2022-plati_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/platinum_mcs2022-plati_world.csv"
+    ],
+    "Manganese": [
+      "usgs_mcs_data/2022/individual_commodities/manganese_mcs2022-manga_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/manganese_mcs2022-manga_world.csv"
+    ],
+    "Cobalt": [
+      "usgs_mcs_data/2022/individual_commodities/cobalt_mcs2022-cobal_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/cobalt_mcs2022-cobal_world.csv"
+    ],
+    "Titanium": [
+      "usgs_mcs_data/2022/individual_commodities/titanium_mcs2022-timin_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/titanium_mcs2022-timin_world.csv"
+    ],
+    "Graphite": [
+      "usgs_mcs_data/2022/individual_commodities/graphite_mcs2022-graph_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/graphite_mcs2022-graph_world.csv"
+    ],
+    "Gallium": [
+      "usgs_mcs_data/2022/individual_commodities/gallium_mcs2022-galli_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/gallium_mcs2022-galli_world.csv"
+    ],
+    "Heavy REE": [
+      "usgs_mcs_data/2022/individual_commodities/rare_earths_mcs2022-raree_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/rare_earths_mcs2022-raree_world.csv"
+    ],
+    "Light REE": [
+      "usgs_mcs_data/2022/individual_commodities/rare_earths_mcs2022-raree_salient.csv",
+      "usgs_mcs_data/2022/individual_commodities/rare_earths_mcs2022-raree_world.csv"
+    ]
+  },
+  "total_files": 24,
+  "status": "complete"
+}
