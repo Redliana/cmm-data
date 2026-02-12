@@ -1,31 +1,30 @@
 ---
-name: Feature Request
-about: Suggest a new feature or enhancement
+name: Feature request
+about: Suggest an idea for this project
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
 ---
 
-## Feature Description
-A clear and concise description of the feature you'd like.
+**Is your feature request related to a problem? Please describe.**
+A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
 
-## Use Case
-Explain the problem this feature would solve or the use case it enables.
+**Describe the solution you'd like**
+A clear and concise description of what you want to happen.
 
-## Proposed Solution
-Describe how you envision this feature working.
+**Describe alternatives you've considered**
+A clear and concise description of any alternative solutions or features you've considered.
 
-## Alternatives Considered
-Describe any alternative solutions or features you've considered.
+**Additional context**
+Add any other context or screenshots about the feature request here.
 
-## Category
-What area does this feature relate to?
-- [ ] Data preprocessing
-- [ ] New data source integration
-- [ ] Fine-tuning pipeline
-- [ ] Evaluation/benchmarking
-- [ ] Documentation
+**Dataset/Loader affected**
+- [ ] USGSCommodityLoader
+- [ ] USGSOreDepositsLoader
+- [ ] OSTIDocumentsLoader
+- [ ] PreprocessedCorpusLoader
+- [ ] GAChronostratigraphicLoader
+- [ ] NETLREECoalLoader
+- [ ] OECDSupplyChainLoader
+- [ ] Visualizations
 - [ ] Other
-
-## Additional Context
-Add any other context, mockups, or examples here.

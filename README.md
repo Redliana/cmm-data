@@ -1,224 +1,1310 @@
-# Critical Minerals and Materials LLM Fine-Tuning
+<p align="center">
+  <img src="docs/_static/cmm_data_banner.svg" alt="CMM Data Banner" width="100%">
+</p>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Data: USGS](https://img.shields.io/badge/Data-USGS%20Public%20Domain-blue.svg)](https://www.usgs.gov/)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+<p align="center">
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.9+-blue.svg" alt="Python 3.9+"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://github.com/PNNL-CMM/cmm-data/actions"><img src="https://img.shields.io/badge/build-passing-brightgreen.svg" alt="Build Status"></a>
+  <a href="https://github.com/PNNL-CMM/cmm-data"><img src="https://img.shields.io/badge/version-0.1.0-blue.svg" alt="Version"></a>
+</p>
 
-A comprehensive toolkit for fine-tuning Large Language Models (LLMs) on Critical Minerals and Materials (CMM) domain knowledge. This repository provides data collection pipelines, a local fine-tuning workflow for Phi-4 on Apple Silicon, a gold-standard evaluation framework, and tooling for mapping scientific literature to structured evaluation benchmarks.
+<p align="center">
+  <b>A comprehensive Python package providing unified access to datasets for critical minerals supply chain modeling.</b><br>
+  Developed by Pacific Northwest National Laboratory (PNNL) for the Critical Minerals Modeling (CMM) project.
+</p>
+
+<p align="center">
+  <a href="#installation">Installation</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#available-datasets">Datasets</a> •
+  <a href="#visualizations">Visualizations</a> •
+  <a href="#api-reference">API Reference</a> •
+  <a href="QUICKSTART_COLLABORATORS.md">Collaborator Guide</a>
+</p>
+
+---
+
+## Table of Contents
+
+- [Demo](#demo)
+- [Overview](#overview)
+- [Features](#features)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Available Datasets](#available-datasets)
+- [Detailed Usage](#detailed-usage)
+  - [USGS Commodity Data](#usgs-commodity-data)
+  - [USGS Ore Deposits](#usgs-ore-deposits)
+  - [Document Corpus](#document-corpus)
+  - [OECD Supply Chain](#oecd-supply-chain)
+  - [Geoscience Australia 3D Model](#geoscience-australia-3d-model)
+  - [NETL REE/Coal Database](#netl-reecoal-database)
+- [Visualizations](#visualizations)
+- [Configuration](#configuration)
+- [API Reference](#api-reference)
+- [Data Sources](#data-sources)
+- [Critical Minerals List](#critical-minerals-list)
+- [Examples](#examples)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+- [Citation](#citation)
+- [Contact](#contact)
+
+---
+
+## Demo
+
+<p align="center">
+  <img src="docs/_static/demo.svg" alt="CMM Data Demo" width="100%">
+</p>
+
+---
 
 ## Overview
 
-Critical minerals are essential for modern technologies including clean energy, electronics, and defense applications. This project aims to:
+The `cmm_data` package addresses a common challenge in critical minerals research: accessing and integrating data from multiple heterogeneous sources. Researchers working on supply chain modeling, resource assessment, and policy analysis often need to combine data from:
 
-1. **Collect** trade flow data (UN Comtrade) and mineral statistics (USGS MCS) for 8 critical commodities
-2. **Generate** template-based Q&A training pairs (3,175 pairs) with full data provenance
-3. **Fine-tune** Microsoft Phi-4 (14B) with LoRA adapters on Apple Silicon via MLX
-4. **Evaluate** model performance against a 100-question gold-standard benchmark spanning 10 commodities, 10 knowledge subdomains, and 4 complexity levels
-5. **Curate** the gold-standard evaluation set by mapping 1,133 OSTI journal articles to the 100-cell evaluation matrix using Vertex AI batch inference
+- **USGS** - Mineral commodity statistics and geochemical databases
+- **OECD/IEA** - Trade data and critical minerals outlooks
+- **DOE National Labs** - Technical reports and specialized databases
+- **International geological surveys** - Geospatial and subsurface models
 
-## Repository Structure
+This package provides a unified Python API to access all these data sources with:
 
+- Consistent data structures (pandas DataFrames)
+- Automatic handling of data quality issues (missing values, special codes)
+- Built-in caching for performance
+- Visualization utilities for quick exploration
+
+---
+
+## Features
+
+### Core Capabilities
+
+| Feature | Description |
+|---------|-------------|
+| **Unified API** | Single interface for 7 different data sources |
+| **80+ Commodities** | Complete USGS Mineral Commodity Summaries coverage |
+| **Data Parsing** | Automatic handling of W (withheld), NA, ranges, and special codes |
+| **Caching** | Built-in memory and disk caching for performance |
+| **Type Safety** | Full type hints for IDE support |
+| **Extensible** | Easy to add new data loaders |
+
+### Data Loaders
+
+| Loader | Data Source | Records | Format |
+|--------|-------------|---------|--------|
+| `USGSCommodityLoader` | USGS MCS 2023 | 80+ commodities | CSV |
+| `USGSOreDepositsLoader` | USGS NGDB | 356 fields | CSV |
+| `OSTIDocumentsLoader` | DOE OSTI | Variable | JSON |
+| `PreprocessedCorpusLoader` | CMM Corpus | 3,298 documents | JSONL |
+| `GAChronostratigraphicLoader` | Geoscience Australia | 9 surfaces | GeoTIFF/XYZ |
+| `NETLREECoalLoader` | NETL | Variable | Geodatabase |
+| `OECDSupplyChainLoader` | OECD/IEA | Multiple | PDF/CSV |
+
+### Visualization Functions
+
+- `plot_world_production()` - Bar charts of top producers
+- `plot_production_timeseries()` - Time series of production/trade
+- `plot_import_reliance()` - U.S. net import reliance charts
+- `plot_deposit_locations()` - Geospatial deposit maps
+- `plot_ree_distribution()` - REE concentration patterns
+
+---
+
+## Installation
+
+### Prerequisites
+
+- Python 3.9 or higher
+- pip package manager
+- Access to the Globus_Sharing data directory
+
+### Basic Installation
+
+```bash
+# Navigate to the data directory
+cd /path/to/Globus_Sharing
+
+# Install the package in development mode
+pip install -e cmm_data
 ```
-LLM_Fine_Tuning/
-├── Exp_Design/                        # Experiment design and core pipelines
-│   ├── fine_tuning/                   #   Phi-4 LoRA fine-tuning pipeline (see its README)
-│   │   ├── src/cmm_fine_tune/         #     Python package: data prep, training, eval, chat
-│   │   ├── configs/                   #     LoRA YAML configs (bf16, 8-bit, 4-bit)
-│   │   ├── tests/                     #     46 unit tests
-│   │   └── README.md                  #     Full pipeline documentation
-│   ├── batch_analysis/                #   Vertex AI batch analysis pipeline (see its README)
-│   │   ├── config.py                  #     GCP config, paths, category mappings
-│   │   ├── matrix_parser.py           #     Parse allocation matrix into 100 cells
-│   │   ├── prepare_batch.py           #     Generate 1,133-line JSONL batch input
-│   │   ├── submit_batch.py            #     Upload to GCS + submit Vertex AI job
-│   │   ├── parse_results.py           #     Parse batch output + salvage truncated JSON
-│   │   ├── generate_report.py         #     Markdown recommendation report
-│   │   └── README.md                  #     Full pipeline documentation
-│   ├── CMM_Gold_QA_Allocation_Matrix.md   # 100-cell evaluation matrix definition
-│   └── CMM_LLM_Baseline_Gold_QA_Methodology.md  # Evaluation methodology
-│
-├── API_Scripts/                       # Data collection scripts
-│   ├── un_comtrade_query.py           #   UN Comtrade API query tool
-│   ├── gold_qa_data/                  #   8 trade CSVs (720 records, 8 commodities)
-│   ├── usgs_mcs_data/                 #   USGS Mineral Commodity Summaries
-│   │   └── cmm_extracted/{2023,2024}/ #     Salient + world production CSVs
-│   └── README.md                      #   API tools documentation
-│
-├── OSTI_retrieval/                    # Scientific literature retrieval
-│   ├── document_catalog.json          #   1,133 categorized OSTI journal articles
-│   ├── osti_retrieval.py              #   OSTI search + download pipeline
-│   └── pdfs/                          #   Downloaded PDFs (gitignored, ~6 GB)
-│
-├── OSTI_OCR_Extracted/                # OCR-processed article text (gitignored, ~315 MB)
-│   ├── batch_output/                  #   106 JSON files with extracted text
-│   └── search_index.db               #   TF-IDF search index
-│
-├── Claude/                            # Anthropic Claude integrations
-│   └── cmm_mcp_server/               #   MCP server for CMM domain tools
-│
-├── Fine_Tuning_Corpus/                # Consolidated fine-tuning datasets (placeholder)
-│
-├── Aurora/                            # Google Aurora fine-tuning reference docs
-├── Mindat/                            # Mindat.org API integration docs
-├── OCR_Tests/                         # OCR validation test files
-├── PNNL_Compute_Examples/             # HPC fine-tuning reference notebooks
-│
-├── .gitignore                         # Excludes PDFs, OCR data, venvs, model weights
-├── CONTRIBUTING.md
-├── LICENSE                            # MIT
-└── README.md                          # This file
+
+### Installation with Optional Dependencies
+
+```bash
+# Visualization support (matplotlib, plotly)
+pip install -e "cmm_data[viz]"
+
+# Geospatial support (geopandas, rasterio, fiona)
+pip install -e "cmm_data[geo]"
+
+# Full installation (all optional dependencies)
+pip install -e "cmm_data[full]"
 ```
 
-## Key Components
+### Recommended: Using Virtual Environment
 
-### Fine-Tuning Pipeline (`Exp_Design/fine_tuning/`)
+```bash
+# Navigate to the data directory
+cd /path/to/Globus_Sharing
 
-A local fine-tuning pipeline for **Phi-4 (14B)** optimized for Apple Silicon using [MLX](https://github.com/ml-explore/mlx). Four CLI commands cover the full workflow:
+# Create a virtual environment
+python3 -m venv .venv
 
-| Stage | Command | Description |
-|-------|---------|-------------|
-| Data Preparation | `cmm-prepare` | Load CSVs, generate 3,175 Q&A pairs, split train/valid/test |
-| Training | `cmm-train` | Fine-tune Phi-4 with LoRA via mlx-lm |
-| Evaluation | `cmm-evaluate` | Score answers against gold-standard Q&A pairs |
-| Chat | `cmm-chat` | Interactive REPL with the fine-tuned model |
+# Activate the environment
+source .venv/bin/activate  # Linux/macOS
+# or
+.venv\Scripts\activate     # Windows
 
-**Current dataset**: 720 trade + 75 salient + 363 world production records = **3,175 Q&A pairs** across 8 commodities (Cobalt, Copper, Gallium, Graphite, Heavy REE, Light REE, Lithium, Nickel) at 3 complexity levels.
+# Install with all dependencies
+pip install -e "cmm_data[full]"
+```
 
-See [`Exp_Design/fine_tuning/README.md`](Exp_Design/fine_tuning/README.md) for installation, usage, training configs, and evaluation methodology.
+### Verify Installation
 
-### Gold Q&A Evaluation Framework (`Exp_Design/`)
+```bash
+# Run the verification script
+python cmm_data/scripts/verify_installation.py
 
-A structured 100-question benchmark defined in [`CMM_Gold_QA_Allocation_Matrix.md`](Exp_Design/CMM_Gold_QA_Allocation_Matrix.md), distributed across:
+# Or run the test suite
+python cmm_data/scripts/run_all_tests.py
+```
 
-- **10 commodities**: HREE, LREE, Cobalt, Lithium, Gallium, Graphite, Nickel, Copper, Germanium, Other (PGMs, Manganese, Tungsten)
-- **10 knowledge subdomains**: Extraction Chemistry, Processing Metallurgy, Geological Occurrence, Production Statistics, Trade Flows, Economic Parameters, Policy/Regulatory, Bilateral/Multilateral, Cross-Commodity, Supply Chain Topology
-- **4 complexity levels**: L1 (Factual), L2 (Relational), L3 (Inferential), L4 (Analytical)
+### Installing from Wheel
 
-The evaluation methodology is documented in [`CMM_LLM_Baseline_Gold_QA_Methodology.md`](Exp_Design/CMM_LLM_Baseline_Gold_QA_Methodology.md).
+If you received a wheel file:
 
-### Batch Analysis Pipeline (`Exp_Design/batch_analysis/`)
+```bash
+pip install cmm_data-0.1.0-py3-none-any.whl
+```
 
-Uses **Gemini 2.5 Pro** via Vertex AI batch inference to analyze 1,133 OSTI journal articles and determine which papers are best suited as source material for each of the 100 gold Q&A evaluation pairs.
-
-**Results** (2026-02-07 batch run):
-- 1,106 / 1,133 papers successfully evaluated (97.6%)
-- 387 papers recommended for gold Q&A creation
-- 92 / 100 matrix cells covered (best score >= 3)
-- 8 gap cells identified needing external source material
-
-See [`Exp_Design/batch_analysis/README.md`](Exp_Design/batch_analysis/README.md) for the full pipeline documentation, design decisions, and results.
-
-### Data Collection (`API_Scripts/`)
-
-Scripts for querying the UN Comtrade API and downloading USGS Mineral Commodity Summaries. Collected data is stored in `gold_qa_data/` (trade flows) and `usgs_mcs_data/` (salient statistics, world production).
-
-See [`API_Scripts/README.md`](API_Scripts/README.md) for setup and usage.
-
-### Literature Retrieval (`OSTI_retrieval/`)
-
-Pipeline for searching, downloading, and cataloging CMM-relevant journal articles from the DOE's OSTI database. The `document_catalog.json` file contains metadata for 1,133 papers categorized by commodity and knowledge subdomain.
+---
 
 ## Quick Start
 
-### Fine-Tuning Pipeline
+### Basic Usage
 
-```bash
-cd Exp_Design/fine_tuning/
+```python
+import cmm_data
 
-# Create venv and install dependencies
-uv venv && uv sync
+# Check version
+print(f"CMM Data version: {cmm_data.__version__}")
 
-# Generate training data from raw CSVs
-cmm-prepare --output-dir data/
+# View all available datasets
+catalog = cmm_data.get_data_catalog()
+print(catalog)
 
-# Fine-tune Phi-4 with LoRA (requires Apple Silicon, 32+ GB RAM)
-cmm-train --config configs/phi4_4bit_lora.yaml
+# List all commodity codes
+commodities = cmm_data.list_commodities()
+print(f"Available commodities: {len(commodities)}")
 
-# Evaluate against gold Q&A set
-cmm-evaluate --gold-qa gold_qa/gold_qa_pairs.jsonl --adapter adapters/phi4_4bit_lora/
-
-# Interactive chat
-cmm-chat --adapter adapters/phi4_4bit_lora/
+# List DOE critical minerals
+critical = cmm_data.list_critical_minerals()
+print(f"Critical minerals: {critical}")
 ```
 
-### Batch Analysis Pipeline
+### Load Data
 
-```bash
-cd Exp_Design/batch_analysis/
+```python
+import cmm_data
 
-# Create venv and install dependencies
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+# Load lithium world production data
+lithium = cmm_data.load_usgs_commodity("lithi", "world")
+print(lithium)
 
-# Generate batch input, submit, parse, report
-python prepare_batch.py
-python submit_batch.py --monitor
-python parse_results.py
-python generate_report.py
+# Load cobalt U.S. statistics
+cobalt = cmm_data.load_usgs_commodity("cobal", "salient")
+print(cobalt)
 ```
 
-Requires GCP authentication (`gcloud auth application-default login`) with access to project `rcgenai`.
+### Quick Visualization
 
-## Commodities Covered
+```python
+import cmm_data
+from cmm_data.visualizations.commodity import plot_world_production
 
-| Commodity | Code | Trade Data | Salient Stats | World Production | OSTI Papers |
-|-----------|------|:----------:|:-------------:|:----------------:|:-----------:|
-| Heavy REE | HREE | 80 records | Yes | Yes | 176 |
-| Light REE | LREE | 80 records | Yes | Yes | 128 |
-| Cobalt | CO | 86 records | Yes | Yes | 143 |
-| Lithium | LI | 175 records | Yes | Yes | 115 |
-| Gallium | GA | 40 records | Yes | Yes | 160 |
-| Graphite | GR | 80 records | Yes | Yes | 70 |
-| Nickel | NI | 104 records | Yes | Yes | 29 |
-| Copper | CU | 75 records | Yes | Yes | 42 |
-| Germanium | GE | -- | -- | -- | 29 |
-| Other | OTH | -- | -- | -- | 51 |
+# Load and plot
+df = cmm_data.load_usgs_commodity("lithi", "world")
+fig = plot_world_production(df, "Lithium", top_n=10)
+fig.savefig("lithium_production.png")
+```
+
+---
+
+## Available Datasets
+
+### 1. USGS Mineral Commodity Summaries (MCS 2023)
+
+**Location:** `USGS_Data/`
+
+The USGS Mineral Commodity Summaries provide annual data on production, trade, and reserves for over 80 mineral commodities worldwide.
+
+**Data Types:**
+- **World Production** (`world/`): Production by country, reserves, and notes
+- **Salient Statistics** (`salient/`): U.S. production, imports, exports, consumption, prices
+
+**Coverage:**
+- Years: 2018-2022 (varies by commodity)
+- Countries: 50+ producing nations
+- Commodities: 80+ minerals and materials
+
+**Key Fields (World Production):**
+| Field | Description |
+|-------|-------------|
+| `Country` | Producing country name |
+| `Prod_t_2021` | Production in metric tons (2021) |
+| `Prod_t_est_2022` | Estimated production (2022) |
+| `Reserves_t` | Reserves in metric tons |
+| `Prod_notes` | Production footnotes |
+| `Reserves_notes` | Reserves footnotes |
+
+**Key Fields (Salient Statistics):**
+| Field | Description |
+|-------|-------------|
+| `Year` | Data year |
+| `USprod_t` | U.S. production (metric tons) |
+| `Imports_t` | U.S. imports (metric tons) |
+| `Exports_t` | U.S. exports (metric tons) |
+| `Consump_t` | Apparent consumption |
+| `Price_dt` | Unit value ($/metric ton) |
+| `NIR_pct` | Net import reliance (%) |
+
+---
+
+### 2. USGS Ore Deposits Database
+
+**Location:** `USGS_Ore_Deposits/`
+
+Geochemical analyses from ore deposits worldwide, compiled from the National Geochemical Database (NGDB).
+
+**Tables:**
+| Table | Description |
+|-------|-------------|
+| `Geology` | Deposit locations and geological context |
+| `BV_Ag_Mo` | Best values for Ag through Mo elements |
+| `BV_Na_Zr` | Best values for Na through Zr elements |
+| `ChemData1`, `ChemData2` | Raw chemical data |
+| `DataDictionary` | Field definitions (356 fields) |
+| `AnalyticMethod` | Analytical method descriptions |
+| `Reference` | Data sources and citations |
+
+**Coverage:**
+- Elements: 60+ major and trace elements
+- Samples: Thousands of ore deposit analyses
+- Deposit types: Porphyry, VMS, sediment-hosted, etc.
+
+---
+
+### 3. Preprocessed Document Corpus
+
+**Location:** `Data/preprocessed/`
+
+Unified corpus of critical minerals documents prepared for LLM training and text analysis.
+
+**File:** `unified_corpus.jsonl`
+
+**Format:** JSON Lines (one document per line)
+
+**Fields:**
+| Field | Description |
+|-------|-------------|
+| `id` | Unique document identifier |
+| `title` | Document title |
+| `text` | Full text content |
+| `source` | Origin (OSTI, USGS, etc.) |
+| `doc_type` | Document type |
+| `date` | Publication date |
+
+**Statistics:**
+- Documents: 3,298
+- Sources: Multiple (OSTI, USGS, IEA, etc.)
+- Topics: Critical minerals, extraction, processing, supply chains
+
+---
+
+### 4. OECD Supply Chain Data
+
+**Location:** `OECD_Supply_Chain_Data/`
+
+Trade data and policy information from OECD and IEA.
+
+**Subdirectories:**
+| Directory | Contents |
+|-----------|----------|
+| `Export_Restrictions/` | OECD inventory of export restrictions (PDFs) |
+| `IEA_Critical_Minerals/` | IEA Critical Minerals Outlook reports |
+| `ICIO/` | Inter-Country Input-Output documentation |
+| `BTIGE/` | Bilateral Trade documentation |
+
+**Export Restrictions Coverage:**
+- Commodities: 65 industrial raw materials
+- Countries: 82 producing nations
+- Years: 2009-2023
+- Key minerals: Potash, molybdenum, tungsten, rare earths, lithium, cobalt
+
+**IEA Critical Minerals:**
+- Minerals: 35 critical minerals
+- Scenarios: STEPS, APS, NZE (Net Zero by 2050)
+- Projections: Supply, demand, prices to 2050
+
+---
+
+### 5. Geoscience Australia 3D Chronostratigraphic Model
+
+**Location:** `GA_149923_Chronostratigraphic/`
+
+Preliminary 3D chronostratigraphic model of Australia providing depth surfaces for major geological time boundaries.
+
+**Surfaces:**
+1. Paleozoic_Top
+2. Neoproterozoic_Top
+3. Mesoproterozoic_Top
+4. Paleoproterozoic_Top
+5. Neoarchean_Top
+6. Mesoarchean_Top
+7. Paleoarchean_Top
+8. Eoarchean_Top
+9. Basement
+
+**Formats:**
+| Format | Description | Size |
+|--------|-------------|------|
+| GeoTIFF | Raster grids for GIS | ~1.2 GB |
+| XYZ | ASCII point data | ~5.9 GB |
+| ZMAP | Grid format for modeling | ~1.2 GB |
+| PNG | Visualization images | ~51 MB |
+
+**Spatial Reference:** EPSG:3577 (GDA94 / Australian Albers)
+
+---
+
+### 6. NETL REE and Coal Database
+
+**Location:** `NETL_REE_Coal/`
+
+Rare earth element data from coal and coal-related resources compiled by the National Energy Technology Laboratory.
+
+**Format:** ArcGIS Geodatabase (`.gdb`)
+
+**Contents:**
+- REE concentration data from coal samples
+- Coal basin boundaries
+- Sample locations with coordinates
+- Analytical results for La, Ce, Pr, Nd, Sm, Eu, Gd, Tb, Dy, Ho, Er, Tm, Yb, Lu, Y
+
+**Requirements:** geopandas, fiona (install with `pip install cmm-data[geo]`)
+
+---
+
+## Detailed Usage
+
+### USGS Commodity Data
+
+#### Using the Loader Class
+
+```python
+from cmm_data import USGSCommodityLoader
+
+# Initialize loader
+loader = USGSCommodityLoader()
+
+# List all available commodities
+commodities = loader.list_available()
+print(f"Available: {len(commodities)} commodities")
+print(commodities[:10])  # First 10
+
+# Get commodity name from code
+print(loader.get_commodity_name("lithi"))  # "Lithium"
+print(loader.get_commodity_name("raree"))  # "Rare Earths"
+
+# List critical minerals only
+critical = loader.list_critical_minerals()
+print(f"Critical minerals: {critical}")
+```
+
+#### Loading World Production Data
+
+```python
+from cmm_data import USGSCommodityLoader
+
+loader = USGSCommodityLoader()
+
+# Load lithium world production
+lithium = loader.load_world_production("lithi")
+print(lithium.columns)
+# ['Source', 'Country', 'Type', 'Prod_t_2021', 'Prod_t_est_2022',
+#  'Prod_notes', 'Reserves_t', 'Reserves_notes', 'Prod_t_2021_clean',
+#  'Prod_t_est_2022_clean', 'Reserves_t_clean', 'commodity_code',
+#  'commodity_name']
+
+# View the data
+print(lithium[['Country', 'Prod_t_est_2022', 'Reserves_t']])
+```
+
+#### Loading Salient Statistics
+
+```python
+from cmm_data import USGSCommodityLoader
+
+loader = USGSCommodityLoader()
+
+# Load cobalt salient statistics (U.S. time series)
+cobalt = loader.load_salient_statistics("cobal")
+print(cobalt.columns)
+# ['DataSource', 'Commodity', 'Year', 'USprod_t', 'Imports_t',
+#  'Exports_t', 'Consump_t', 'Price_dt', 'Employment_num', 'NIR_pct',
+#  'USprod_t_clean', 'Imports_t_clean', ...]
+
+# View time series
+print(cobalt[['Year', 'Imports_t', 'Exports_t', 'NIR_pct']])
+```
+
+#### Getting Top Producers
+
+```python
+from cmm_data import USGSCommodityLoader
+
+loader = USGSCommodityLoader()
+
+# Get top 10 rare earth producers
+top_ree = loader.get_top_producers("raree", top_n=10)
+print(top_ree[['Country', 'Prod_t_est_2022', 'Reserves_t']])
+
+# Get top lithium producers
+top_lithium = loader.get_top_producers("lithi", top_n=5)
+for _, row in top_lithium.iterrows():
+    print(f"{row['Country']}: {row['Prod_t_est_2022']:,} t")
+```
+
+#### Using Convenience Functions
+
+```python
+import cmm_data
+
+# Quick loading without creating loader instance
+df_world = cmm_data.load_usgs_commodity("lithi", "world")
+df_salient = cmm_data.load_usgs_commodity("lithi", "salient")
+
+# These are equivalent to:
+# loader = cmm_data.USGSCommodityLoader()
+# df_world = loader.load_world_production("lithi")
+# df_salient = loader.load_salient_statistics("lithi")
+```
+
+#### Working with Multiple Commodities
+
+```python
+from cmm_data import USGSCommodityLoader
+import pandas as pd
+
+loader = USGSCommodityLoader()
+
+# Compare critical minerals
+minerals = ['lithi', 'cobal', 'nicke', 'graph', 'raree']
+
+comparison = []
+for code in minerals:
+    df = loader.load_salient_statistics(code)
+    latest = df.iloc[-1]
+    comparison.append({
+        'Commodity': loader.get_commodity_name(code),
+        'Year': latest['Year'],
+        'Imports_t': latest.get('Imports_t_clean', latest.get('Imports_t')),
+        'NIR_pct': latest['NIR_pct']
+    })
+
+result = pd.DataFrame(comparison)
+print(result)
+```
+
+---
+
+### USGS Ore Deposits
+
+#### Loading Tables
+
+```python
+from cmm_data import USGSOreDepositsLoader
+
+loader = USGSOreDepositsLoader()
+
+# List available tables
+tables = loader.list_available()
+print(f"Available tables: {tables}")
+
+# Load data dictionary
+data_dict = loader.load_data_dictionary()
+print(f"Total fields: {len(data_dict)}")
+print(data_dict[['FIELD_NAME', 'FIELD_DESC', 'FIELD_UNIT']].head(20))
+
+# Load geology data
+geology = loader.load_geology()
+print(f"Deposits: {len(geology)}")
+```
+
+#### Working with Geochemistry Data
+
+```python
+from cmm_data import USGSOreDepositsLoader
+
+loader = USGSOreDepositsLoader()
+
+# Load combined geochemistry (all elements)
+geochem = loader.load_geochemistry()
+print(f"Columns: {len(geochem.columns)}")
+
+# Load specific elements only
+ree_data = loader.load_geochemistry(elements=['La', 'Ce', 'Nd', 'Y'])
+print(ree_data.head())
+
+# Get REE samples directly
+ree_samples = loader.get_ree_samples()
+print(f"REE samples: {len(ree_samples)}")
+```
+
+#### Element Statistics
+
+```python
+from cmm_data import USGSOreDepositsLoader
+
+loader = USGSOreDepositsLoader()
+
+# Get statistics for lanthanum
+la_stats = loader.get_element_statistics("La")
+print(f"Lanthanum (La):")
+print(f"  Total samples: {la_stats['total_samples']}")
+print(f"  Valid samples: {la_stats['valid_samples']}")
+print(f"  Mean: {la_stats['mean']:.2f} ppm")
+print(f"  Max: {la_stats['max']:.2f} ppm")
+
+# Compare multiple REE elements
+for elem in ['La', 'Ce', 'Nd', 'Y']:
+    stats = loader.get_element_statistics(elem)
+    print(f"{elem}: mean={stats['mean']:.1f}, max={stats['max']:.1f} ppm")
+```
+
+#### Searching Deposits
+
+```python
+from cmm_data import USGSOreDepositsLoader
+
+loader = USGSOreDepositsLoader()
+
+# Search by deposit type
+porphyry = loader.search_deposits(deposit_type="porphyry")
+print(f"Porphyry deposits: {len(porphyry)}")
+
+# Search by commodity
+copper = loader.search_deposits(commodity="copper")
+print(f"Copper deposits: {len(copper)}")
+
+# Search by country
+australia = loader.search_deposits(country="Australia")
+print(f"Australian deposits: {len(australia)}")
+```
+
+---
+
+### Document Corpus
+
+#### Loading the Corpus
+
+```python
+from cmm_data import PreprocessedCorpusLoader
+
+loader = PreprocessedCorpusLoader()
+
+# Get corpus statistics
+stats = loader.get_corpus_stats()
+print(f"Total documents: {stats['total_documents']}")
+print(f"Columns: {stats['columns']}")
+
+if 'text_stats' in stats:
+    print(f"Total characters: {stats['text_stats']['total_chars']:,}")
+    print(f"Mean doc length: {stats['text_stats']['mean_length']:,.0f}")
+
+if 'source_distribution' in stats:
+    print(f"Sources: {stats['source_distribution']}")
+```
+
+#### Searching Documents
+
+```python
+from cmm_data import PreprocessedCorpusLoader
+
+loader = PreprocessedCorpusLoader()
+
+# Search for documents about lithium
+results = loader.search("lithium extraction", limit=10)
+print(f"Found {len(results)} documents")
+
+for _, doc in results.iterrows():
+    title = doc.get('title', 'No title')[:60]
+    print(f"  - {title}")
+
+# Search with specific fields
+results = loader.search("rare earth", fields=['title', 'abstract'], limit=5)
+```
+
+#### Iterating Over Documents
+
+```python
+from cmm_data import PreprocessedCorpusLoader
+
+loader = PreprocessedCorpusLoader()
+
+# Iterate one document at a time
+for i, doc in enumerate(loader.iter_documents()):
+    if i >= 5:
+        break
+    print(f"Document {i}: {doc.get('title', 'No title')[:50]}")
+
+# Iterate in batches
+for batch in loader.iter_documents(batch_size=100):
+    print(f"Processing batch of {len(batch)} documents")
+    # Process batch...
+    break  # Just show first batch
+```
+
+#### Filtering by Source
+
+```python
+from cmm_data import PreprocessedCorpusLoader
+
+loader = PreprocessedCorpusLoader()
+
+# Get documents from specific source
+osti_docs = loader.filter_by_source("OSTI")
+print(f"OSTI documents: {len(osti_docs)}")
+
+usgs_docs = loader.filter_by_source("USGS")
+print(f"USGS documents: {len(usgs_docs)}")
+```
+
+---
+
+### OECD Supply Chain
+
+#### Available Data
+
+```python
+from cmm_data import OECDSupplyChainLoader
+
+loader = OECDSupplyChainLoader()
+
+# List available datasets
+available = loader.list_available()
+print(f"Available: {available}")
+
+# Get minerals coverage information
+coverage = loader.get_minerals_coverage()
+for name, info in coverage.items():
+    print(f"\n{name}:")
+    print(f"  Description: {info['description']}")
+    if 'key_minerals' in info:
+        print(f"  Key minerals: {', '.join(info['key_minerals'][:5])}...")
+```
+
+#### Accessing PDF Reports
+
+```python
+from cmm_data import OECDSupplyChainLoader
+
+loader = OECDSupplyChainLoader()
+
+# Get export restrictions reports
+export_pdfs = loader.get_export_restrictions_reports()
+print("Export Restrictions Reports:")
+for pdf in export_pdfs:
+    print(f"  - {pdf.name} ({pdf.stat().st_size / 1e6:.1f} MB)")
+
+# Get IEA critical minerals reports
+iea_pdfs = loader.get_iea_minerals_reports()
+print("\nIEA Critical Minerals Reports:")
+for pdf in iea_pdfs:
+    print(f"  - {pdf.name}")
+
+# Get ICIO documentation
+icio_docs = loader.get_icio_documentation()
+print("\nICIO Documentation:")
+for doc in icio_docs:
+    print(f"  - {doc.name}")
+```
+
+#### Manual Download URLs
+
+```python
+from cmm_data import OECDSupplyChainLoader
+
+loader = OECDSupplyChainLoader()
+
+# Get URLs for manual download (due to Cloudflare protection)
+urls = loader.get_download_urls()
+print("Manual Download URLs:")
+for name, url in urls.items():
+    print(f"  {name}:")
+    print(f"    {url}")
+```
+
+---
+
+### Geoscience Australia 3D Model
+
+#### Model Information
+
+```python
+from cmm_data import GAChronostratigraphicLoader
+
+loader = GAChronostratigraphicLoader()
+
+# Get model info
+info = loader.get_model_info()
+for key, value in info.items():
+    print(f"{key}: {value}")
+
+# List available surfaces
+surfaces = loader.list_surfaces()
+print(f"\nSurfaces: {surfaces}")
+
+# List available formats
+formats = loader.list_available()
+print(f"Formats: {formats}")
+```
+
+#### Loading Surface Data
+
+```python
+from cmm_data import GAChronostratigraphicLoader
+
+loader = GAChronostratigraphicLoader()
+
+# Load surface as XYZ points
+try:
+    paleozoic = loader.load("Paleozoic_Top", format="xyz")
+    print(f"Points: {len(paleozoic)}")
+    print(paleozoic.describe())
+except Exception as e:
+    print(f"Data not available: {e}")
+
+# Get surface extent
+try:
+    extent = loader.get_surface_extent("Basement")
+    print(f"Basement extent:")
+    print(f"  X: {extent['xmin']:.0f} to {extent['xmax']:.0f}")
+    print(f"  Y: {extent['ymin']:.0f} to {extent['ymax']:.0f}")
+    print(f"  Z: {extent['zmin']:.0f} to {extent['zmax']:.0f} m")
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+---
+
+### NETL REE/Coal Database
+
+#### Loading Data
+
+```python
+from cmm_data import NETLREECoalLoader
+
+loader = NETLREECoalLoader()
+
+# List available layers
+try:
+    layers = loader.list_available()
+    print(f"Available layers: {layers}")
+except Exception as e:
+    print(f"Error: {e}")
+
+# Load REE samples
+try:
+    samples = loader.get_ree_samples()
+    print(f"REE samples: {len(samples)}")
+    print(samples.head())
+except Exception as e:
+    print(f"Requires geopandas: {e}")
+```
+
+#### REE Statistics
+
+```python
+from cmm_data import NETLREECoalLoader
+
+loader = NETLREECoalLoader()
+
+try:
+    stats = loader.get_ree_statistics()
+    print("REE Statistics from Coal:")
+    for elem, data in stats.items():
+        print(f"  {elem}: mean={data['mean']:.1f}, max={data['max']:.1f} ppm")
+except Exception as e:
+    print(f"Error: {e}")
+```
+
+---
+
+## Visualizations
+
+### Installation
+
+```bash
+pip install cmm-data[viz]
+# or
+pip install matplotlib plotly
+```
+
+### World Production Chart
+
+```python
+import cmm_data
+from cmm_data.visualizations.commodity import plot_world_production
+import matplotlib.pyplot as plt
+
+# Load data
+df = cmm_data.load_usgs_commodity("lithi", "world")
+
+# Create chart
+fig = plot_world_production(
+    df,
+    commodity_name="Lithium",
+    top_n=10,
+    figsize=(12, 6)
+)
+
+plt.savefig("lithium_producers.png", dpi=150, bbox_inches='tight')
+plt.show()
+```
+
+### Time Series Chart
+
+```python
+import cmm_data
+from cmm_data.visualizations.commodity import plot_production_timeseries
+import matplotlib.pyplot as plt
+
+# Load salient statistics
+df = cmm_data.load_usgs_commodity("cobal", "salient")
+
+# Create time series chart
+fig = plot_production_timeseries(
+    df,
+    commodity_name="Cobalt",
+    figsize=(10, 6)
+)
+
+plt.savefig("cobalt_timeseries.png", dpi=150)
+plt.show()
+```
+
+### Import Reliance Chart
+
+```python
+import cmm_data
+from cmm_data.visualizations.commodity import plot_import_reliance
+import matplotlib.pyplot as plt
+
+# Load data
+df = cmm_data.load_usgs_commodity("raree", "salient")
+
+# Create import reliance chart
+fig = plot_import_reliance(
+    df,
+    commodity_name="Rare Earths",
+    figsize=(10, 5)
+)
+
+plt.savefig("ree_import_reliance.png", dpi=150)
+plt.show()
+```
+
+### Critical Minerals Comparison
+
+```python
+from cmm_data.visualizations.timeseries import plot_critical_minerals_comparison
+import matplotlib.pyplot as plt
+
+# Compare import values across critical minerals
+fig = plot_critical_minerals_comparison(
+    metric="Imports_t",
+    top_n=15,
+    figsize=(14, 8)
+)
+
+plt.savefig("critical_minerals_comparison.png", dpi=150)
+plt.show()
+```
+
+### Custom Multi-Panel Figure
+
+```python
+import cmm_data
+from cmm_data.visualizations.commodity import (
+    plot_world_production,
+    plot_production_timeseries,
+    plot_import_reliance
+)
+import matplotlib.pyplot as plt
+
+# Create figure with subplots
+fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+
+# Lithium producers
+df_world = cmm_data.load_usgs_commodity("lithi", "world")
+plot_world_production(df_world, "Lithium", top_n=6, ax=axes[0, 0])
+
+# Lithium time series
+df_salient = cmm_data.load_usgs_commodity("lithi", "salient")
+plot_production_timeseries(df_salient, "Lithium", ax=axes[0, 1])
+
+# Cobalt producers
+df_world = cmm_data.load_usgs_commodity("cobal", "world")
+plot_world_production(df_world, "Cobalt", top_n=6, ax=axes[1, 0])
+
+# Cobalt import reliance
+df_salient = cmm_data.load_usgs_commodity("cobal", "salient")
+plot_import_reliance(df_salient, "Cobalt", ax=axes[1, 1])
+
+plt.tight_layout()
+plt.savefig("critical_minerals_dashboard.png", dpi=150)
+plt.show()
+```
+
+---
+
+## Configuration
+
+### Automatic Configuration
+
+The package automatically detects the data directory by:
+
+1. Checking `CMM_DATA_PATH` environment variable
+2. Searching parent directories for `Globus_Sharing`
+3. Checking common installation paths
+
+### Manual Configuration
+
+```python
+import cmm_data
+
+# Configure data path
+cmm_data.configure(data_root="/path/to/Globus_Sharing")
+
+# Configure caching
+cmm_data.configure(
+    cache_enabled=True,
+    cache_ttl_seconds=7200  # 2 hours
+)
+
+# View current configuration
+config = cmm_data.get_config()
+print(f"Data root: {config.data_root}")
+print(f"Cache enabled: {config.cache_enabled}")
+print(f"Cache TTL: {config.cache_ttl_seconds} seconds")
+```
+
+### Environment Variable
+
+```bash
+# Set in shell
+export CMM_DATA_PATH=/path/to/Globus_Sharing
+
+# Or in Python
+import os
+os.environ['CMM_DATA_PATH'] = '/path/to/Globus_Sharing'
+
+import cmm_data
+print(cmm_data.get_config().data_root)
+```
+
+### Validating Configuration
+
+```python
+import cmm_data
+
+config = cmm_data.get_config()
+
+# Check what datasets are available
+status = config.validate()
+print("Dataset availability:")
+for dataset, available in status.items():
+    icon = "[OK]" if available else "[--]"
+    print(f"  {icon} {dataset}")
+```
+
+---
+
+## API Reference
+
+### Module-Level Functions
+
+| Function | Description |
+|----------|-------------|
+| `get_data_catalog()` | Returns DataFrame with all dataset metadata |
+| `list_commodities()` | Returns list of all commodity codes |
+| `list_critical_minerals()` | Returns list of DOE critical mineral codes |
+| `load_usgs_commodity(code, type)` | Quick load of USGS data |
+| `load_ore_deposits(table)` | Quick load of ore deposits data |
+| `search_documents(query)` | Search OSTI documents |
+| `iter_corpus_documents()` | Iterate over corpus |
+| `configure(**kwargs)` | Set configuration options |
+| `get_config()` | Get current configuration |
+
+### Loader Classes
+
+All loaders inherit from `BaseLoader` and provide:
+
+| Method | Description |
+|--------|-------------|
+| `load(**kwargs)` | Load data, returns DataFrame |
+| `list_available()` | List available data items |
+| `describe()` | Return dataset metadata dict |
+| `query(**kwargs)` | Query with filters |
+
+### USGSCommodityLoader
+
+| Method | Description |
+|--------|-------------|
+| `load_world_production(commodity)` | Load world production data |
+| `load_salient_statistics(commodity)` | Load U.S. statistics |
+| `get_top_producers(commodity, top_n)` | Get top producing countries |
+| `get_commodity_name(code)` | Get full name from code |
+| `list_critical_minerals()` | List critical mineral codes |
+
+### USGSOreDepositsLoader
+
+| Method | Description |
+|--------|-------------|
+| `load(table)` | Load specific table |
+| `load_data_dictionary()` | Load field definitions |
+| `load_geology()` | Load deposit information |
+| `load_geochemistry(elements)` | Load geochemistry data |
+| `get_ree_samples()` | Get REE analyses |
+| `get_element_statistics(element)` | Get element statistics |
+| `search_deposits(**filters)` | Search deposits |
+
+### PreprocessedCorpusLoader
+
+| Method | Description |
+|--------|-------------|
+| `load(corpus_file)` | Load corpus as DataFrame |
+| `iter_documents(batch_size)` | Iterate over documents |
+| `get_corpus_stats()` | Get corpus statistics |
+| `search(query, fields, limit)` | Search documents |
+| `filter_by_source(source)` | Filter by source |
+
+### OECDSupplyChainLoader
+
+| Method | Description |
+|--------|-------------|
+| `load(dataset)` | Load dataset file inventory |
+| `get_pdf_paths(dataset)` | Get PDF file paths |
+| `get_export_restrictions_reports()` | Get export restrictions PDFs |
+| `get_iea_minerals_reports()` | Get IEA report PDFs |
+| `get_minerals_coverage()` | Get coverage information |
+| `get_download_urls()` | Get manual download URLs |
+
+---
 
 ## Data Sources
 
-- **[UN Comtrade](https://comtradeplus.un.org/)**: International trade flows by HS commodity code, reporter, partner, and year
-- **[USGS Mineral Commodity Summaries](https://www.usgs.gov/centers/national-minerals-information-center/mineral-commodity-summaries)**: US salient statistics (production, imports, exports, prices, net import reliance) and world mine production/reserves by country
-- **[DOE OSTI](https://www.osti.gov/)**: Scientific and technical journal articles on critical minerals topics
+| Source | Description | URL |
+|--------|-------------|-----|
+| USGS MCS | Mineral Commodity Summaries | https://www.usgs.gov/centers/national-minerals-information-center/mineral-commodity-summaries |
+| USGS NGDB | National Geochemical Database | https://mrdata.usgs.gov/ngdb/rock/ |
+| OSTI | Office of Scientific and Technical Information | https://www.osti.gov/ |
+| Geoscience Australia | eCat Metadata Catalog | https://ecat.ga.gov.au/ |
+| NETL | National Energy Technology Laboratory | https://www.netl.doe.gov/ |
+| OECD | Data Explorer | https://data-explorer.oecd.org/ |
+| IEA | Critical Minerals Data Explorer | https://www.iea.org/data-and-statistics/data-tools/critical-minerals-data-explorer |
 
-## Citation
+---
 
-If you use this work in your research, please cite:
+## Critical Minerals List
 
-```bibtex
-@misc{cmm_llm_finetuning_2025,
-  title={Critical Minerals and Materials LLM Fine-Tuning Toolkit},
-  author={[Authors]},
-  year={2025},
-  publisher={GitHub},
-  url={https://github.com/[username]/CMM-LLM-FineTuning}
-}
+The DOE Critical Minerals List (2023) includes 50 minerals. This package covers the following 27 with USGS data:
+
+| Code | Mineral | Code | Mineral |
+|------|---------|------|---------|
+| `alumi` | Aluminum | `nicke` | Nickel |
+| `antim` | Antimony | `niobi` | Niobium |
+| `arsen` | Arsenic | `plati` | Platinum Group |
+| `barit` | Barite | `raree` | Rare Earths |
+| `beryl` | Beryllium | `tanta` | Tantalum |
+| `bismu` | Bismuth | `tellu` | Tellurium |
+| `chrom` | Chromium | `tin` | Tin |
+| `cobal` | Cobalt | `titan` | Titanium |
+| `fluor` | Fluorspar | `tungs` | Tungsten |
+| `galli` | Gallium | `vanad` | Vanadium |
+| `germa` | Germanium | `zinc` | Zinc |
+| `graph` | Graphite | `zirco-hafni` | Zirconium/Hafnium |
+| `indiu` | Indium | | |
+| `lithi` | Lithium | | |
+| `manga` | Manganese | | |
+
+---
+
+## Examples
+
+### Example Scripts
+
+The `examples/` directory contains:
+
+| File | Description |
+|------|-------------|
+| `basic_usage.py` | Basic API usage examples |
+| `visualization_examples.py` | Chart generation examples |
+| `data_export.py` | Export to CSV/Excel |
+| `cmm_data_tutorial.ipynb` | Comprehensive Jupyter tutorial |
+
+### Running Examples
+
+```bash
+# Basic usage
+python cmm_data/examples/basic_usage.py
+
+# Generate visualizations
+python cmm_data/examples/visualization_examples.py
+
+# Export data
+python cmm_data/examples/data_export.py
+
+# Jupyter tutorial
+jupyter notebook cmm_data/examples/cmm_data_tutorial.ipynb
 ```
 
-Please also cite the original data sources:
+---
 
-```bibtex
-@techreport{usgs_mcs2025,
-  title={Mineral Commodity Summaries 2025},
-  author={{U.S. Geological Survey}},
-  year={2025},
-  institution={U.S. Geological Survey},
-  doi={10.3133/mcs2025}
-}
+## Troubleshooting
+
+### Package Import Fails
+
+```bash
+# Check installation
+pip list | grep cmm
+
+# Reinstall
+pip uninstall cmm-data
+pip install -e /path/to/cmm_data
 ```
+
+### Data Not Found
+
+```python
+import cmm_data
+
+# Check configuration
+config = cmm_data.get_config()
+print(f"Data root: {config.data_root}")
+
+# Validate
+status = config.validate()
+for ds, available in status.items():
+    print(f"{ds}: {available}")
+
+# Reconfigure if needed
+cmm_data.configure(data_root="/correct/path/to/Globus_Sharing")
+```
+
+### Missing Dependencies
+
+```bash
+# For visualizations
+pip install matplotlib plotly
+
+# For geospatial data
+pip install geopandas rasterio fiona
+
+# Full installation
+pip install -e "cmm_data[full]"
+```
+
+### Caching Issues
+
+```python
+import cmm_data
+
+# Disable caching
+cmm_data.configure(cache_enabled=False)
+
+# Or clear cache directory
+import shutil
+config = cmm_data.get_config()
+if config.cache_dir and config.cache_dir.exists():
+    shutil.rmtree(config.cache_dir)
+```
+
+### Running Verification
+
+```bash
+# Run verification script
+python cmm_data/scripts/verify_installation.py
+
+# Run full test suite
+python cmm_data/scripts/run_all_tests.py
+
+# Run pytest
+pytest cmm_data/tests/ -v
+```
+
+---
 
 ## Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on:
+
+- Development setup
+- Code style (ruff)
+- Testing requirements
+- Pull request process
+- Adding new loaders
+
+---
 
 ## License
 
-- **Code**: MIT License -- see [LICENSE](LICENSE)
-- **USGS Data**: Public Domain (U.S. Government Work)
-- **UN Comtrade Data**: Subject to [UN Comtrade terms of use](https://comtradeplus.un.org/LegalAgreement)
+MIT License - see [LICENSE](LICENSE) file.
+
+---
+
+## Citation
+
+```bibtex
+@software{cmm_data,
+  title = {CMM Data: Critical Minerals Modeling Data Access Library},
+  author = {Pacific Northwest National Laboratory},
+  year = {2026},
+  version = {0.1.0},
+  url = {https://github.com/PNNL-CMM/cmm-data},
+  note = {Python package for accessing critical minerals datasets}
+}
+```
+
+---
+
+## Contact
+
+For questions, issues, or contributions:
+
+- **GitHub Issues**: https://github.com/PNNL-CMM/cmm-data/issues
+- **Email**: cmm@pnnl.gov
+- **Organization**: Pacific Northwest National Laboratory
+
+---
 
 ## Acknowledgments
 
-- U.S. Geological Survey National Minerals Information Center
-- U.S. Department of Energy Office of Scientific and Technical Information (OSTI)
-- United Nations Statistics Division (UN Comtrade)
-- Pacific Northwest National Laboratory (PNNL)
+This work was supported by the U.S. Department of Energy. Data sources include:
+
+- U.S. Geological Survey (USGS)
+- Office of Scientific and Technical Information (OSTI)
+- Organisation for Economic Co-operation and Development (OECD)
+- International Energy Agency (IEA)
+- Geoscience Australia
+- National Energy Technology Laboratory (NETL)
+
+---
+
+*CMM Data v0.1.0 - Critical Minerals Modeling Data Access Library*

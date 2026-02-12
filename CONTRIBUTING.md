@@ -1,209 +1,152 @@
-# Contributing to CMM LLM Fine-Tuning
+# Contributing to CMM Data
 
-Thank you for your interest in contributing to the Critical Minerals and Materials LLM Fine-Tuning project! This document provides guidelines for contributing.
-
-## Table of Contents
-
-- [Code of Conduct](#code-of-conduct)
-- [How to Contribute](#how-to-contribute)
-- [Development Setup](#development-setup)
-- [Pull Request Process](#pull-request-process)
-- [Coding Standards](#coding-standards)
-- [Documentation](#documentation)
-
-## Code of Conduct
-
-This project adheres to a Code of Conduct. By participating, you are expected to uphold this code. Please report unacceptable behavior to [contact email].
-
-## How to Contribute
-
-### Reporting Bugs
-
-Before creating bug reports, please check existing issues. When creating a bug report, include:
-
-- **Clear title** describing the issue
-- **Steps to reproduce** the behavior
-- **Expected behavior** vs actual behavior
-- **Environment details** (Python version, OS, etc.)
-- **Error messages** and stack traces if applicable
-
-### Suggesting Enhancements
-
-Enhancement suggestions are welcome! Please include:
-
-- **Use case** explaining why this enhancement would be useful
-- **Proposed solution** with as much detail as possible
-- **Alternatives considered** if any
-
-### Contributing Code
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Make your changes
-4. Run tests and validation
-5. Commit with clear messages
-6. Push to your fork
-7. Open a Pull Request
+Thank you for your interest in contributing to the CMM Data package!
 
 ## Development Setup
 
-### Prerequisites
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/PNNL-CMM/cmm-data.git
+   cd cmm-data
+   ```
 
-- Python 3.8+
-- Git
+2. **Create a virtual environment**
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   ```
 
-### Installation
+3. **Install in development mode**
+   ```bash
+   pip install -e ".[full]"
+   pip install pytest pytest-cov ruff pre-commit
+   ```
 
+4. **Install pre-commit hooks**
+   ```bash
+   pre-commit install
+   ```
+
+5. **Configure data path**
+   ```bash
+   export CMM_DATA_PATH=/path/to/Globus_Sharing
+   ```
+
+## Pre-commit Hooks
+
+We use [pre-commit](https://pre-commit.com/) to run code quality checks before each commit.
+
+**Installed hooks:**
+- **ruff**: Linting and formatting
+- **mypy**: Type checking
+- **bandit**: Security checks
+- **codespell**: Spell checking
+- **pydocstyle**: Docstring style
+- **rstcheck**: RST documentation syntax
+- Various file checks (YAML, TOML, trailing whitespace, etc.)
+
+**Usage:**
 ```bash
-# Clone your fork
-git clone https://github.com/YOUR_USERNAME/CMM-LLM-FineTuning.git
-cd CMM-LLM-FineTuning
+# Run all hooks on all files
+pre-commit run --all-files
 
-# Create virtual environment (optional but recommended)
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+# Run specific hook
+pre-commit run ruff --all-files
 
-# Install development dependencies
-pip install -r requirements-dev.txt  # If available
+# Update hooks to latest versions
+pre-commit autoupdate
+
+# Skip hooks temporarily (not recommended)
+git commit --no-verify -m "message"
 ```
 
-### Running Tests
+## Code Style
+
+We use [ruff](https://github.com/astral-sh/ruff) for linting and formatting:
 
 ```bash
-# Validate corpus integrity
-cd Data/preprocessed
-python3 validate_corpus.py
+# Check code
+ruff check src/
 
-# Run unit tests (if available)
-python3 -m pytest tests/
+# Fix auto-fixable issues
+ruff check --fix src/
+
+# Format code
+ruff format src/
+
+# Check formatting without changing
+ruff format --check src/
+```
+
+**Style guidelines:**
+- Line length: 100 characters
+- Quote style: double quotes
+- Import sorting: isort-compatible (handled by ruff)
+- Docstrings: Google style
+
+## Testing
+
+```bash
+# Run tests
+pytest tests/ -v
+
+# With coverage
+pytest tests/ -v --cov=cmm_data
+```
+
+## Adding a New Loader
+
+1. Create a new file in `src/cmm_data/loaders/`
+2. Inherit from `BaseLoader`
+3. Implement required methods:
+   - `load(**kwargs) -> pd.DataFrame`
+   - `list_available() -> List[str]`
+4. Add to `__init__.py` exports
+5. Update `catalog.py` with dataset info
+6. Add tests and documentation
+
+Example:
+```python
+from .base import BaseLoader
+
+class NewDatasetLoader(BaseLoader):
+    dataset_name = "new_dataset"
+
+    def list_available(self):
+        # Return list of available items
+        pass
+
+    def load(self, **kwargs):
+        # Load and return DataFrame
+        pass
 ```
 
 ## Pull Request Process
 
-1. **Update documentation** for any changed functionality
-2. **Add tests** for new features
-3. **Ensure validation passes** (`python3 validate_corpus.py`)
-4. **Update CHANGELOG.md** with your changes
-5. **Request review** from maintainers
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Make your changes
+4. Run tests: `pytest tests/`
+5. Run linter: `ruff check src/`
+6. Commit with clear message: `git commit -m "Add feature X"`
+7. Push: `git push origin feature/my-feature`
+8. Open a Pull Request
 
-### PR Title Format
+## Commit Messages
 
-Use conventional commit format:
-- `feat: Add new preprocessing for commodity X`
-- `fix: Correct parsing of withheld values`
-- `docs: Update methodology documentation`
-- `refactor: Improve column categorization logic`
+Use clear, descriptive commit messages:
+- `Add: new loader for XYZ dataset`
+- `Fix: handle missing values in USGS data`
+- `Update: improve documentation for visualizations`
+- `Refactor: simplify caching logic`
 
-## Coding Standards
+## Reporting Issues
 
-### Python Style
-
-- Follow [PEP 8](https://pep8.org/) style guide
-- Use meaningful variable names
-- Add docstrings to functions and classes
-- Keep functions focused and small
-
-### Example Function
-
-```python
-def parse_special_value(value: str) -> Dict[str, Any]:
-    """
-    Parse USGS special value notation into structured representation.
-
-    Args:
-        value: Raw string value from CSV (e.g., "W", ">95", "NA")
-
-    Returns:
-        Dictionary with 'value' and 'type' keys, plus additional
-        context fields based on the value type.
-
-    Examples:
-        >>> parse_special_value("W")
-        {"value": None, "type": "withheld", "reason": "company proprietary data"}
-
-        >>> parse_special_value(">95")
-        {"value": 95, "type": "range", "operator": "greater_than"}
-    """
-    # Implementation...
-```
-
-### Commit Messages
-
-- Use present tense ("Add feature" not "Added feature")
-- Use imperative mood ("Move cursor to..." not "Moves cursor to...")
-- Reference issues when applicable ("Fix #123")
-
-## Documentation
-
-### Updating Documentation
-
-When making changes:
-
-1. Update `README.md` if adding new features
-2. Update `METHODOLOGY.md` for preprocessing changes
-3. Update `DATA_DICTIONARY.md` for schema changes
-4. Add entry to `CHANGELOG.md`
-
-### Documentation Style
-
-- Use clear, concise language
-- Include code examples where helpful
-- Add tables for structured information
-- Keep formatting consistent with existing docs
-
-## Adding New Data Sources
-
-When adding a new data source:
-
-1. Create preprocessing script following existing patterns
-2. Handle special values consistently
-3. Generate both text and structured_data fields
-4. Update DATA_DICTIONARY.md with new fields
-5. Add source to METHODOLOGY.md
-6. Update corpus_summary.json schema
-
-### Preprocessing Script Template
-
-```python
-#!/usr/bin/env python3
-"""
-Preprocess [Data Source Name] into JSONL format.
-
-Source: [URL or reference]
-Output: [output_filename].jsonl
-"""
-
-import csv
-import json
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Any
-
-INPUT_DIR = Path("...")
-OUTPUT_DIR = Path("...")
-
-def process_data() -> List[Dict]:
-    """Process the data source."""
-    documents = []
-    # Implementation...
-    return documents
-
-def main():
-    """Main preprocessing function."""
-    print("=" * 60)
-    print("[Data Source] Preprocessing")
-    print("=" * 60)
-
-    documents = process_data()
-
-    # Write output...
-
-if __name__ == "__main__":
-    main()
-```
+- Use the issue templates
+- Include Python version and cmm_data version
+- Provide minimal reproducible example
+- Include full error traceback
 
 ## Questions?
 
-Feel free to open an issue for questions or reach out to the maintainers.
-
-Thank you for contributing!
+Contact the CMM team at PNNL.

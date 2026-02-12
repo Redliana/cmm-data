@@ -20,9 +20,11 @@ parts/
 sdist/
 var/
 wheels/
+share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # PyInstaller
 *.manifest
@@ -50,6 +52,26 @@ coverage.xml
 *.mo
 *.pot
 
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
@@ -60,9 +82,21 @@ ipython_config.py
 # pyenv
 .python-version
 
-# Environment
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
 .env
-.env.local
 .venv
 env/
 venv/
@@ -85,6 +119,15 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
 # IDE
 .idea/
 .vscode/
@@ -92,49 +135,18 @@ dmypy.json
 *.swo
 *~
 
-# OS files
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
 # Project specific
-*.log
-*.tmp
-*.temp
+.cmm_cache/
+*.pkl
+exports/
+cmm_exports/
 
-# API keys and secrets
-.env
-*.key
-credentials.json
-secrets.json
-
-# Large data files
-*.pdf
-*.zip
-
-# Model checkpoints (large files)
-models/*.bin
-models/*.safetensors
-models/*.gguf
-*.ckpt
-
-# Downloaded PDFs and OCR-extracted data
-OSTI_retrieval/pdfs/
-OSTI_OCR_Extracted/
-
-# Batch analysis generated output
-Exp_Design/batch_analysis/output/
-
-# API Scripts venv
-API_Scripts/venv/
-
-# Claude Code
-.claude/
-
-# Temporary processing files
-/tmp/
-*.bak
+# Generated visualizations
+*.png
+*.jpg
+*.jpeg
+!examples/*.png

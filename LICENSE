@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2025 [Author/Institution]
+Copyright (c) 2026 Pacific Northwest National Laboratory
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,19 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
---------------------------------------------------------------------------------
-
-DATA LICENSE NOTICE
-
-The source data from the U.S. Geological Survey (USGS) is in the public domain
-as a work of the United States Government and is not subject to copyright
-protection in the United States (17 U.S.C. §105).
-
-When using USGS data, please provide appropriate citation:
-
-U.S. Geological Survey, 2025, Mineral commodity summaries 2025:
-U.S. Geological Survey, 212 p., https://doi.org/10.3133/mcs2025
-
-U.S. Geological Survey, Mineral Resources Data System:
-https://mrdata.usgs.gov/mrds/
