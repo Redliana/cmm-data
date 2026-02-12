@@ -43,12 +43,7 @@ def _fmt_weight(kg: float) -> str:
 
 def _fmt_num(value: float, unit: str = "") -> str:
     """Format a generic number with optional unit."""
-    if abs(value) >= 1e6:
-        s = f"{value:,.0f}"
-    elif abs(value) >= 100:
-        s = f"{value:,.0f}"
-    else:
-        s = f"{value:,.2f}"
+    s = f"{value:,.0f}" if abs(value) >= 1000000.0 or abs(value) >= 100 else f"{value:,.2f}"
     return f"{s} {unit}".strip() if unit else s
 
 

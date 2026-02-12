@@ -27,7 +27,7 @@ def build_report(
     by_subdomain: dict[str, list[float]] = defaultdict(list)
     by_commodity: dict[str, list[float]] = defaultdict(list)
 
-    for gold, score in zip(golds, scores):
+    for gold, score in zip(golds, scores, strict=False):
         by_level[gold.complexity_level].append(score.score)
         by_subdomain[gold.subdomain].append(score.score)
         by_commodity[gold.commodity].append(score.score)

@@ -50,7 +50,7 @@ def stratified_split(
 
     # First split: train vs (valid+test)
     holdout_ratio = valid_ratio + test_ratio
-    train_pairs, holdout_pairs, train_keys, holdout_keys = train_test_split(
+    train_pairs, holdout_pairs, _train_keys, _holdout_keys = train_test_split(
         pairs,
         strat_keys if strat_keys is not None else [None] * len(pairs),
         test_size=holdout_ratio,

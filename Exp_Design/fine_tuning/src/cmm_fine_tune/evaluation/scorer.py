@@ -137,4 +137,4 @@ def _rouge_to_rubric(rouge_l: float) -> float:
 def score_all(golds: list[GoldQAPair], generated_answers: list[str]) -> list[ScoreResult]:
     """Score all generated answers against gold QA pairs."""
     assert len(golds) == len(generated_answers)
-    return [score_answer(g, a) for g, a in zip(golds, generated_answers)]
+    return [score_answer(g, a) for g, a in zip(golds, generated_answers, strict=False)]

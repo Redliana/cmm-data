@@ -155,7 +155,7 @@ def main() -> None:
         if "split_counts" in summary:
             sc = summary["split_counts"]
             print(f"  Train: {sc['train']}, Valid: {sc['valid']}, Test: {sc['test']}")
-    except Exception:  # noqa: BLE001
+    except Exception:
         logger.exception("Pipeline failed")
         sys.exit(1)
 

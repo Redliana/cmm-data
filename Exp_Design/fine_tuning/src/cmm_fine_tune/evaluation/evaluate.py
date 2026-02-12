@@ -95,7 +95,7 @@ def main() -> None:
         print(f"  Mean ROUGE-L: {report.mean_rouge_l:.3f}")
         print(f"  Reports written to: {args.output}")
 
-    except Exception:  # noqa: BLE001
+    except Exception:
         logger.exception("Evaluation failed")
         sys.exit(1)
 
