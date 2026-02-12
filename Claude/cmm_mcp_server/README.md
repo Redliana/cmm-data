@@ -1,6 +1,8 @@
 # CMM MCP Server — Critical Minerals and Materials Document Server
 
-An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that gives Claude (and other MCP-compatible LLM clients) programmatic access to a curated collection of DOE technical reports, USGS mineral-commodity datasets, Mistral-powered OCR extraction, and live UN Comtrade international trade data — all focused on Critical Minerals and Materials (CMM).
+An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that gives Claude (and other MCP-compatible LLM clients) programmatic access to a curated collection of DOE technical reports, USGS mineral-commodity datasets, and Mistral-powered OCR extraction — all focused on Critical Minerals and Materials (CMM).
+
+> **Note:** For international trade data queries (UN Comtrade), use the dedicated **[UNComtrade_MCP](../../Data_Needs/UNComtrade_MCP/)** server, which provides a more comprehensive set of trade analysis tools.
 
 ---
 
@@ -15,7 +17,6 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that 
    - [OCR Tools](#ocr-tools)
    - [Batch Processing Tools](#batch-processing-tools)
    - [Data Tools](#data-tools)
-   - [UN Comtrade Trade Data Tools](#un-comtrade-trade-data-tools)
    - [Utility Tools](#utility-tools)
 5. [Prerequisites](#prerequisites)
 6. [Installation](#installation)
@@ -38,7 +39,6 @@ The CMM MCP Server is designed to support research and analysis of critical mine
 - Run **Mistral OCR** on scanned or image-heavy PDFs for high-quality text extraction
 - Analyze **scientific charts and figures** with Pixtral Large vision model to extract numerical data
 - **Batch-process** documents through an OCR + chart-analysis pipeline to generate JSONL fine-tuning data for LLMs
-- Query **live UN Comtrade** international trade data for critical minerals (lithium, cobalt, rare earths, graphite, nickel, manganese, gallium, germanium)
 - Export **BibTeX citations** for any document in the collection
 
 The server is built with [FastMCP](https://github.com/jlowin/fastmcp) and communicates over **stdio transport**, making it straightforward to register with Claude Code.
@@ -62,22 +62,22 @@ The server is built with [FastMCP](https://github.com/jlowin/fastmcp) and commun
 │  │ metadata,     │ │              │ │  PDF Triager         │ │
 │  │ citations     │ │              │ │                      │ │
 │  └──────────────┘ └──────────────┘ └──────────────────────┘ │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────────────┐ │
-│  │ data_tools.py│ │batch_process │ │ comtrade_client.py   │ │
-│  │ CSV query,   │ │or.py         │ │ comtrade_models.py   │ │
-│  │ schemas      │ │ JSONL output │ │ UN Comtrade API      │ │
-│  └──────────────┘ └──────────────┘ └──────────────────────┘ │
+│  ┌──────────────┐ ┌──────────────────────────────────────┐ │
+│  │ data_tools.py│ │ batch_processor.py                   │ │
+│  │ CSV query,   │ │ Batch OCR pipeline → JSONL output    │ │
+│  │ schemas      │ │                                      │ │
+│  └──────────────┘ └──────────────────────────────────────┘ │
 │                                                             │
 │                      config.py                              │
 │              (paths, constants, env vars)                    │
 └─────────────────────────────────────────────────────────────┘
-         │                │                   │
-   ┌─────▼──────┐  ┌─────▼──────┐   ┌────────▼────────┐
-   │ OSTI PDFs  │  │ CSV Data   │   │  UN Comtrade    │
-   │ (1,137 docs│  │ (579+ files│   │  REST API       │
-   │  by commod.)│  │  USGS/LISA/│   │                 │
-   │            │  │  NETL)     │   │                 │
-   └────────────┘  └────────────┘   └─────────────────┘
+         │                │
+   ┌─────▼──────┐  ┌─────▼──────┐
+   │ OSTI PDFs  │  │ CSV Data   │
+   │ (1,137 docs│  │ (579+ files│
+   │  by commod.)│  │  USGS/LISA/│
+   │            │  │  NETL)     │
+   └────────────┘  └────────────┘
 ```
 
 ---
@@ -91,13 +91,13 @@ The server is built with [FastMCP](https://github.com/jlowin/fastmcp) and commun
 | **USGS Ore Deposits** | Geochemical and geospatial ore deposit data | Multiple CSVs |
 | **LISA Model** | LISA (Lithium-Ion Supply Analysis) extracted model data | Multiple CSVs |
 | **NETL REE Coal** | National Energy Technology Laboratory rare earth element data from coal sources (geodatabase exports) | Multiple CSVs |
-| **UN Comtrade** | Live international trade data via the UN Comtrade API (annual HS-coded commodity flows) | Real-time API |
+| **UN Comtrade** | International trade data available via the separate **[UNComtrade_MCP](../../Data_Needs/UNComtrade_MCP/)** server | See UNComtrade_MCP |
 
 ---
 
 ## Capabilities & Tools
 
-The server registers **27 MCP tools** across seven functional groups.
+The server registers **21 MCP tools** across six functional groups.
 
 ### Document Tools
 
@@ -154,19 +154,6 @@ The batch pipeline produces:
 | `query_csv(dataset, filters?, columns?, limit?)` | Query a CSV with filters (`>`, `<` for numeric; `~` for substring match) |
 | `read_csv_sample(dataset, n_rows?)` | Preview the first N rows of a dataset |
 
-### UN Comtrade Trade Data Tools
-
-| Tool | Description |
-|------|-------------|
-| `get_comtrade_status()` | Check UN Comtrade API connectivity and key validity |
-| `list_trade_minerals()` | List available critical minerals with their associated HS codes |
-| `get_trade_data(reporter, commodity, partner?, flow?, year?, max_records?)` | Query bilateral trade data by HS commodity code |
-| `get_mineral_trade(mineral, reporter?, partner?, flow?, year?, max_records?)` | Query trade data for a critical mineral by name (uses preset HS code mappings) |
-| `get_country_mineral_profile(country, year?)` | Get a country's full import/export profile across all critical minerals |
-
-**Country codes** use the UN M49 standard (e.g., `842` = USA, `156` = China, `0` = World).
-**Trade flow codes**: `M` = imports, `X` = exports, `M,X` = both.
-
 ### Utility Tools
 
 | Tool | Description |
@@ -181,7 +168,6 @@ The batch pipeline produces:
 - **Python 3.10+**
 - **Claude Code** (or any MCP-compatible client)
 - **Mistral AI API key** (optional; required for OCR and chart analysis features)
-- **UN Comtrade API key** (optional; required for live trade data queries)
 - The underlying data collections (OSTI PDFs, CSV datasets, document catalog) at the paths configured in `config.py`
 
 ---
@@ -216,7 +202,6 @@ The batch pipeline produces:
    | `numpy` | Numerical operations for search/similarity |
    | `mistralai` | Mistral OCR and Pixtral Large vision APIs |
    | `python-dotenv` | Environment variable loading from `.env` |
-   | `httpx` | Async HTTP client for UN Comtrade API |
 
 4. **Configure environment variables** (see [Configuration](#configuration) below).
 
@@ -231,12 +216,9 @@ Create a `.env` file in the `cmm_mcp_server/` directory with the following keys:
 ```env
 # Required for OCR and chart analysis features
 MISTRAL_API_KEY=your_mistral_api_key_here
-
-# Required for UN Comtrade trade data queries
-UNCOMTRADE_API_KEY=your_comtrade_api_key_here
 ```
 
-Both keys are **optional** — the server will start without them, but OCR/chart-analysis and Comtrade tools will return informative error messages if invoked without the corresponding key.
+This key is **optional** — the server will start without it, but OCR and chart-analysis tools will return informative error messages if invoked without it.
 
 ### Data Paths (`config.py`)
 
@@ -307,11 +289,6 @@ The index is persisted to `index/search_index.db` (FTS5) and `index/tfidf_vector
 > Search for documents about "solvent extraction rare earth separation"
 ```
 
-**Get trade data for lithium:**
-```
-> Show me US lithium imports for 2020-2023
-```
-
 **Query USGS commodity data:**
 ```
 > List the available USGS datasets, then show me the schema for the lithium salient statistics file
@@ -328,15 +305,13 @@ The index is persisted to `index/search_index.db` (FTS5) and `index/tfidf_vector
 
 ```
 cmm_mcp_server/
-├── server.py              # Main MCP server — registers all 27 tools with FastMCP
+├── server.py              # Main MCP server — registers all 21 tools with FastMCP
 ├── config.py              # Configuration: paths, API keys, constants, commodity/subdomain codes
 ├── document_tools.py      # DocumentManager: PDF reading, metadata, citations, commodity browsing
 ├── search.py              # SearchIndex: SQLite FTS5 full-text search + TF-IDF similarity
 ├── ocr.py                 # MistralOCR: OCR extraction, chart analysis (Pixtral Large), PDF triage
 ├── batch_processor.py     # BatchProcessor: batch OCR pipeline → JSONL fine-tuning data
 ├── data_tools.py          # DataManager: CSV listing, schema inspection, filtered queries
-├── comtrade_client.py     # ComtradeClient: async HTTP client for UN Comtrade API v1
-├── comtrade_models.py     # Pydantic models (TradeRecord, etc.) and HS code mappings
 ├── __init__.py            # Package marker
 ├── requirements.txt       # Python dependencies
 ├── .env                   # API keys (gitignored)
@@ -415,15 +390,6 @@ The `BatchProcessor` (`batch_processor.py`) orchestrates large-scale document co
 
 The JSONL output format is structured for LLM instruction fine-tuning, with metadata, full text, table contents, and figure descriptions combined into a single text field per document.
 
-### UN Comtrade Integration
-
-The Comtrade module (`comtrade_client.py`, `comtrade_models.py`) provides:
-
-- Async HTTP client using `httpx` for the UN Comtrade API v1
-- Pydantic-validated `TradeRecord` models with proper field aliasing
-- Pre-configured HS code mappings for 10 critical minerals
-- Country mineral profile aggregation across all minerals with rate limiting
-
 ### Singleton Pattern
 
 All major components (`DocumentManager`, `DataManager`, `SearchIndex`, `MistralOCR`, `PDFTriager`, `BatchProcessor`) use a **singleton pattern** via module-level `get_*()` factory functions. This ensures that catalogs, indexes, and API clients are loaded once and reused across tool invocations within a session.
@@ -438,6 +404,5 @@ All major components (`DocumentManager`, `DataManager`, `SearchIndex`, `MistralO
 | `Mistral OCR not configured` | Add a valid `MISTRAL_API_KEY` to the `.env` file |
 | `PDF not found for OSTI ID` | Verify that the PDF exists under `OSTI_PDFS_DIR/{commodity}/{osti_id}_*.pdf` |
 | `Dataset not found` | Check that `SCHEMAS_JSON` points to a valid `all_schemas.json` and the CSV paths within it are correct |
-| Comtrade `unauthorized` status | Add a valid `UNCOMTRADE_API_KEY` to the `.env` file; obtain one from [UN Comtrade](https://comtradeplus.un.org/) |
 | Slow search index build | The initial build processes ~1,137 PDFs and takes ~30 minutes. Subsequent queries use the cached index. |
 | `DATA_ROOT` path errors | Update `DATA_ROOT` in `config.py` to match your local data directory layout |
