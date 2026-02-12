@@ -49,7 +49,7 @@ def main():
         else:
             print_status("Data root", False, "Not found or not configured")
             errors.append("Data root not configured")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print_status("Configuration", False, str(e))
         errors.append("Configuration error")
 
@@ -66,7 +66,7 @@ def main():
 
         if available_count == 0:
             errors.append("No datasets available")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print_status("Data catalog", False, str(e))
         errors.append("Cannot read data catalog")
 
@@ -85,7 +85,7 @@ def main():
             loader = loader_class()
             available = loader.list_available()
             print_status(loader_name, True, f"{len(available)} items")
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             print_status(loader_name, False, str(e))
 
     # 5. Test data loading
@@ -93,7 +93,7 @@ def main():
     try:
         df = cmm_data.load_usgs_commodity("lithi", "world")
         print_status("Load lithium data", True, f"{len(df)} rows")
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print_status("Load lithium data", False, str(e))
         errors.append("Cannot load sample data")
 

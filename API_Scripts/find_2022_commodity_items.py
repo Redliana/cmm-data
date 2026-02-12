@@ -67,7 +67,7 @@ def search_commodity_item(year: int, commodity: str, parent_id: str = None) -> d
                             "title": item.get("title"),
                             "url": f"https://www.sciencebase.gov/catalog/item/{item.get('id')}",
                         }
-        except Exception as e:
+        except requests.RequestException as e:
             continue
 
     return None

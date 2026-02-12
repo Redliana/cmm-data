@@ -67,7 +67,7 @@ def get_csv_schema(csv_path, sample_rows=5):
                 schema["columns"].append(
                     {"name": header, "type": dtype, "samples": col_samples.get(i, [])}
                 )
-    except Exception as e:
+    except (OSError, csv.Error) as e:
         schema["error"] = str(e)
 
     return schema
@@ -80,12 +80,12 @@ def infer_type(value):
     try:
         int(value)
         return "int"
-    except:
+    except (ValueError, TypeError):
         pass
     try:
         float(value)
         return "float"
-    except:
+    except (ValueError, TypeError):
         pass
     return "str"
 
@@ -137,7 +137,7 @@ def convert_geodatabase_to_csv(gdb_path, output_dir):
                 print("FAILED (no output)")
         except subprocess.TimeoutExpired:
             print("TIMEOUT")
-        except Exception as e:
+        except (OSError, subprocess.SubprocessError) as e:
             print(f"ERROR: {e}")
 
     return converted

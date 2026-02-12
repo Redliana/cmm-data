@@ -53,7 +53,7 @@ def export_critical_minerals_summary(output_dir: Path):
                     "net_import_reliance": latest.get("NIR_pct", "N/A"),
                 }
             )
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             print(f"  Warning: Error processing {code}: {e}")
             continue
 
@@ -80,7 +80,7 @@ def export_world_production_all(output_dir: Path):
             df["commodity_code"] = code
             df["commodity_name"] = loader.get_commodity_name(code)
             all_data.append(df)
-        except Exception:
+        except (OSError, ValueError):
             continue
 
     if all_data:
@@ -105,7 +105,7 @@ def export_salient_statistics_all(output_dir: Path):
             df["commodity_code"] = code
             df["commodity_name"] = loader.get_commodity_name(code)
             all_data.append(df)
-        except Exception:
+        except (OSError, ValueError):
             continue
 
     if all_data:
@@ -134,7 +134,7 @@ def export_ore_deposits(output_dir: Path):
         geology.to_csv(output_file, index=False)
         print(f"  Saved: {output_file} ({len(geology)} rows)")
 
-    except Exception as e:
+    except (OSError, ValueError) as e:
         print(f"  Error: {e}")
 
 
@@ -162,7 +162,7 @@ def export_to_excel(output_dir: Path):
                 top = df[~df["Country"].str.contains("World|total", case=False, na=False)].head(5)
                 top["commodity"] = loader.get_commodity_name(code)
                 summary_data.append(top[["commodity", "Country", "Prod_t_est_2022", "Reserves_t"]])
-            except Exception:
+            except (OSError, ValueError):
                 continue
 
         if summary_data:

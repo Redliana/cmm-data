@@ -151,7 +151,7 @@ class DataManager:
                 "data": records,
             }
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             return {"error": f"Error reading dataset: {str(e)}"}
 
     def read_csv_sample(self, dataset: str, n_rows: int = 10) -> dict:
@@ -179,7 +179,7 @@ class DataManager:
                 "data": df.to_dict(orient="records"),
             }
 
-        except Exception as e:
+        except (OSError, ValueError) as e:
             return {"error": f"Error reading dataset: {str(e)}"}
 
     def get_statistics(self) -> dict:

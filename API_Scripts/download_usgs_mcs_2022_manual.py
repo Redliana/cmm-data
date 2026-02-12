@@ -67,7 +67,7 @@ class USGSMCS2022Downloader:
             response = self.session.get(url, timeout=30)
             if response.status_code == 200:
                 return response.json()
-        except Exception as e:
+        except requests.RequestException as e:
             print(f"Error fetching item {item_id}: {e}")
         return {}
 
@@ -126,7 +126,7 @@ class USGSMCS2022Downloader:
                         downloaded_files.append(filepath)
                         print(f"      ✓ Downloaded {filepath.stat().st_size / 1024:.1f} KB")
                         time.sleep(0.5)  # Rate limiting
-                    except Exception as e:
+                    except (requests.RequestException, OSError) as e:
                         print(f"      ✗ Error: {e}")
 
         return downloaded_files

@@ -246,7 +246,7 @@ def plot_multiple_commodities(
                 latest = df.iloc[-1]
                 value = latest.get("USprod_t_clean", 0)
                 ax.bar(loader.get_commodity_name(commodity), value)
-        except Exception:
+        except (OSError, ValueError):
             continue
 
     ax.set_xlabel("Commodity")

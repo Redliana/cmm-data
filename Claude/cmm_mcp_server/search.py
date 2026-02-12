@@ -53,7 +53,7 @@ class SearchIndex:
                     self.tfidf_matrix = data["matrix"]
                     self.doc_ids = data["doc_ids"]
                 logger.info(f"Loaded TF-IDF index with {len(self.doc_ids)} documents")
-            except Exception as e:
+            except (OSError, ValueError, pickle.UnpicklingError) as e:
                 logger.warning(f"Failed to load TF-IDF index: {e}")
 
     def is_indexed(self) -> bool:
@@ -232,7 +232,7 @@ class SearchIndex:
             if text.strip():
                 return text
 
-        except Exception as e:
+        except (OSError, ValueError) as e:
             logger.warning(f"PyMuPDF failed for {pdf_path}: {e}")
 
         # Fallback to Mistral OCR if enabled and available

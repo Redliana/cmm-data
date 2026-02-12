@@ -225,6 +225,6 @@ class PreprocessedCorpusLoader(BaseLoader):
         try:
             stats = self.get_corpus_stats()
             base.update(stats)
-        except Exception:
+        except (OSError, ValueError):
             pass
         return base

@@ -99,7 +99,7 @@ class MistralOCR:
                 "model": self.model,
             }
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             logger.error(f"Mistral OCR failed for {pdf_path}: {e}")
             return {"error": str(e)}
 
@@ -255,7 +255,7 @@ class MistralOCR:
                 },
             }
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             logger.error(f"Mistral OCR full extraction failed for {pdf_path}: {e}")
             return {"error": str(e)}
 
@@ -287,7 +287,7 @@ class MistralOCR:
                         f.write(base64.b64decode(data))
 
                     saved.append(str(filepath))
-                except Exception as e:
+                except (OSError, ValueError) as e:
                     logger.warning(f"Failed to save image {img['id']}: {e}")
 
         return saved
@@ -356,7 +356,7 @@ Format the data points as a markdown table for easy parsing."""
                 "model": self.vision_model,
             }
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             logger.error(f"Chart analysis failed: {e}")
             return {"error": str(e)}
 
@@ -485,7 +485,7 @@ class PDFTriager:
             # Determine if OCR is recommended
             self._evaluate_ocr_recommendation(result)
 
-        except Exception as e:
+        except (OSError, ValueError) as e:
             result["reasons"].append(f"Error analyzing PDF: {str(e)}")
             result["ocr_recommended"] = True
             result["priority"] = 5
@@ -513,7 +513,7 @@ class PDFTriager:
                 img_rect = page.get_image_bbox(xref)
                 if img_rect:
                     image_area += img_rect.width * img_rect.height
-            except:
+            except (OSError, ValueError):
                 pass
 
         image_coverage = image_area / max(1, page_area)

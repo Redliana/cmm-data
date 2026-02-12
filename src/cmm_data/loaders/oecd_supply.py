@@ -235,7 +235,7 @@ class OECDSupplyChainLoader(BaseLoader):
             try:
                 df = self.load(dataset)
                 file_counts[dataset] = df["extension"].value_counts().to_dict()
-            except Exception:
+            except (OSError, ValueError):
                 pass
         base["file_counts"] = file_counts
 

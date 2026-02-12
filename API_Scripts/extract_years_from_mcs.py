@@ -80,7 +80,7 @@ def extract_years_from_release(release_year: int, target_years: list[int], outpu
 
                 print(f"  ✓ {commodity_part} {file_type}: {len(df_filtered)} rows")
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             print(f"  ✗ Error processing {csv_file.name}: {e}")
             continue
 

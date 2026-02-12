@@ -142,7 +142,7 @@ class GoldQADataCollector:
             try:
                 df = pd.read_csv(filepath)
                 return df
-            except Exception as e:
+            except (OSError, ValueError) as e:
                 print(f"  Warning: Could not load existing data: {e}")
                 return pd.DataFrame()
         return pd.DataFrame()
@@ -280,7 +280,7 @@ class GoldQADataCollector:
 
                             self.query_log.append(query_id)
 
-                        except Exception as e:
+                        except (ValueError, KeyError, OSError) as e:
                             print(f"    ✗ Error: {e}")
                             continue
 
@@ -521,7 +521,7 @@ Examples:
     except KeyboardInterrupt:
         print("\n\nCollection interrupted by user.")
         sys.exit(1)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"\n✗ Error during collection: {e}")
         import traceback
 

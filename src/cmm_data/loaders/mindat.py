@@ -525,7 +525,7 @@ class MindatLoader(BaseLoader):
             try:
                 minerals = self.fetch_minerals_by_element(elem, ima_only=ima_only, save=save)
                 results[elem] = minerals
-            except Exception as e:
+            except (OSError, ValueError, KeyError) as e:
                 results[elem] = {"error": str(e)}
 
         return results

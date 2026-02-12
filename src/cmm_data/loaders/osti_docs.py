@@ -78,7 +78,7 @@ class OSTIDocumentsLoader(BaseLoader):
                         df = pd.DataFrame([data])
                     df["_source_file"] = json_file.name
                     dfs.append(df)
-                except (json.JSONDecodeError, Exception):
+                except (json.JSONDecodeError, OSError):
                     continue
 
             if dfs:
@@ -175,7 +175,7 @@ class OSTIDocumentsLoader(BaseLoader):
                 mask = years == year
                 if mask.any():
                     return df[mask]
-            except Exception:
+            except (ValueError, TypeError):
                 continue
 
         return pd.DataFrame()
@@ -196,7 +196,7 @@ class OSTIDocumentsLoader(BaseLoader):
                 years = pd.to_datetime(df[col], errors="coerce").dt.year
                 stats["year_distribution"] = years.value_counts().to_dict()
                 break
-            except Exception:
+            except (ValueError, TypeError):
                 continue
 
         return stats
@@ -207,6 +207,6 @@ class OSTIDocumentsLoader(BaseLoader):
         try:
             stats = self.get_statistics()
             base.update(stats)
-        except Exception:
+        except (OSError, ValueError):
             pass
         return base

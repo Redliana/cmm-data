@@ -82,7 +82,7 @@ def example_import_reliance():
             filename = f"{code}_import_reliance.png"
             fig.savefig(filename, dpi=150, bbox_inches="tight")
             print(f"  Saved: {filename}")
-        except Exception as e:
+        except (OSError, ValueError) as e:
             print(f"  Error for {name}: {e}")
 
     plt.close("all")
@@ -124,7 +124,7 @@ def example_custom_chart():
                         "production": prod if isinstance(prod, (int, float)) else 0,
                     }
                 )
-        except Exception:
+        except (OSError, ValueError):
             continue
 
     if data:

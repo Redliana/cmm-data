@@ -88,7 +88,7 @@ def get_data_catalog() -> pd.DataFrame:
     def get_path_safe(ds):
         try:
             return str(config.get_path(ds))
-        except Exception:
+        except (ValueError, KeyError):
             return None
 
     df["path"] = df["dataset"].map(get_path_safe)
@@ -172,7 +172,7 @@ def search_all_datasets(query: str, datasets: list[str] | None = None) -> pd.Dat
                             "match_field": "commodity_name",
                         }
                     )
-        except Exception:
+        except (OSError, ValueError):
             pass
 
     if "osti" in datasets:
@@ -189,7 +189,7 @@ def search_all_datasets(query: str, datasets: list[str] | None = None) -> pd.Dat
                         "match_field": "title/abstract",
                     }
                 )
-        except Exception:
+        except (OSError, ValueError):
             pass
 
     if "preprocessed" in datasets:
@@ -206,7 +206,7 @@ def search_all_datasets(query: str, datasets: list[str] | None = None) -> pd.Dat
                         "match_field": "text",
                     }
                 )
-        except Exception:
+        except (OSError, ValueError):
             pass
 
     return pd.DataFrame(results)

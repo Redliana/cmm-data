@@ -122,7 +122,7 @@ def main():
         print("\033[1;33m>>> \033[0m", end="")
         type_command("print(df[['Country', 'Prod_t_est_2022', 'Reserves_t']].head(8))")
         print(df[["Country", "Prod_t_est_2022", "Reserves_t"]].head(8).to_string())
-    except Exception as e:
+    except (OSError, ValueError) as e:
         print(f"\033[33m[Data not available: {e}]\033[0m")
     section_pause()
 

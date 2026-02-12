@@ -81,7 +81,7 @@ class USGSMCSIndividualDownloader:
             response = self.session.get(url, timeout=30)
             if response.status_code == 200:
                 return response.json()
-        except Exception as e:
+        except requests.RequestException as e:
             print(f"Error fetching item {item_id}: {e}")
         return {}
 
@@ -102,7 +102,7 @@ class USGSMCSIndividualDownloader:
                         return data
                     elif isinstance(data, dict) and "items" in data:
                         return data["items"]
-            except Exception as e:
+            except requests.RequestException as e:
                 continue
 
         # Alternative: Try to parse HTML page for child item links
@@ -131,7 +131,7 @@ class USGSMCSIndividualDownloader:
                 if children:
                     print(f"  Retrieved {len(children)} child items from HTML parsing")
                     return children
-        except Exception as e:
+        except (requests.RequestException, ValueError) as e:
             print(f"  HTML parsing error: {e}")
             pass
 
@@ -255,7 +255,7 @@ class USGSMCSIndividualDownloader:
                         downloaded_files.append(filepath)
                         print(f"      ✓ Downloaded {filepath.stat().st_size / 1024:.1f} KB")
                         time.sleep(0.5)  # Rate limiting
-                    except Exception as e:
+                    except (requests.RequestException, OSError) as e:
                         print(f"      ✗ Error: {e}")
 
         return downloaded_files

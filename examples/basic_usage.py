@@ -76,14 +76,14 @@ try:
     geology = ore_loader.load_geology()
     print(f"\nGeology table: {len(geology)} deposits")
     print(f"Columns: {list(geology.columns)[:5]}...")
-except Exception as e:
+except (OSError, ValueError) as e:
     print(f"Error loading geology: {e}")
 
 # Get REE samples
 try:
     ree = ore_loader.get_ree_samples()
     print(f"\nREE samples: {len(ree)} records")
-except Exception as e:
+except (OSError, ValueError) as e:
     print(f"Error loading REE samples: {e}")
 
 # =============================================================================
@@ -104,7 +104,7 @@ try:
     # Search
     results = corpus_loader.search("lithium", limit=3)
     print(f"\nSearch results for 'lithium': {len(results)} documents")
-except Exception as e:
+except (OSError, ValueError) as e:
     print(f"Corpus not available: {e}")
 
 # =============================================================================
@@ -133,7 +133,7 @@ try:
     print(f"\nExport Restrictions PDFs: {len(pdfs)} files")
     for pdf in pdfs[:3]:
         print(f"  - {pdf.name}")
-except Exception as e:
+except (OSError, ValueError) as e:
     print(f"Error: {e}")
 
 # =============================================================================

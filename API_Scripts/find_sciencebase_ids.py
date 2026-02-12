@@ -38,7 +38,7 @@ def search_sciencebase(query: str, max_results: int = 10) -> list[dict]:
                     return data["items"]
                 elif isinstance(data, list):
                     return data
-        except Exception as e:
+        except requests.RequestException as e:
             continue
 
     return []

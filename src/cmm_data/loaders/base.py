@@ -146,7 +146,7 @@ class BaseLoader(ABC):
                         return data
                     else:
                         cache_file.unlink()
-                except Exception:
+                except (OSError, ValueError, pickle.UnpicklingError):
                     pass
 
         return None
@@ -172,7 +172,7 @@ class BaseLoader(ABC):
                 cache_file = self.config.cache_dir / f"{key}.pkl"
                 with open(cache_file, "wb") as f:
                     pickle.dump(data, f)
-            except Exception:
+            except OSError:
                 pass  # Silently fail disk caching
 
     def _validate_path(self, path: Path, description: str = "File") -> None:

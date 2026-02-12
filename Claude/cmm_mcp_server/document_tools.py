@@ -135,7 +135,7 @@ class DocumentManager:
             doc.close()
             return "\n".join(text_parts)
 
-        except Exception as e:
+        except (OSError, ValueError) as e:
             return f"Error reading PDF: {str(e)}"
 
     def export_citation(self, osti_id: str, format: str = "bibtex") -> str:

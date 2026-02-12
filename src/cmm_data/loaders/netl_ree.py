@@ -55,7 +55,7 @@ class NETLREECoalLoader(BaseLoader):
                 "REE_Coal_Basins",
                 "Coal_Resources",
             ]
-        except Exception:
+        except (OSError, ValueError):
             return []
 
     def load(self, layer: str | None = None) -> pd.DataFrame:
@@ -251,7 +251,7 @@ class NETLREECoalLoader(BaseLoader):
         try:
             stats = self.get_ree_statistics()
             base["ree_elements_available"] = list(stats.keys())
-        except Exception:
+        except (OSError, ValueError):
             pass
 
         return base

@@ -103,7 +103,7 @@ class BatchProcessor:
                             "title": doc.get("title", "Unknown")[:60],
                         }
                     )
-                except:
+                except (OSError, ValueError):
                     pass
 
         # Pricing estimates (as of 2025)
@@ -284,7 +284,7 @@ class BatchProcessor:
                 if (i + 1) % 5 == 0:
                     self.save_state(state)
 
-            except Exception as e:
+            except (OSError, ValueError, KeyError) as e:
                 logger.error(f"Error processing {osti_id}: {e}")
                 state["failed"].append(osti_id)
                 results["failed"].append({"osti_id": osti_id, "error": str(e)})
@@ -320,7 +320,7 @@ class BatchProcessor:
             try:
                 with open(json_file) as f:
                     records.append(json.load(f))
-            except:
+            except (OSError, json.JSONDecodeError):
                 pass
 
         if not records:

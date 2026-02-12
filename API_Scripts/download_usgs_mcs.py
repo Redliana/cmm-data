@@ -90,7 +90,7 @@ class USGSMCSDownloader:
                 response = self.session.get(api_url, timeout=30)
                 if response.status_code == 200:
                     return response.json()
-            except Exception as e:
+            except requests.RequestException as e:
                 continue
 
         # If API fails, return empty dict - we'll use direct download URLs
@@ -119,7 +119,7 @@ class USGSMCSDownloader:
 
             print(f"    ✓ Downloaded {filepath.stat().st_size / 1024:.1f} KB")
             return True
-        except Exception as e:
+        except (requests.RequestException, OSError) as e:
             print(f"    ✗ Error downloading {url}: {e}")
             return False
 
@@ -140,7 +140,7 @@ class USGSMCSDownloader:
                 zip_ref.extractall(extract_to)
             print(f"    ✓ Extracted to {extract_to}")
             return True
-        except Exception as e:
+        except (OSError, zipfile.BadZipFile) as e:
             print(f"    ✗ Error extracting {zip_path}: {e}")
             return False
 
@@ -276,7 +276,7 @@ class USGSMCSDownloader:
                         df.to_csv(dest_file, index=False)
                         extracted[cmm_category] = extracted.get(cmm_category, []) + [str(dest_file)]
                         print(f"    ✓ Extracted {len(df)} rows")
-                    except Exception as e:
+                    except (OSError, ValueError) as e:
                         print(f"    ✗ Error processing {csv_file}: {e}")
 
         return extracted

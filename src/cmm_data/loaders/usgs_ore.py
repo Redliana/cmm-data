@@ -259,7 +259,7 @@ class USGSOreDepositsLoader(BaseLoader):
         try:
             geology = self.load_geology()
             base["deposit_count"] = len(geology)
-        except Exception:
+        except (OSError, ValueError):
             base["deposit_count"] = "Unknown"
 
         return base

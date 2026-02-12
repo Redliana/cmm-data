@@ -173,7 +173,7 @@ def plot_critical_minerals_comparison(
                     data.append(
                         {"commodity": loader.get_commodity_name(code), "code": code, "value": value}
                     )
-        except Exception:
+        except (OSError, ValueError):
             continue
 
     if not data:

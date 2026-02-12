@@ -57,7 +57,7 @@ def main():
         print(f"\n  Columns: {list(df.columns)}")
         print(f"\n  Data ({len(df)} rows):")
         print(df[["Country", "Prod_t_est_2022", "Reserves_t"]].head(10).to_string(index=False))
-    except Exception as e:
+    except (OSError, ValueError) as e:
         print(f"  [ERROR] {e}")
 
     # 5. Top Producers
@@ -77,7 +77,7 @@ def main():
                 print(f"  {i:4d}  {country:15s}  {prod:>15,.0f}")
             else:
                 print(f"  {i:4d}  {country:15s}  {str(prod):>15s}")
-    except Exception as e:
+    except (OSError, ValueError) as e:
         print(f"  [ERROR] {e}")
 
     # 6. Salient Statistics
@@ -93,7 +93,7 @@ def main():
         print(f"    Imports: {latest.get('Imports_t', 'N/A')} t")
         print(f"    Exports: {latest.get('Exports_t', 'N/A')} t")
         print(f"    Net Import Reliance: {latest.get('NIR_pct', 'N/A')}")
-    except Exception as e:
+    except (OSError, ValueError) as e:
         print(f"  [ERROR] {e}")
 
     print("\n" + "=" * 60)

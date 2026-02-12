@@ -215,7 +215,7 @@ class ComtradeQuery:
                 if data is not None and not data.empty:
                     results.append(data)
 
-            except Exception as e:
+            except (ValueError, TypeError, OSError) as e:
                 print(f"Warning: Error querying flow {flow} for {reporter}-{partner}: {e}")
                 continue
 
@@ -429,7 +429,7 @@ Examples:
             query.save_results(df, args.output)
             print(f"Results saved to: {args.output}")
 
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         print(f"Error executing query: {e}")
         import traceback
 

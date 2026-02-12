@@ -96,7 +96,7 @@ class USGSMCSAutoDownloader:
                 children.append(child)
                 if i % 20 == 0:
                     print(f"  Fetched {i}/{len(child_ids)} items...")
-            except Exception as e:
+            except (requests.RequestException, ValueError) as e:
                 print(f"  Warning: Error fetching {child_id}: {e}")
                 continue
 
@@ -183,7 +183,7 @@ class USGSMCSAutoDownloader:
                         downloaded_files.append(filepath)
                         print(f"      ✓ Downloaded {filepath.stat().st_size / 1024:.1f} KB")
                         time.sleep(0.5)  # Rate limiting
-                    except Exception as e:
+                    except (requests.RequestException, OSError) as e:
                         print(f"      ✗ Error: {e}")
 
         return downloaded_files
