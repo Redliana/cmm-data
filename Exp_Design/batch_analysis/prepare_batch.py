@@ -69,8 +69,11 @@ RESPONSE_SCHEMA = {
                     },
                 },
                 "required": [
-                    "cell_id", "relevance_score", "justification",
-                    "suggested_question_angle", "supports_l3_l4",
+                    "cell_id",
+                    "relevance_score",
+                    "justification",
+                    "suggested_question_angle",
+                    "supports_l3_l4",
                 ],
             },
         },
@@ -85,8 +88,12 @@ RESPONSE_SCHEMA = {
         },
     },
     "required": [
-        "osti_id", "overall_cmm_relevance", "depth_assessment",
-        "cell_evaluations", "best_matching_cells", "recommended_for_gold_qa",
+        "osti_id",
+        "overall_cmm_relevance",
+        "depth_assessment",
+        "cell_evaluations",
+        "best_matching_cells",
+        "recommended_for_gold_qa",
     ],
 }
 
@@ -136,7 +143,7 @@ def _format_cells_for_prompt(cells: list[MatrixCell]) -> str:
 def _get_category_label(commodity_category: str) -> str:
     """Human-readable label for a commodity_category value."""
     if commodity_category.startswith(SUBDOMAIN_CATEGORY_PREFIX):
-        sub = commodity_category[len(SUBDOMAIN_CATEGORY_PREFIX):]
+        sub = commodity_category[len(SUBDOMAIN_CATEGORY_PREFIX) :]
         return f"Subdomain: {SUBDOMAIN_DISPLAY.get(sub, sub)} ({sub})"
     return f"Commodity: {COMMODITY_DISPLAY.get(commodity_category, commodity_category)} ({commodity_category})"
 
@@ -191,7 +198,9 @@ def build_user_prompt(doc: dict, cells: list[MatrixCell]) -> tuple[str, bool]:
             abstract_source = "(abstract recovered from OCR extraction)"
         else:
             limited_metadata = True
-            abstract_source = "(no abstract available -- evaluation based on title and subjects only)"
+            abstract_source = (
+                "(no abstract available -- evaluation based on title and subjects only)"
+            )
     else:
         abstract_source = ""
 
@@ -342,9 +351,7 @@ def prepare_batch(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate Vertex AI batch input JSONL"
-    )
+    parser = argparse.ArgumentParser(description="Generate Vertex AI batch input JSONL")
     parser.add_argument(
         "--dry-run",
         action="store_true",

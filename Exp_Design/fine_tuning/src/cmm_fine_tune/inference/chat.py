@@ -55,9 +55,7 @@ def main() -> None:
     model, tokenizer = load(args.model, **load_kwargs)
     console.print("[green]Model loaded![/green]\n")
 
-    conversation: list[dict[str, str]] = [
-        {"role": "system", "content": CMM_SYSTEM_PROMPT}
-    ]
+    conversation: list[dict[str, str]] = [{"role": "system", "content": CMM_SYSTEM_PROMPT}]
 
     while True:
         try:

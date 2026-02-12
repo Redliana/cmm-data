@@ -73,12 +73,10 @@ def generate_report() -> Path:
     recommended = stats.get("recommended_papers", 0)
     high_rel = stats.get("high_relevance_papers", 0)
     cells_covered = sum(
-        1 for papers in rec_matrix.values()
-        if any(p["relevance_score"] >= 3 for p in papers)
+        1 for papers in rec_matrix.values() if any(p["relevance_score"] >= 3 for p in papers)
     )
     cells_strong = sum(
-        1 for papers in rec_matrix.values()
-        if any(p["relevance_score"] >= 4 for p in papers)
+        1 for papers in rec_matrix.values() if any(p["relevance_score"] >= 4 for p in papers)
     )
     gap_count = 100 - cells_covered
 
@@ -118,8 +116,10 @@ def generate_report() -> Path:
                     covered += 1
 
         avg_top = f"{sum(top_scores) / len(top_scores):.1f}" if top_scores else "N/A"
-        w(f"| {COMMODITY_DISPLAY.get(comm, comm)} ({comm}) | {paper_count} | "
-          f"{len(comm_cells)} | {covered} | {avg_top} |")
+        w(
+            f"| {COMMODITY_DISPLAY.get(comm, comm)} ({comm}) | {paper_count} | "
+            f"{len(comm_cells)} | {covered} | {avg_top} |"
+        )
 
     w()
 
@@ -171,7 +171,9 @@ def generate_report() -> Path:
                 top_5 = papers[:5]
 
                 w(f"**Q{cell.question_number}: {cid}**")
-                w(f"- Commodity: {cell.commodity} | Level: {cell.complexity_display} ({cell.complexity_level}) | Stratum: {cell.stratum}")
+                w(
+                    f"- Commodity: {cell.commodity} | Level: {cell.complexity_display} ({cell.complexity_level}) | Stratum: {cell.stratum}"
+                )
                 w(f"- Topic: {cell.topic_focus}")
                 w()
 
@@ -214,9 +216,11 @@ def generate_report() -> Path:
         w("| Q# | Cell ID | Commodity | Subdomain | Level | Topic | Best Score |")
         w("|----|---------|-----------|-----------|-------|-------|------------|")
         for cell, score in gap_cells:
-            w(f"| Q{cell.question_number} | {cell.cell_id} | {cell.commodity} | "
-              f"{cell.subdomain} | {cell.complexity_level} | {cell.topic_focus} | "
-              f"{score}/5 |")
+            w(
+                f"| Q{cell.question_number} | {cell.cell_id} | {cell.commodity} | "
+                f"{cell.subdomain} | {cell.complexity_level} | {cell.topic_focus} | "
+                f"{score}/5 |"
+            )
         w()
 
         # Group gaps by commodity
@@ -228,8 +232,10 @@ def generate_report() -> Path:
         w()
         for comm in COMMODITY_CATEGORIES:
             if comm in gap_by_comm:
-                w(f"- **{comm}**: {len(gap_by_comm[comm])} cells -- "
-                  f"{', '.join(c.subdomain + '/' + c.complexity_level for c in gap_by_comm[comm])}")
+                w(
+                    f"- **{comm}**: {len(gap_by_comm[comm])} cells -- "
+                    f"{', '.join(c.subdomain + '/' + c.complexity_level for c in gap_by_comm[comm])}"
+                )
 
     w()
     w("---")

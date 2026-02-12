@@ -43,6 +43,7 @@ mcp = FastMCP(
 # Document Tools
 # =============================================================================
 
+
 @mcp.tool()
 def list_documents(commodity: Optional[str] = None, limit: int = 50) -> list:
     """
@@ -129,6 +130,7 @@ def search_by_commodity(commodity: str) -> dict:
 # Search Tools
 # =============================================================================
 
+
 @mcp.tool()
 def search_documents(query: str, limit: int = 20) -> list:
     """
@@ -196,6 +198,7 @@ def get_index_status() -> dict:
 # OCR Tools
 # =============================================================================
 
+
 @mcp.tool()
 def ocr_document(osti_id: str, commodity: Optional[str] = None) -> dict:
     """
@@ -227,16 +230,14 @@ def get_ocr_status() -> dict:
     return {
         "available": ocr.is_available(),
         "model": ocr.model if ocr.is_available() else None,
-        "message": "Mistral OCR is ready" if ocr.is_available()
-                   else "Set MISTRAL_API_KEY in .env file to enable OCR"
+        "message": "Mistral OCR is ready"
+        if ocr.is_available()
+        else "Set MISTRAL_API_KEY in .env file to enable OCR",
     }
 
 
 @mcp.tool()
-def triage_documents(
-    limit: Optional[int] = None,
-    commodity: Optional[str] = None
-) -> dict:
+def triage_documents(limit: Optional[int] = None, commodity: Optional[str] = None) -> dict:
     """
     Analyze PDFs to identify candidates that would benefit from Mistral OCR.
 
@@ -258,11 +259,7 @@ def triage_documents(
     def progress(current, total, message):
         print(f"[{current}/{total}] {message}", file=sys.stderr)
 
-    return triager.triage_documents(
-        limit=limit,
-        commodity=commodity,
-        progress_callback=progress
-    )
+    return triager.triage_documents(limit=limit, commodity=commodity, progress_callback=progress)
 
 
 @mcp.tool()
@@ -285,25 +282,22 @@ def analyze_document_for_ocr(osti_id: str) -> dict:
     if not doc:
         return {"error": f"Document {osti_id} not found in catalog"}
 
-    commodity = doc.get('commodity_category', '')
+    commodity = doc.get("commodity_category", "")
     pdf_path = triager._find_pdf(osti_id, commodity)
 
     if not pdf_path:
         return {"error": f"PDF not found for {osti_id}"}
 
     analysis = triager.analyze_pdf(pdf_path)
-    analysis['osti_id'] = osti_id
-    analysis['title'] = doc.get('title', 'Unknown')
-    analysis['commodity'] = commodity
+    analysis["osti_id"] = osti_id
+    analysis["title"] = doc.get("title", "Unknown")
+    analysis["commodity"] = commodity
 
     return analysis
 
 
 @mcp.tool()
-def extract_document_full(
-    osti_id: str,
-    save_images: bool = True
-) -> dict:
+def extract_document_full(osti_id: str, save_images: bool = True) -> dict:
     """
     Full document extraction with images, tables, and structured content.
 
@@ -331,7 +325,7 @@ def extract_document_full(
     if not doc:
         return {"error": f"Document {osti_id} not found in catalog"}
 
-    commodity = doc.get('commodity_category', '')
+    commodity = doc.get("commodity_category", "")
     pdf_path = triager._find_pdf(osti_id, commodity)
 
     if not pdf_path:
@@ -347,17 +341,14 @@ def extract_document_full(
 
     if result.get("success"):
         result["osti_id"] = osti_id
-        result["title"] = doc.get('title', 'Unknown')
+        result["title"] = doc.get("title", "Unknown")
         result["commodity"] = commodity
 
     return result
 
 
 @mcp.tool()
-def analyze_chart(
-    image_path: str,
-    custom_prompt: Optional[str] = None
-) -> dict:
+def analyze_chart(image_path: str, custom_prompt: Optional[str] = None) -> dict:
     """
     Analyze a chart/plot image using Pixtral Large to extract numerical data.
 
@@ -379,10 +370,7 @@ def analyze_chart(
 
 
 @mcp.tool()
-def extract_and_analyze_document(
-    osti_id: str,
-    analyze_charts: bool = True
-) -> dict:
+def extract_and_analyze_document(osti_id: str, analyze_charts: bool = True) -> dict:
     """
     Full document extraction with automatic chart analysis.
 
@@ -409,7 +397,7 @@ def extract_and_analyze_document(
     if not doc:
         return {"error": f"Document {osti_id} not found in catalog"}
 
-    commodity = doc.get('commodity_category', '')
+    commodity = doc.get("commodity_category", "")
     pdf_path = triager._find_pdf(osti_id, commodity)
 
     if not pdf_path:
@@ -426,7 +414,7 @@ def extract_and_analyze_document(
 
     if result.get("success"):
         result["osti_id"] = osti_id
-        result["title"] = doc.get('title', 'Unknown')
+        result["title"] = doc.get("title", "Unknown")
         result["commodity"] = commodity
 
     return result
@@ -435,6 +423,7 @@ def extract_and_analyze_document(
 # =============================================================================
 # Batch Processing Tools
 # =============================================================================
+
 
 @mcp.tool()
 def estimate_batch_cost(osti_ids: Optional[List[str]] = None) -> dict:
@@ -453,9 +442,7 @@ def estimate_batch_cost(osti_ids: Optional[List[str]] = None) -> dict:
 
 @mcp.tool()
 def process_documents_batch(
-    osti_ids: Optional[List[str]] = None,
-    analyze_charts: bool = True,
-    resume: bool = True
+    osti_ids: Optional[List[str]] = None, analyze_charts: bool = True, resume: bool = True
 ) -> dict:
     """
     Batch process documents for LLM fine-tuning.
@@ -479,10 +466,7 @@ def process_documents_batch(
         print(f"[{current}/{total}] {message}", file=sys.stderr)
 
     return processor.process_batch(
-        osti_ids=osti_ids,
-        analyze_charts=analyze_charts,
-        resume=resume,
-        progress_callback=progress
+        osti_ids=osti_ids, analyze_charts=analyze_charts, resume=resume, progress_callback=progress
     )
 
 
@@ -517,6 +501,7 @@ def process_single_for_finetune(osti_id: str, analyze_charts: bool = True) -> di
 # =============================================================================
 # Data Tools
 # =============================================================================
+
 
 @mcp.tool()
 def list_datasets(category: Optional[str] = None) -> list:
@@ -553,7 +538,7 @@ def query_csv(
     dataset: str,
     filters: Optional[dict] = None,
     columns: Optional[List[str]] = None,
-    limit: int = 100
+    limit: int = 100,
 ) -> dict:
     """
     Query a CSV file with optional filters.
@@ -593,6 +578,7 @@ def read_csv_sample(dataset: str, n_rows: int = 10) -> dict:
 # Utility Tools
 # =============================================================================
 
+
 @mcp.tool()
 def get_statistics() -> dict:
     """
@@ -606,11 +592,11 @@ def get_statistics() -> dict:
     idx = get_search_index()
 
     return {
-        'documents': dm.get_statistics(),
-        'datasets': data_mgr.get_statistics(),
-        'search_index': idx.get_index_stats(),
-        'commodities': COMMODITIES,
-        'subdomains': SUBDOMAINS,
+        "documents": dm.get_statistics(),
+        "datasets": data_mgr.get_statistics(),
+        "search_index": idx.get_index_stats(),
+        "commodities": COMMODITIES,
+        "subdomains": SUBDOMAINS,
     }
 
 
@@ -623,8 +609,8 @@ def get_commodities() -> dict:
         Dictionary of commodity codes and their descriptions
     """
     return {
-        'commodities': COMMODITIES,
-        'subdomains': SUBDOMAINS,
+        "commodities": COMMODITIES,
+        "subdomains": SUBDOMAINS,
     }
 
 

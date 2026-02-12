@@ -36,26 +36,26 @@ def parse_numeric_value(value: Any) -> Optional[float]:
     s = str(value).strip()
 
     # Handle special codes
-    if s.upper() in ('W', 'XX', '--', '—', 'NA', 'N/A', 'N.A.', ''):
+    if s.upper() in ("W", "XX", "--", "—", "NA", "N/A", "N.A.", ""):
         return np.nan
 
     # Handle greater/less than
-    if s.startswith('>') or s.startswith('<'):
+    if s.startswith(">") or s.startswith("<"):
         s = s[1:]
 
     # Handle range (return midpoint)
-    if '-' in s and not s.startswith('-'):
-        parts = s.split('-')
+    if "-" in s and not s.startswith("-"):
+        parts = s.split("-")
         if len(parts) == 2:
             try:
-                low = float(parts[0].replace(',', ''))
-                high = float(parts[1].replace(',', ''))
+                low = float(parts[0].replace(",", ""))
+                high = float(parts[1].replace(",", ""))
                 return (low + high) / 2
             except ValueError:
                 pass
 
     # Remove commas and try to parse
-    s = s.replace(',', '')
+    s = s.replace(",", "")
 
     try:
         return float(s)
@@ -79,41 +79,43 @@ def parse_range(value: Any) -> Tuple[Optional[float], Optional[float]]:
     s = str(value).strip()
 
     # Greater than
-    if s.startswith('>'):
+    if s.startswith(">"):
         try:
-            v = float(s[1:].replace(',', ''))
+            v = float(s[1:].replace(",", ""))
             return (v, None)
         except ValueError:
             return (None, None)
 
     # Less than
-    if s.startswith('<'):
+    if s.startswith("<"):
         try:
-            v = float(s[1:].replace(',', ''))
+            v = float(s[1:].replace(",", ""))
             return (None, v)
         except ValueError:
             return (None, None)
 
     # Range
-    if '-' in s and not s.startswith('-'):
-        parts = s.split('-')
+    if "-" in s and not s.startswith("-"):
+        parts = s.split("-")
         if len(parts) == 2:
             try:
-                low = float(parts[0].replace(',', ''))
-                high = float(parts[1].replace(',', ''))
+                low = float(parts[0].replace(",", ""))
+                high = float(parts[1].replace(",", ""))
                 return (low, high)
             except ValueError:
                 pass
 
     # Single value
     try:
-        v = float(s.replace(',', ''))
+        v = float(s.replace(",", ""))
         return (v, v)
     except ValueError:
         return (None, None)
 
 
-def clean_numeric_column(series: pd.Series, keep_original: bool = False) -> Union[pd.Series, pd.DataFrame]:
+def clean_numeric_column(
+    series: pd.Series, keep_original: bool = False
+) -> Union[pd.Series, pd.DataFrame]:
     """
     Clean a pandas Series containing numeric values with special codes.
 
@@ -127,10 +129,7 @@ def clean_numeric_column(series: pd.Series, keep_original: bool = False) -> Unio
     cleaned = series.apply(parse_numeric_value)
 
     if keep_original:
-        return pd.DataFrame({
-            'original': series,
-            'cleaned': cleaned
-        })
+        return pd.DataFrame({"original": series, "cleaned": cleaned})
 
     return cleaned
 
@@ -150,21 +149,21 @@ def standardize_country_name(name: str) -> str:
 
     # Common standardizations
     mappings = {
-        'United States': 'United States',
-        'USA': 'United States',
-        'U.S.': 'United States',
-        'United States of America': 'United States',
-        'UK': 'United Kingdom',
-        'Great Britain': 'United Kingdom',
-        "People's Republic of China": 'China',
-        "China, People's Republic of": 'China',
-        'Republic of Korea': 'South Korea',
-        'Korea, Republic of': 'South Korea',
-        'Korea (South)': 'South Korea',
-        'Russian Federation': 'Russia',
-        'Congo (Kinshasa)': 'Democratic Republic of the Congo',
-        'DRC': 'Democratic Republic of the Congo',
-        'Czechia': 'Czech Republic',
+        "United States": "United States",
+        "USA": "United States",
+        "U.S.": "United States",
+        "United States of America": "United States",
+        "UK": "United Kingdom",
+        "Great Britain": "United Kingdom",
+        "People's Republic of China": "China",
+        "China, People's Republic of": "China",
+        "Republic of Korea": "South Korea",
+        "Korea, Republic of": "South Korea",
+        "Korea (South)": "South Korea",
+        "Russian Federation": "Russia",
+        "Congo (Kinshasa)": "Democratic Republic of the Congo",
+        "DRC": "Democratic Republic of the Congo",
+        "Czechia": "Czech Republic",
     }
 
     name_clean = str(name).strip()
@@ -186,7 +185,7 @@ def extract_commodity_code(filename: str) -> Optional[str]:
     Returns:
         Commodity code like 'lithi' or None
     """
-    match = re.search(r'mcs\d{4}-(\w+)_(?:world|salient)', filename)
+    match = re.search(r"mcs\d{4}-(\w+)_(?:world|salient)", filename)
     if match:
         return match.group(1)
     return None

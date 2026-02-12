@@ -139,9 +139,7 @@ def poll_job(client=None, job_name: str | None = None) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Submit Vertex AI batch inference job"
-    )
+    parser = argparse.ArgumentParser(description="Submit Vertex AI batch inference job")
     parser.add_argument(
         "--monitor",
         action="store_true",

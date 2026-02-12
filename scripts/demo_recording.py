@@ -25,6 +25,7 @@ Usage:
 import time
 import sys
 
+
 # Typing effect for commands
 def type_command(text, delay=0.03):
     """Simulate typing a command."""
@@ -34,15 +35,18 @@ def type_command(text, delay=0.03):
         time.sleep(delay)
     print()
 
+
 def print_slow(text, delay=0.01):
     """Print text with slight delay for readability."""
-    for line in text.split('\n'):
+    for line in text.split("\n"):
         print(line)
         time.sleep(delay)
+
 
 def section_pause():
     """Pause between sections."""
     time.sleep(1.5)
+
 
 def main():
     print("\033[1;36m" + "=" * 60 + "\033[0m")
@@ -55,6 +59,7 @@ def main():
     print("\033[1;33m>>> \033[0m", end="")
     type_command("import cmm_data")
     import cmm_data
+
     print("\033[32m✓ Package imported successfully\033[0m")
     section_pause()
 
@@ -114,7 +119,7 @@ def main():
         df = cmm_data.load_usgs_commodity("lithi", "world")
         print("\033[1;33m>>> \033[0m", end="")
         type_command("print(df[['Country', 'Prod_t_est_2022', 'Reserves_t']].head(8))")
-        print(df[['Country', 'Prod_t_est_2022', 'Reserves_t']].head(8).to_string())
+        print(df[["Country", "Prod_t_est_2022", "Reserves_t"]].head(8).to_string())
     except Exception as e:
         print(f"\033[33m[Data not available: {e}]\033[0m")
     section_pause()

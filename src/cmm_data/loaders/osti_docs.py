@@ -84,19 +84,23 @@ class OSTIDocumentsLoader(BaseLoader):
                 df = pd.concat(dfs, ignore_index=True)
             else:
                 # Create empty DataFrame with expected columns
-                df = pd.DataFrame(columns=[
-                    "osti_id", "title", "authors", "publication_date",
-                    "abstract", "doi", "url"
-                ])
+                df = pd.DataFrame(
+                    columns=[
+                        "osti_id",
+                        "title",
+                        "authors",
+                        "publication_date",
+                        "abstract",
+                        "doi",
+                        "url",
+                    ]
+                )
 
         self._set_cached(cache_key, df)
         return df
 
     def search_documents(
-        self,
-        query: str,
-        fields: Optional[List[str]] = None,
-        limit: int = 100
+        self, query: str, fields: Optional[List[str]] = None, limit: int = 100
     ) -> pd.DataFrame:
         """
         Search documents by keyword.
@@ -121,9 +125,7 @@ class OSTIDocumentsLoader(BaseLoader):
         mask = pd.Series([False] * len(df))
         for field in fields:
             if field in df.columns:
-                field_mask = df[field].astype(str).str.contains(
-                    query, case=False, na=False
-                )
+                field_mask = df[field].astype(str).str.contains(query, case=False, na=False)
                 mask = mask | field_mask
 
         results = df[mask].head(limit)

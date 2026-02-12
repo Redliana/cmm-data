@@ -66,9 +66,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         return df
 
     def iter_documents(
-        self,
-        corpus_file: str = "unified_corpus.jsonl",
-        batch_size: Optional[int] = None
+        self, corpus_file: str = "unified_corpus.jsonl", batch_size: Optional[int] = None
     ) -> Generator[Dict[str, Any], None, None]:
         """
         Iterate over documents in the corpus.
@@ -141,10 +139,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         return stats
 
     def search(
-        self,
-        query: str,
-        fields: Optional[List[str]] = None,
-        limit: int = 100
+        self, query: str, fields: Optional[List[str]] = None, limit: int = 100
     ) -> pd.DataFrame:
         """
         Search documents in the corpus.
@@ -165,9 +160,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         mask = pd.Series([False] * len(df))
         for field in fields:
             if field in df.columns:
-                field_mask = df[field].astype(str).str.contains(
-                    query, case=False, na=False
-                )
+                field_mask = df[field].astype(str).str.contains(query, case=False, na=False)
                 mask = mask | field_mask
 
         return df[mask].head(limit)
@@ -188,10 +181,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         return df
 
     def export_for_training(
-        self,
-        output_path: Path,
-        text_column: str = "text",
-        format: str = "jsonl"
+        self, output_path: Path, text_column: str = "text", format: str = "jsonl"
     ) -> int:
         """
         Export corpus for LLM training.

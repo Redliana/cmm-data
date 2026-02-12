@@ -70,9 +70,7 @@ def _commodity_name(key: str) -> str:
 # ===========================================================================
 
 
-def _generate_trade_qa(
-    commodity_key: str, records: list[TradeFlowRecord]
-) -> list[QAPair]:
+def _generate_trade_qa(commodity_key: str, records: list[TradeFlowRecord]) -> list[QAPair]:
     """Generate Q&A pairs from trade flow records."""
     pairs: list[QAPair] = []
     name = _commodity_name(commodity_key)
@@ -282,10 +280,7 @@ def _generate_trade_qa(
             for p in top_partners
         )
 
-        q = (
-            f"Which countries were the largest sources of {name} imports for "
-            f"{reporter} in {year}?"
-        )
+        q = f"Which countries were the largest sources of {name} imports for {reporter} in {year}?"
         a = (
             f"In {year}, {reporter}'s top {name} import sources were: {top_str}. "
             f"Total imports were valued at {_fmt_usd(total_val)}."
@@ -322,9 +317,7 @@ def _generate_trade_qa(
 # ===========================================================================
 
 
-def _generate_salient_qa(
-    commodity_key: str, records: list[SalientRecord]
-) -> list[QAPair]:
+def _generate_salient_qa(commodity_key: str, records: list[SalientRecord]) -> list[QAPair]:
     """Generate Q&A pairs from USGS salient statistics."""
     pairs: list[QAPair] = []
     name = _commodity_name(commodity_key)
@@ -337,7 +330,11 @@ def _generate_salient_qa(
         # S1: Net import reliance (L1)
         nir = fields.get("NIR_pct")
         if nir is not None:
-            nir_str = str(nir) if isinstance(nir, str) and not str(nir).replace(".", "").isdigit() else f"{nir}%"
+            nir_str = (
+                str(nir)
+                if isinstance(nir, str) and not str(nir).replace(".", "").isdigit()
+                else f"{nir}%"
+            )
             # Handle ">50", ">25" style values stored as raw strings
             if isinstance(nir, str) and nir.startswith(">"):
                 nir_str = f"greater than {nir[1:]}%"
@@ -388,7 +385,13 @@ def _generate_salient_qa(
                 unit = "thousand metric tons"
 
             # Clean field label
-            label = pfield.replace("USprod_", "").replace("_t", "").replace("_kg", "").replace("_kt", "").replace("_num", "")
+            label = (
+                pfield.replace("USprod_", "")
+                .replace("_t", "")
+                .replace("_kg", "")
+                .replace("_kt", "")
+                .replace("_num", "")
+            )
             label = label.replace("_", " ").strip()
 
             q = f"What was US {label} production of {name} in {year}?"
@@ -510,8 +513,16 @@ def _generate_salient_qa(
         if curr.year != prev.year + 1:
             continue
 
-        prev_prices = {k: v for k, v in prev.fields.items() if "price" in k.lower() and isinstance(v, (int, float))}
-        curr_prices = {k: v for k, v in curr.fields.items() if "price" in k.lower() and isinstance(v, (int, float))}
+        prev_prices = {
+            k: v
+            for k, v in prev.fields.items()
+            if "price" in k.lower() and isinstance(v, (int, float))
+        }
+        curr_prices = {
+            k: v
+            for k, v in curr.fields.items()
+            if "price" in k.lower() and isinstance(v, (int, float))
+        }
 
         for pfield in set(prev_prices) & set(curr_prices):
             pv = float(prev_prices[pfield])
@@ -550,8 +561,14 @@ def _generate_salient_qa(
     # S6: Production-consumption gap (L2)
     for r in records:
         # Find any consumption field and any production field
-        consump_fields = {k: v for k, v in r.fields.items() if "consump" in k.lower() and isinstance(v, (int, float))}
-        prod_fields = {k: v for k, v in r.fields.items() if "USprod" in k and isinstance(v, (int, float))}
+        consump_fields = {
+            k: v
+            for k, v in r.fields.items()
+            if "consump" in k.lower() and isinstance(v, (int, float))
+        }
+        prod_fields = {
+            k: v for k, v in r.fields.items() if "USprod" in k and isinstance(v, (int, float))
+        }
         if not consump_fields or not prod_fields:
             continue
 
@@ -565,10 +582,7 @@ def _generate_salient_qa(
         gap = consump_val - total_prod
         pct = (gap / consump_val) * 100
 
-        q = (
-            f"What was the gap between US production and consumption of "
-            f"{name} in {r.year}?"
-        )
+        q = f"What was the gap between US production and consumption of {name} in {r.year}?"
         a = (
             f"In {r.year}, US domestic production of {name} totaled "
             f"{_fmt_num(total_prod)} while consumption was {_fmt_num(consump_val)}, "
@@ -698,8 +712,16 @@ def _generate_world_production_qa(
 
     # Cross-country templates (per source year)
     for source, src_records in by_source.items():
-        valid = [r for r in src_records if r.production_year2 is not None and r.country.lower() not in ("world total", "world")]
-        world_recs = [r for r in src_records if r.country.lower() in ("world total", "world") and r.production_year2 is not None]
+        valid = [
+            r
+            for r in src_records
+            if r.production_year2 is not None and r.country.lower() not in ("world total", "world")
+        ]
+        world_recs = [
+            r
+            for r in src_records
+            if r.country.lower() in ("world total", "world") and r.production_year2 is not None
+        ]
 
         if not valid:
             continue
@@ -770,14 +792,10 @@ def _generate_world_production_qa(
             top3 = sorted_producers[:3]
             year_clean = top3[0].production_year2_label.replace(" (est.)", "")
             top_str = ", ".join(
-                f"{p.country} ({_fmt_num(p.production_year2)} metric tons)"
-                for p in top3
+                f"{p.country} ({_fmt_num(p.production_year2)} metric tons)" for p in top3
             )
             q = f"Which countries were the top producers of {name} in {year_clean}?"
-            a = (
-                f"The top three producers of {name} in {year_clean} were: "
-                f"{top_str} ({source})."
-            )
+            a = f"The top three producers of {name} in {year_clean} were: {top_str} ({source})."
             pairs.append(
                 QAPair(
                     question=q,
@@ -789,8 +807,7 @@ def _generate_world_production_qa(
                         "commodity": commodity_key,
                         "year": year_clean,
                         "top_producers": [
-                            {"country": p.country, "production": p.production_year2}
-                            for p in top3
+                            {"country": p.country, "production": p.production_year2} for p in top3
                         ],
                         "source": source,
                     },
@@ -802,9 +819,7 @@ def _generate_world_production_qa(
             if cr.reserves and cr.production_year2 and cr.production_year2 > 0:
                 ratio = cr.reserves / cr.production_year2
                 year_clean = cr.production_year2_label.replace(" (est.)", "")
-                q = (
-                    f"What is {cr.country}'s reserves-to-production ratio for {name}?"
-                )
+                q = f"What is {cr.country}'s reserves-to-production ratio for {name}?"
                 a = (
                     f"Based on {source} data, {cr.country}'s {name} reserves-to-production "
                     f"ratio is approximately {ratio:.0f} years (reserves of "
@@ -836,7 +851,13 @@ def _generate_world_production_qa(
             top3_share = sum(s for _, s in sorted(shares, key=lambda x: -x[1])[:3])
             year_clean = world_recs[0].production_year2_label.replace(" (est.)", "")
 
-            conc = "highly concentrated" if hhi > 2500 else "moderately concentrated" if hhi > 1500 else "diversified"
+            conc = (
+                "highly concentrated"
+                if hhi > 2500
+                else "moderately concentrated"
+                if hhi > 1500
+                else "diversified"
+            )
             q = f"How concentrated is global {name} production in {year_clean}?"
             a = (
                 f"Global {name} production in {year_clean} is {conc}. "

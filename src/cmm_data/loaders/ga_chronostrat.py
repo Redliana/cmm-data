@@ -62,11 +62,7 @@ class GAChronostratigraphicLoader(BaseLoader):
 
         return available
 
-    def load(
-        self,
-        surface: str = "Paleozoic_Top",
-        format: str = "xyz"
-    ) -> pd.DataFrame:
+    def load(self, surface: str = "Paleozoic_Top", format: str = "xyz") -> pd.DataFrame:
         """
         Load a surface from the chronostratigraphic model.
 
@@ -97,9 +93,7 @@ class GAChronostratigraphicLoader(BaseLoader):
         # Find XYZ zip file
         xyz_files = list(self.data_path.glob(self.FORMAT_PATTERNS["xyz"]))
         if not xyz_files:
-            raise DataNotFoundError(
-                "XYZ data not found. Download from GA eCat (record 149923)"
-            )
+            raise DataNotFoundError("XYZ data not found. Download from GA eCat (record 149923)")
 
         zip_path = xyz_files[0]
 
@@ -113,22 +107,14 @@ class GAChronostratigraphicLoader(BaseLoader):
                     break
 
             if not surface_file:
-                available_surfaces = [
-                    n for n in zf.namelist() if n.endswith(".xyz")
-                ]
+                available_surfaces = [n for n in zf.namelist() if n.endswith(".xyz")]
                 raise DataNotFoundError(
                     f"Surface '{surface}' not found. Available: {available_surfaces}"
                 )
 
             # Read XYZ file
             with zf.open(surface_file) as f:
-                df = pd.read_csv(
-                    f,
-                    sep=r"\s+",
-                    names=["x", "y", "z"],
-                    header=None,
-                    comment="#"
-                )
+                df = pd.read_csv(f, sep=r"\s+", names=["x", "y", "z"], header=None, comment="#")
 
         df["surface"] = surface
 
@@ -141,8 +127,7 @@ class GAChronostratigraphicLoader(BaseLoader):
             import rasterio
         except ImportError:
             raise ConfigurationError(
-                "rasterio required for GeoTIFF loading. "
-                "Install with: pip install cmm-data[geo]"
+                "rasterio required for GeoTIFF loading. Install with: pip install cmm-data[geo]"
             )
 
         self._validate_path(self.data_path, "GA Chronostratigraphic directory")
@@ -150,9 +135,7 @@ class GAChronostratigraphicLoader(BaseLoader):
         # Find GeoTIFF zip file
         tiff_files = list(self.data_path.glob(self.FORMAT_PATTERNS["geotiff"]))
         if not tiff_files:
-            raise DataNotFoundError(
-                "GeoTIFF data not found. Download from GA eCat (record 149923)"
-            )
+            raise DataNotFoundError("GeoTIFF data not found. Download from GA eCat (record 149923)")
 
         zip_path = tiff_files[0]
 
@@ -197,12 +180,7 @@ class GAChronostratigraphicLoader(BaseLoader):
             "point_count": len(df),
         }
 
-    def get_depth_at_point(
-        self,
-        x: float,
-        y: float,
-        surface: str = "Basement"
-    ) -> Optional[float]:
+    def get_depth_at_point(self, x: float, y: float, surface: str = "Basement") -> Optional[float]:
         """
         Get depth to a surface at a specific location.
 
@@ -217,7 +195,7 @@ class GAChronostratigraphicLoader(BaseLoader):
         df = self._load_xyz_surface(surface)
 
         # Find nearest point (simple approach)
-        distances = np.sqrt((df["x"] - x)**2 + (df["y"] - y)**2)
+        distances = np.sqrt((df["x"] - x) ** 2 + (df["y"] - y) ** 2)
         min_idx = distances.idxmin()
 
         # Return None if too far from any data point

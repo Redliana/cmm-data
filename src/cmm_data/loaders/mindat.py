@@ -69,8 +69,25 @@ CRITICAL_ELEMENTS = {
 ELEMENT_GROUPS = {
     "ree_light": ["La", "Ce", "Pr", "Nd", "Pm", "Sm"],
     "ree_heavy": ["Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Y"],
-    "ree_all": ["La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy",
-                "Ho", "Er", "Tm", "Yb", "Lu", "Y", "Sc"],
+    "ree_all": [
+        "La",
+        "Ce",
+        "Pr",
+        "Nd",
+        "Pm",
+        "Sm",
+        "Eu",
+        "Gd",
+        "Tb",
+        "Dy",
+        "Ho",
+        "Er",
+        "Tm",
+        "Yb",
+        "Lu",
+        "Y",
+        "Sc",
+    ],
     "pgm": ["Pt", "Pd", "Rh", "Ir", "Ru", "Os"],
     "battery_metals": ["Li", "Co", "Ni", "Mn"],
     "tech_metals": ["Ga", "Ge", "In", "Te"],
@@ -81,6 +98,7 @@ def _check_openmindat_installed() -> bool:
     """Check if openmindat package is installed."""
     try:
         import openmindat
+
         return True
     except ImportError:
         return False
@@ -218,9 +236,7 @@ class MindatLoader(BaseLoader):
     # =========================================================================
 
     def _filter_minerals_by_element(
-        self,
-        minerals: List[Dict[str, Any]],
-        element: str
+        self, minerals: List[Dict[str, Any]], element: str
     ) -> List[Dict[str, Any]]:
         """
         Filter minerals to those containing a specific element.
@@ -228,13 +244,14 @@ class MindatLoader(BaseLoader):
         Uses formula field to check for element presence.
         """
         import re
+
         # Match element symbol at word boundary (e.g., "Li" but not "Cl")
         # Element must be followed by subscript, parenthesis, space, or end
-        pattern = rf'\b{re.escape(element)}(?:<sub>|[0-9\(\)\s]|$)'
+        pattern = rf"\b{re.escape(element)}(?:<sub>|[0-9\(\)\s]|$)"
 
         filtered = []
         for mineral in minerals:
-            formula = mineral.get('mindat_formula', '') or mineral.get('ima_formula', '') or ''
+            formula = mineral.get("mindat_formula", "") or mineral.get("ima_formula", "") or ""
             if re.search(pattern, formula):
                 filtered.append(mineral)
 
@@ -245,7 +262,7 @@ class MindatLoader(BaseLoader):
         element: str,
         ima_only: bool = True,
         save: bool = True,
-        fields: Optional[List[str]] = None
+        fields: Optional[List[str]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Fetch minerals containing a specific element from Mindat API.
@@ -275,8 +292,8 @@ class MindatLoader(BaseLoader):
         api_response = retriever.get_dict()
 
         # Extract results from API response wrapper
-        if isinstance(api_response, dict) and 'results' in api_response:
-            minerals = api_response['results']
+        if isinstance(api_response, dict) and "results" in api_response:
+            minerals = api_response["results"]
         elif isinstance(api_response, list):
             minerals = api_response
         else:
@@ -295,10 +312,7 @@ class MindatLoader(BaseLoader):
         return filtered_minerals
 
     def fetch_minerals_by_elements(
-        self,
-        elements: List[str],
-        ima_only: bool = True,
-        save: bool = True
+        self, elements: List[str], ima_only: bool = True, save: bool = True
     ) -> List[Dict[str, Any]]:
         """
         Fetch minerals containing ALL specified elements.
@@ -356,11 +370,7 @@ class MindatLoader(BaseLoader):
 
         return result
 
-    def fetch_mineral_by_name(
-        self,
-        name: str,
-        save: bool = True
-    ) -> List[Dict[str, Any]]:
+    def fetch_mineral_by_name(self, name: str, save: bool = True) -> List[Dict[str, Any]]:
         """
         Search for minerals by name.
 
@@ -402,8 +412,8 @@ class MindatLoader(BaseLoader):
         api_response = retriever.get_dict()
 
         # Extract results from API response wrapper
-        if isinstance(api_response, dict) and 'results' in api_response:
-            minerals = api_response['results']
+        if isinstance(api_response, dict) and "results" in api_response:
+            minerals = api_response["results"]
         elif isinstance(api_response, list):
             minerals = api_response
         else:
@@ -414,7 +424,9 @@ class MindatLoader(BaseLoader):
 
         return minerals
 
-    def fetch_all_ima_and_filter_critical(self, save: bool = True) -> Dict[str, List[Dict[str, Any]]]:
+    def fetch_all_ima_and_filter_critical(
+        self, save: bool = True
+    ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Fetch all IMA minerals once and filter for each critical element.
 
@@ -442,9 +454,7 @@ class MindatLoader(BaseLoader):
         return results
 
     def fetch_localities_for_mineral(
-        self,
-        mineral_id: int,
-        save: bool = True
+        self, mineral_id: int, save: bool = True
     ) -> List[Dict[str, Any]]:
         """
         Fetch localities where a mineral occurs.
@@ -468,11 +478,7 @@ class MindatLoader(BaseLoader):
 
         return results
 
-    def fetch_localities_by_country(
-        self,
-        country: str,
-        save: bool = True
-    ) -> List[Dict[str, Any]]:
+    def fetch_localities_by_country(self, country: str, save: bool = True) -> List[Dict[str, Any]]:
         """
         Fetch mineral localities in a specific country.
 
@@ -497,10 +503,7 @@ class MindatLoader(BaseLoader):
         return results
 
     def fetch_critical_minerals_data(
-        self,
-        elements: Optional[List[str]] = None,
-        ima_only: bool = True,
-        save: bool = True
+        self, elements: Optional[List[str]] = None, ima_only: bool = True, save: bool = True
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Fetch mineral data for all or specified critical elements.
@@ -519,9 +522,7 @@ class MindatLoader(BaseLoader):
         results = {}
         for elem in elements:
             try:
-                minerals = self.fetch_minerals_by_element(
-                    elem, ima_only=ima_only, save=save
-                )
+                minerals = self.fetch_minerals_by_element(elem, ima_only=ima_only, save=save)
                 results[elem] = minerals
             except Exception as e:
                 results[elem] = {"error": str(e)}
@@ -537,7 +538,7 @@ class MindatLoader(BaseLoader):
         data_type: str = "geomaterials",
         element: Optional[str] = None,
         identifier: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> pd.DataFrame:
         """
         Load cached Mindat data as a DataFrame.
@@ -637,7 +638,7 @@ class MindatLoader(BaseLoader):
         element: Optional[str] = None,
         crystal_system: Optional[str] = None,
         ima_status: Optional[str] = None,
-        **kwargs
+        **kwargs,
     ) -> pd.DataFrame:
         """
         Query cached mineral data with filters.
@@ -689,7 +690,7 @@ class MindatLoader(BaseLoader):
                 "element": element,
                 "element_name": self.get_element_name(element),
                 "status": "no_data",
-                "mineral_count": 0
+                "mineral_count": 0,
             }
 
         summary = {

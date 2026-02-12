@@ -116,8 +116,14 @@ class CMMDataConfig:
             dict mapping dataset names to availability status
         """
         datasets = [
-            "usgs_commodity", "usgs_ore", "osti", "preprocessed",
-            "ga_chronostrat", "netl_ree", "oecd", "mindat"
+            "usgs_commodity",
+            "usgs_ore",
+            "osti",
+            "preprocessed",
+            "ga_chronostrat",
+            "netl_ree",
+            "oecd",
+            "mindat",
         ]
 
         status = {}
@@ -148,7 +154,7 @@ def configure(
     cache_enabled: Optional[bool] = None,
     cache_dir: Optional[str] = None,
     cache_ttl_seconds: Optional[int] = None,
-    **kwargs
+    **kwargs,
 ) -> CMMDataConfig:
     """
     Configure the CMM Data package.

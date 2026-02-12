@@ -11,8 +11,23 @@ from ..exceptions import DataNotFoundError
 
 # REE elements for filtering
 REE_ELEMENTS = [
-    "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd",
-    "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Y", "Sc"
+    "La",
+    "Ce",
+    "Pr",
+    "Nd",
+    "Pm",
+    "Sm",
+    "Eu",
+    "Gd",
+    "Tb",
+    "Dy",
+    "Ho",
+    "Er",
+    "Tm",
+    "Yb",
+    "Lu",
+    "Y",
+    "Sc",
 ]
 
 
@@ -75,9 +90,7 @@ class USGSOreDepositsLoader(BaseLoader):
                     break
             else:
                 available = self.list_available()
-                raise DataNotFoundError(
-                    f"Table '{table}' not found. Available: {available}"
-                )
+                raise DataNotFoundError(f"Table '{table}' not found. Available: {available}")
 
         df = self._read_csv(file_path)
 
@@ -197,7 +210,7 @@ class USGSOreDepositsLoader(BaseLoader):
         self,
         deposit_type: Optional[str] = None,
         commodity: Optional[str] = None,
-        country: Optional[str] = None
+        country: Optional[str] = None,
     ) -> pd.DataFrame:
         """
         Search deposits by type, commodity, or country.
@@ -219,13 +232,17 @@ class USGSOreDepositsLoader(BaseLoader):
                 df = df[mask]
 
         if commodity:
-            comm_cols = [c for c in df.columns if "COMMODITY" in c.upper() or "MINERAL" in c.upper()]
+            comm_cols = [
+                c for c in df.columns if "COMMODITY" in c.upper() or "MINERAL" in c.upper()
+            ]
             for col in comm_cols:
                 mask = df[col].str.contains(commodity, case=False, na=False)
                 df = df[mask]
 
         if country:
-            country_cols = [c for c in df.columns if "COUNTRY" in c.upper() or "NATION" in c.upper()]
+            country_cols = [
+                c for c in df.columns if "COUNTRY" in c.upper() or "NATION" in c.upper()
+            ]
             for col in country_cols:
                 mask = df[col].str.contains(country, case=False, na=False)
                 df = df[mask]

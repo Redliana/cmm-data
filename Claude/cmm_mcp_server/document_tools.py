@@ -8,9 +8,7 @@ from pathlib import Path
 from typing import Optional
 import fitz  # PyMuPDF
 
-from config import (
-    OSTI_CATALOG, OSTI_PDFS_DIR, COMMODITIES, SUBDOMAINS, MAX_PDF_CHARS
-)
+from config import OSTI_CATALOG, OSTI_PDFS_DIR, COMMODITIES, SUBDOMAINS, MAX_PDF_CHARS
 
 
 class DocumentManager:
@@ -24,24 +22,20 @@ class DocumentManager:
         """Load document catalog from JSON"""
         if not OSTI_CATALOG.exists():
             return []
-        with open(OSTI_CATALOG, 'r') as f:
+        with open(OSTI_CATALOG, "r") as f:
             return json.load(f)
 
     def _build_index(self):
         """Build lookup indices for fast access"""
-        self.by_id = {doc.get('osti_id'): doc for doc in self.catalog}
+        self.by_id = {doc.get("osti_id"): doc for doc in self.catalog}
         self.by_commodity = {}
         for doc in self.catalog:
-            cat = doc.get('commodity_category', 'unknown')
+            cat = doc.get("commodity_category", "unknown")
             if cat not in self.by_commodity:
                 self.by_commodity[cat] = []
             self.by_commodity[cat].append(doc)
 
-    def list_documents(
-        self,
-        commodity: Optional[str] = None,
-        limit: int = 50
-    ) -> list:
+    def list_documents(self, commodity: Optional[str] = None, limit: int = 50) -> list:
         """
         List documents, optionally filtered by commodity.
 
@@ -63,14 +57,16 @@ class DocumentManager:
 
         results = []
         for doc in docs[:limit]:
-            results.append({
-                'osti_id': doc.get('osti_id'),
-                'title': doc.get('title'),
-                'authors': doc.get('authors', [])[:3],  # First 3 authors
-                'publication_date': doc.get('publication_date'),
-                'commodity_category': doc.get('commodity_category'),
-                'product_type': doc.get('product_type'),
-            })
+            results.append(
+                {
+                    "osti_id": doc.get("osti_id"),
+                    "title": doc.get("title"),
+                    "authors": doc.get("authors", [])[:3],  # First 3 authors
+                    "publication_date": doc.get("publication_date"),
+                    "commodity_category": doc.get("commodity_category"),
+                    "product_type": doc.get("product_type"),
+                }
+            )
 
         return results
 
@@ -92,7 +88,7 @@ class DocumentManager:
         if not doc:
             return None
 
-        commodity = doc.get('commodity_category', '')
+        commodity = doc.get("commodity_category", "")
         commodity_dir = OSTI_PDFS_DIR / commodity
 
         if not commodity_dir.exists():
@@ -157,27 +153,27 @@ class DocumentManager:
             return f"Error: Document not found for OSTI ID {osti_id}"
 
         # Extract fields
-        title = doc.get('title', 'Unknown Title')
-        authors = doc.get('authors', [])
-        year = doc.get('publication_date', '')[:4] if doc.get('publication_date') else 'n.d.'
-        doi = doc.get('doi', '')
-        product_type = doc.get('product_type', 'misc')
+        title = doc.get("title", "Unknown Title")
+        authors = doc.get("authors", [])
+        year = doc.get("publication_date", "")[:4] if doc.get("publication_date") else "n.d."
+        doi = doc.get("doi", "")
+        product_type = doc.get("product_type", "misc")
 
         # Format authors for BibTeX
-        author_str = ' and '.join(authors) if authors else 'Unknown'
+        author_str = " and ".join(authors) if authors else "Unknown"
 
         # Determine entry type
-        if 'Journal' in product_type:
-            entry_type = 'article'
-            journal = doc.get('journal_name', '')
-            volume = doc.get('journal_volume', '')
+        if "Journal" in product_type:
+            entry_type = "article"
+            journal = doc.get("journal_name", "")
+            volume = doc.get("journal_volume", "")
             journal_field = f"  journal = {{{journal}}}," if journal else ""
             volume_field = f"\n  volume = {{{volume}}}," if volume else ""
         else:
-            entry_type = 'techreport'
+            entry_type = "techreport"
             journal_field = ""
             volume_field = ""
-            institution = doc.get('research_orgs', [''])[0] if doc.get('research_orgs') else ''
+            institution = doc.get("research_orgs", [""])[0] if doc.get("research_orgs") else ""
             if institution:
                 journal_field = f"  institution = {{{institution}}},"
 
@@ -196,17 +192,17 @@ class DocumentManager:
     def get_statistics(self) -> dict:
         """Get collection statistics"""
         stats = {
-            'total_documents': len(self.catalog),
-            'by_commodity': {},
-            'by_product_type': {},
+            "total_documents": len(self.catalog),
+            "by_commodity": {},
+            "by_product_type": {},
         }
 
         for commodity, docs in self.by_commodity.items():
-            stats['by_commodity'][commodity] = len(docs)
+            stats["by_commodity"][commodity] = len(docs)
 
         for doc in self.catalog:
-            ptype = doc.get('product_type', 'Unknown')
-            stats['by_product_type'][ptype] = stats['by_product_type'].get(ptype, 0) + 1
+            ptype = doc.get("product_type", "Unknown")
+            stats["by_product_type"][ptype] = stats["by_product_type"].get(ptype, 0) + 1
 
         return stats
 
@@ -229,15 +225,16 @@ class DocumentManager:
         docs = self.list_documents(commodity=commodity, limit=100)
 
         return {
-            'commodity_code': commodity,
-            'description': description,
-            'document_count': len(docs),
-            'documents': docs[:20],  # Return first 20
+            "commodity_code": commodity,
+            "description": description,
+            "document_count": len(docs),
+            "documents": docs[:20],  # Return first 20
         }
 
 
 # Singleton instance
 _document_manager = None
+
 
 def get_document_manager() -> DocumentManager:
     """Get or create DocumentManager singleton"""

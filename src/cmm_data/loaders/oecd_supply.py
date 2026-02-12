@@ -65,21 +65,21 @@ class OECDSupplyChainLoader(BaseLoader):
         path = self.data_path / subdir
 
         if not path.exists():
-            raise DataNotFoundError(
-                f"Dataset '{dataset}' not found at {path}"
-            )
+            raise DataNotFoundError(f"Dataset '{dataset}' not found at {path}")
 
         # Build file inventory
         files = []
         for f in path.rglob("*"):
             if f.is_file():
-                files.append({
-                    "filename": f.name,
-                    "path": str(f),
-                    "extension": f.suffix.lower(),
-                    "size_mb": f.stat().st_size / (1024 * 1024),
-                    "category": dataset,
-                })
+                files.append(
+                    {
+                        "filename": f.name,
+                        "path": str(f),
+                        "extension": f.suffix.lower(),
+                        "size_mb": f.stat().st_size / (1024 * 1024),
+                        "category": dataset,
+                    }
+                )
 
         return pd.DataFrame(files)
 
@@ -168,17 +168,31 @@ class OECDSupplyChainLoader(BaseLoader):
                 "countries": 82,
                 "years": "2009-2023",
                 "key_minerals": [
-                    "potash", "molybdenum", "tungsten", "zirconium",
-                    "germanium", "rare earths", "lithium", "cobalt",
-                    "nickel", "graphite"
+                    "potash",
+                    "molybdenum",
+                    "tungsten",
+                    "zirconium",
+                    "germanium",
+                    "rare earths",
+                    "lithium",
+                    "cobalt",
+                    "nickel",
+                    "graphite",
                 ],
             },
             "iea_critical_minerals": {
                 "description": "IEA Critical Minerals Outlook",
                 "minerals_count": 35,
                 "key_minerals": [
-                    "lithium", "nickel", "cobalt", "graphite", "copper",
-                    "rare earth elements", "manganese", "silicon", "chromium"
+                    "lithium",
+                    "nickel",
+                    "cobalt",
+                    "graphite",
+                    "copper",
+                    "rare earth elements",
+                    "manganese",
+                    "silicon",
+                    "chromium",
                 ],
                 "scenarios": ["STEPS", "APS", "NZE"],
             },

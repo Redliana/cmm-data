@@ -11,11 +11,11 @@ def _get_matplotlib():
     """Get matplotlib.pyplot, raising helpful error if not installed."""
     try:
         import matplotlib.pyplot as plt
+
         return plt
     except ImportError:
         raise ConfigurationError(
-            "matplotlib required for visualizations. "
-            "Install with: pip install cmm-data[viz]"
+            "matplotlib required for visualizations. Install with: pip install cmm-data[viz]"
         )
 
 
@@ -67,8 +67,13 @@ def plot_world_production(
 
     # Add value labels
     for bar, val in zip(bars, plot_df[year_col]):
-        ax.text(bar.get_width(), bar.get_y() + bar.get_height()/2,
-                f" {val:,.0f}", va="center", fontsize=9)
+        ax.text(
+            bar.get_width(),
+            bar.get_y() + bar.get_height() / 2,
+            f" {val:,.0f}",
+            va="center",
+            fontsize=9,
+        )
 
     plt.tight_layout()
     return fig
@@ -116,11 +121,25 @@ def plot_production_timeseries(
 
     # Add imports/exports if available
     if "Imports_t_clean" in df.columns:
-        ax.plot(x, df["Imports_t_clean"], marker="s", linewidth=1,
-                linestyle="--", label="Imports", alpha=0.7)
+        ax.plot(
+            x,
+            df["Imports_t_clean"],
+            marker="s",
+            linewidth=1,
+            linestyle="--",
+            label="Imports",
+            alpha=0.7,
+        )
     if "Exports_t_clean" in df.columns:
-        ax.plot(x, df["Exports_t_clean"], marker="^", linewidth=1,
-                linestyle="--", label="Exports", alpha=0.7)
+        ax.plot(
+            x,
+            df["Exports_t_clean"],
+            marker="^",
+            linewidth=1,
+            linestyle="--",
+            label="Exports",
+            alpha=0.7,
+        )
 
     ax.set_xlabel("Year")
     ax.set_ylabel("Quantity (metric tons)")

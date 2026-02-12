@@ -11,11 +11,11 @@ def _get_matplotlib():
     """Get matplotlib.pyplot, raising helpful error if not installed."""
     try:
         import matplotlib.pyplot as plt
+
         return plt
     except ImportError:
         raise ConfigurationError(
-            "matplotlib required for visualizations. "
-            "Install with: pip install cmm-data[viz]"
+            "matplotlib required for visualizations. Install with: pip install cmm-data[viz]"
         )
 
 
@@ -168,11 +168,9 @@ def plot_critical_minerals_comparison(
             if col in row.columns:
                 value = row[col].iloc[0]
                 if pd.notna(value) and value > 0:
-                    data.append({
-                        "commodity": loader.get_commodity_name(code),
-                        "code": code,
-                        "value": value
-                    })
+                    data.append(
+                        {"commodity": loader.get_commodity_name(code), "code": code, "value": value}
+                    )
         except Exception:
             continue
 

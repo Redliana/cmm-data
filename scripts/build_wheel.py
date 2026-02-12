@@ -29,14 +29,26 @@ def main():
 
     # Change to project directory
     import os
+
     os.chdir(project_dir)
 
     # Step 1: Install build tools
     print("1. Installing build tools...")
-    subprocess.run([
-        sys.executable, "-m", "pip", "install",
-        "--upgrade", "pip", "build", "wheel", "setuptools", "--quiet"
-    ], check=True)
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--upgrade",
+            "pip",
+            "build",
+            "wheel",
+            "setuptools",
+            "--quiet",
+        ],
+        check=True,
+    )
     print("   Done.")
 
     # Step 2: Clean previous builds

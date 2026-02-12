@@ -205,9 +205,7 @@ class BaseLoader(ABC):
         matches = list(directory.glob(pattern))
 
         if not matches:
-            raise DataNotFoundError(
-                f"No file matching '{pattern}' found in {directory}"
-            )
+            raise DataNotFoundError(f"No file matching '{pattern}' found in {directory}")
 
         return matches[0]
 

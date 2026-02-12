@@ -32,9 +32,7 @@ class NETLREECoalLoader(BaseLoader):
             if gdb_files:
                 self._gdb_path = gdb_files[0]
             else:
-                raise DataNotFoundError(
-                    "Geodatabase not found in NETL REE directory"
-                )
+                raise DataNotFoundError("Geodatabase not found in NETL REE directory")
         return self._gdb_path
 
     def list_available(self) -> List[str]:
@@ -44,6 +42,7 @@ class NETLREECoalLoader(BaseLoader):
 
         try:
             import fiona
+
             with fiona.open(self.gdb_path) as src:
                 self._layers = list(src)
             return self._layers
@@ -69,6 +68,7 @@ class NETLREECoalLoader(BaseLoader):
         """
         try:
             import geopandas as gpd
+
             gdf = self.load_with_geometry(layer)
             # Drop geometry for regular DataFrame
             return pd.DataFrame(gdf.drop(columns="geometry", errors="ignore"))
@@ -110,9 +110,7 @@ class NETLREECoalLoader(BaseLoader):
             else:
                 raise DataNotFoundError("No layers available in geodatabase")
         elif layer not in available:
-            raise DataNotFoundError(
-                f"Layer '{layer}' not found. Available: {available}"
-            )
+            raise DataNotFoundError(f"Layer '{layer}' not found. Available: {available}")
 
         gdf = gpd.read_file(self.gdb_path, layer=layer)
 
@@ -161,8 +159,23 @@ class NETLREECoalLoader(BaseLoader):
         df = self.get_ree_samples()
 
         # Find REE columns (typically La, Ce, Pr, Nd, etc.)
-        ree_elements = ["La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd",
-                        "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Y"]
+        ree_elements = [
+            "La",
+            "Ce",
+            "Pr",
+            "Nd",
+            "Sm",
+            "Eu",
+            "Gd",
+            "Tb",
+            "Dy",
+            "Ho",
+            "Er",
+            "Tm",
+            "Yb",
+            "Lu",
+            "Y",
+        ]
 
         stats = {}
         for elem in ree_elements:

@@ -51,6 +51,7 @@ class TestParseNumeric:
 
     def test_nan(self):
         import math
+
         assert _parse_numeric(float("nan")) is None
 
     def test_less_than_half(self):

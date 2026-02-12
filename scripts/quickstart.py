@@ -24,7 +24,7 @@ def main():
 
     catalog = cmm_data.get_data_catalog()
     for _, row in catalog.iterrows():
-        status = "[OK]" if row['available'] else "[--]"
+        status = "[OK]" if row["available"] else "[--]"
         print(f"  {status} {row['dataset']}: {row['name']}")
 
     # 2. List Commodities
@@ -54,7 +54,7 @@ def main():
         df = cmm_data.load_usgs_commodity("lithi", "world")
         print(f"\n  Columns: {list(df.columns)}")
         print(f"\n  Data ({len(df)} rows):")
-        print(df[['Country', 'Prod_t_est_2022', 'Reserves_t']].head(10).to_string(index=False))
+        print(df[["Country", "Prod_t_est_2022", "Reserves_t"]].head(10).to_string(index=False))
     except Exception as e:
         print(f"  [ERROR] {e}")
 
@@ -69,8 +69,8 @@ def main():
         print("\n  Rank  Country         Production (t)")
         print("  " + "-" * 40)
         for i, (_, row) in enumerate(top.iterrows(), 1):
-            country = row['Country'][:15]
-            prod = row.get('Prod_t_est_2022_clean', row.get('Prod_t_est_2022', 'N/A'))
+            country = row["Country"][:15]
+            prod = row.get("Prod_t_est_2022_clean", row.get("Prod_t_est_2022", "N/A"))
             if isinstance(prod, (int, float)):
                 print(f"  {i:4d}  {country:15s}  {prod:>15,.0f}")
             else:

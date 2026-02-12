@@ -80,7 +80,9 @@ class TestScoreAnswer:
             required_elements=[],
             disqualifying_errors=[],
         )
-        result = score_answer(gold, "Cobalt supply chains involve mining in DRC and refining in China.")
+        result = score_answer(
+            gold, "Cobalt supply chains involve mining in DRC and refining in China."
+        )
         assert result.score > 0.0
         assert result.rouge_l > 0.0
 

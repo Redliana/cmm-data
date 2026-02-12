@@ -62,9 +62,7 @@ def download_batch_output() -> Path:
     jsonl_blobs = [b for b in blobs if b.name.endswith(".jsonl")]
 
     if not jsonl_blobs:
-        raise FileNotFoundError(
-            f"No JSONL files found at gs://{GCS_BUCKET}/{GCS_OUTPUT_PREFIX}"
-        )
+        raise FileNotFoundError(f"No JSONL files found at gs://{GCS_BUCKET}/{GCS_OUTPUT_PREFIX}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     local_path = OUTPUT_DIR / "batch_output_raw.jsonl"
@@ -102,25 +100,27 @@ def _salvage_truncated_json(text: str) -> dict | None:
     # Find complete cell_evaluation objects using a greedy approach:
     # Each complete object has all 5 required fields and ends with }
     cell_pattern = re.compile(
-        r'\{\s*'
+        r"\{\s*"
         r'"cell_id"\s*:\s*"([^"]*)"\s*,\s*'
         r'"relevance_score"\s*:\s*(\d+)\s*,\s*'
         r'"justification"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*'
         r'"suggested_question_angle"\s*:\s*"((?:[^"\\]|\\.)*)"\s*,\s*'
         r'"supports_l3_l4"\s*:\s*(true|false)\s*'
-        r'\}',
+        r"\}",
         re.DOTALL,
     )
 
     cell_evals = []
     for m in cell_pattern.finditer(text):
-        cell_evals.append({
-            "cell_id": m.group(1),
-            "relevance_score": int(m.group(2)),
-            "justification": m.group(3),
-            "suggested_question_angle": m.group(4),
-            "supports_l3_l4": m.group(5) == "true",
-        })
+        cell_evals.append(
+            {
+                "cell_id": m.group(1),
+                "relevance_score": int(m.group(2)),
+                "justification": m.group(3),
+                "suggested_question_angle": m.group(4),
+                "supports_l3_l4": m.group(5) == "true",
+            }
+        )
 
     if not cell_evals:
         return None
@@ -174,13 +174,15 @@ def parse_response_line(line: str) -> tuple[PaperEvaluation | None, bool]:
 
     cell_evaluations = []
     for ce in result.get("cell_evaluations", []):
-        cell_evaluations.append(CellScore(
-            cell_id=ce.get("cell_id", ""),
-            relevance_score=int(ce.get("relevance_score", 0)),
-            justification=ce.get("justification", ""),
-            suggested_question_angle=ce.get("suggested_question_angle", ""),
-            supports_l3_l4=bool(ce.get("supports_l3_l4", False)),
-        ))
+        cell_evaluations.append(
+            CellScore(
+                cell_id=ce.get("cell_id", ""),
+                relevance_score=int(ce.get("relevance_score", 0)),
+                justification=ce.get("justification", ""),
+                suggested_question_angle=ce.get("suggested_question_angle", ""),
+                supports_l3_l4=bool(ce.get("supports_l3_l4", False)),
+            )
+        )
 
     return PaperEvaluation(
         osti_id=str(result.get("osti_id", "")),
@@ -200,14 +202,16 @@ def build_recommendation_matrix(
 
     for ev in evaluations:
         for cs in ev.cell_evaluations:
-            matrix[cs.cell_id].append({
-                "osti_id": ev.osti_id,
-                "relevance_score": cs.relevance_score,
-                "justification": cs.justification,
-                "suggested_question_angle": cs.suggested_question_angle,
-                "supports_l3_l4": cs.supports_l3_l4,
-                "overall_cmm_relevance": ev.overall_cmm_relevance,
-            })
+            matrix[cs.cell_id].append(
+                {
+                    "osti_id": ev.osti_id,
+                    "relevance_score": cs.relevance_score,
+                    "justification": cs.justification,
+                    "suggested_question_angle": cs.suggested_question_angle,
+                    "supports_l3_l4": cs.supports_l3_l4,
+                    "overall_cmm_relevance": ev.overall_cmm_relevance,
+                }
+            )
 
     # Sort each cell's papers by relevance_score descending
     for cell_id in matrix:
@@ -324,7 +328,9 @@ def main() -> None:
     print(f"Total lines: {stats['total_lines']}")
     print(f"Parsed OK: {stats['parsed_ok']}")
     print(f"  Complete: {stats['parsed_ok'] - stats['salvaged']}")
-    print(f"  Salvaged (truncated): {stats['salvaged']} ({stats['salvaged_cells']} cells recovered)")
+    print(
+        f"  Salvaged (truncated): {stats['salvaged']} ({stats['salvaged_cells']} cells recovered)"
+    )
     print(f"Parse failures: {stats['parse_failures']}")
     print(f"Recommended papers: {stats['recommended_papers']}")
     print(f"High relevance (>=4): {stats['high_relevance_papers']}")
@@ -334,8 +340,7 @@ def main() -> None:
 
     # Coverage check
     cells_with_papers = sum(
-        1 for papers in rec_matrix.values()
-        if any(p["relevance_score"] >= 3 for p in papers)
+        1 for papers in rec_matrix.values() if any(p["relevance_score"] >= 3 for p in papers)
     )
     print(f"\nCells with at least one score>=3 paper: {cells_with_papers}/100")
 

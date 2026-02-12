@@ -11,11 +11,11 @@ def _get_matplotlib():
     """Get matplotlib.pyplot, raising helpful error if not installed."""
     try:
         import matplotlib.pyplot as plt
+
         return plt
     except ImportError:
         raise ConfigurationError(
-            "matplotlib required for visualizations. "
-            "Install with: pip install cmm-data[viz]"
+            "matplotlib required for visualizations. Install with: pip install cmm-data[viz]"
         )
 
 
@@ -55,9 +55,7 @@ def plot_deposit_locations(
         lon_col = lon_cols[0]
 
     if lat_col not in df.columns or lon_col not in df.columns:
-        raise ValueError(
-            f"Coordinate columns not found. Available: {list(df.columns)}"
-        )
+        raise ValueError(f"Coordinate columns not found. Available: {list(df.columns)}")
 
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
@@ -80,17 +78,11 @@ def plot_deposit_locations(
                 c=[color],
                 label=str(cat)[:30],
                 alpha=0.6,
-                s=20
+                s=20,
             )
         ax.legend(loc="upper right", fontsize=8)
     else:
-        ax.scatter(
-            plot_df[lon_col],
-            plot_df[lat_col],
-            c="steelblue",
-            alpha=0.6,
-            s=20
-        )
+        ax.scatter(plot_df[lon_col], plot_df[lat_col], c="steelblue", alpha=0.6, s=20)
 
     ax.set_xlabel("Longitude")
     ax.set_ylabel("Latitude")
@@ -133,7 +125,7 @@ def plot_surface_depth(
         c=df["z"],
         cmap="viridis_r",  # Reversed so deeper is darker
         s=1,
-        alpha=0.7
+        alpha=0.7,
     )
 
     cbar = plt.colorbar(scatter, ax=ax)
@@ -172,8 +164,22 @@ def plot_ree_distribution(
     import numpy as np
 
     if elements is None:
-        elements = ["La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd",
-                    "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu"]
+        elements = [
+            "La",
+            "Ce",
+            "Pr",
+            "Nd",
+            "Sm",
+            "Eu",
+            "Gd",
+            "Tb",
+            "Dy",
+            "Ho",
+            "Er",
+            "Tm",
+            "Yb",
+            "Lu",
+        ]
 
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)

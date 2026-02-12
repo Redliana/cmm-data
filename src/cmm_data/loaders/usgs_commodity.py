@@ -94,10 +94,33 @@ COMMODITY_NAMES = {
 
 # DOE Critical Minerals List (2023)
 CRITICAL_MINERALS = [
-    "alumi", "antim", "arsen", "barit", "beryl", "bismu", "chrom", "cobal",
-    "fluor", "galli", "germa", "graph", "indiu", "lithi", "manga", "nicke",
-    "niobi", "plati", "raree", "tanta", "tellu", "tin", "titan", "tungs",
-    "vanad", "zinc", "zirco-hafni"
+    "alumi",
+    "antim",
+    "arsen",
+    "barit",
+    "beryl",
+    "bismu",
+    "chrom",
+    "cobal",
+    "fluor",
+    "galli",
+    "germa",
+    "graph",
+    "indiu",
+    "lithi",
+    "manga",
+    "nicke",
+    "niobi",
+    "plati",
+    "raree",
+    "tanta",
+    "tellu",
+    "tin",
+    "titan",
+    "tungs",
+    "vanad",
+    "zinc",
+    "zirco-hafni",
 ]
 
 
@@ -119,7 +142,7 @@ class USGSCommodityLoader(BaseLoader):
         codes = set()
         for pattern in ["world/mcs*_world.csv", "salient/mcs*_salient.csv"]:
             for f in self.data_path.glob(pattern):
-                match = re.search(r'mcs\d{4}-(\w+)_', f.name)
+                match = re.search(r"mcs\d{4}-(\w+)_", f.name)
                 if match:
                     codes.add(match.group(1))
 
@@ -191,9 +214,9 @@ class USGSCommodityLoader(BaseLoader):
         df = self._read_csv(file_path)
 
         # Clean numeric columns
-        numeric_cols = [c for c in df.columns if 'Prod_t' in c or 'Reserves' in c]
+        numeric_cols = [c for c in df.columns if "Prod_t" in c or "Reserves" in c]
         for col in numeric_cols:
-            if col in df.columns and not col.endswith('_notes'):
+            if col in df.columns and not col.endswith("_notes"):
                 df[f"{col}_clean"] = clean_numeric_column(df[col])
 
         # Add commodity metadata
@@ -234,8 +257,14 @@ class USGSCommodityLoader(BaseLoader):
         df = self._read_csv(file_path)
 
         # Clean numeric columns
-        numeric_cols = ["USprod_t", "Imports_t", "Exports_t", "Consump_t",
-                        "Price_dt", "Employment_num"]
+        numeric_cols = [
+            "USprod_t",
+            "Imports_t",
+            "Exports_t",
+            "Consump_t",
+            "Price_dt",
+            "Employment_num",
+        ]
         for col in numeric_cols:
             if col in df.columns:
                 df[f"{col}_clean"] = clean_numeric_column(df[col])
@@ -271,10 +300,7 @@ class USGSCommodityLoader(BaseLoader):
         return pd.concat(dfs, ignore_index=True)
 
     def get_top_producers(
-        self,
-        commodity: str,
-        year_col: str = "Prod_t_est_2022",
-        top_n: int = 10
+        self, commodity: str, year_col: str = "Prod_t_est_2022", top_n: int = 10
     ) -> pd.DataFrame:
         """
         Get top producing countries for a commodity.

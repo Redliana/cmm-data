@@ -135,10 +135,7 @@ def get_commodity_info(code: str) -> Dict:
     }
 
 
-def search_all_datasets(
-    query: str,
-    datasets: Optional[List[str]] = None
-) -> pd.DataFrame:
+def search_all_datasets(query: str, datasets: Optional[List[str]] = None) -> pd.DataFrame:
     """
     Search across multiple datasets.
 
@@ -164,13 +161,15 @@ def search_all_datasets(
             # Search commodity names
             for code, name in COMMODITY_NAMES.items():
                 if query.lower() in name.lower() or query.lower() in code.lower():
-                    results.append({
-                        "dataset": "usgs_commodity",
-                        "type": "commodity",
-                        "id": code,
-                        "name": name,
-                        "match_field": "commodity_name",
-                    })
+                    results.append(
+                        {
+                            "dataset": "usgs_commodity",
+                            "type": "commodity",
+                            "id": code,
+                            "name": name,
+                            "match_field": "commodity_name",
+                        }
+                    )
         except Exception:
             pass
 
@@ -179,13 +178,15 @@ def search_all_datasets(
             loader = OSTIDocumentsLoader()
             docs = loader.search_documents(query, limit=20)
             for _, row in docs.iterrows():
-                results.append({
-                    "dataset": "osti",
-                    "type": "document",
-                    "id": row.get("osti_id", ""),
-                    "name": row.get("title", ""),
-                    "match_field": "title/abstract",
-                })
+                results.append(
+                    {
+                        "dataset": "osti",
+                        "type": "document",
+                        "id": row.get("osti_id", ""),
+                        "name": row.get("title", ""),
+                        "match_field": "title/abstract",
+                    }
+                )
         except Exception:
             pass
 
@@ -194,13 +195,15 @@ def search_all_datasets(
             loader = PreprocessedCorpusLoader()
             docs = loader.search(query, limit=20)
             for _, row in docs.iterrows():
-                results.append({
-                    "dataset": "preprocessed",
-                    "type": "document",
-                    "id": row.get("id", ""),
-                    "name": row.get("title", str(row.get("text", ""))[:50]),
-                    "match_field": "text",
-                })
+                results.append(
+                    {
+                        "dataset": "preprocessed",
+                        "type": "document",
+                        "id": row.get("id", ""),
+                        "name": row.get("title", str(row.get("text", ""))[:50]),
+                        "match_field": "text",
+                    }
+                )
         except Exception:
             pass
 

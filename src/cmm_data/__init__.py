@@ -12,31 +12,40 @@ from .config import CMMDataConfig, configure, get_config
 from .catalog import get_data_catalog, list_commodities, list_critical_minerals
 from .exceptions import CMMDataError, DataNotFoundError, ConfigurationError
 
+
 # Lazy imports for loaders to avoid import overhead
 def __getattr__(name):
     if name == "USGSCommodityLoader":
         from .loaders.usgs_commodity import USGSCommodityLoader
+
         return USGSCommodityLoader
     elif name == "USGSOreDepositsLoader":
         from .loaders.usgs_ore import USGSOreDepositsLoader
+
         return USGSOreDepositsLoader
     elif name == "OSTIDocumentsLoader":
         from .loaders.osti_docs import OSTIDocumentsLoader
+
         return OSTIDocumentsLoader
     elif name == "PreprocessedCorpusLoader":
         from .loaders.preprocessed import PreprocessedCorpusLoader
+
         return PreprocessedCorpusLoader
     elif name == "GAChronostratigraphicLoader":
         from .loaders.ga_chronostrat import GAChronostratigraphicLoader
+
         return GAChronostratigraphicLoader
     elif name == "NETLREECoalLoader":
         from .loaders.netl_ree import NETLREECoalLoader
+
         return NETLREECoalLoader
     elif name == "OECDSupplyChainLoader":
         from .loaders.oecd_supply import OECDSupplyChainLoader
+
         return OECDSupplyChainLoader
     elif name == "MindatLoader":
         from .loaders.mindat import MindatLoader
+
         return MindatLoader
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
@@ -54,6 +63,7 @@ def load_usgs_commodity(commodity: str, data_type: str = "world"):
         pandas.DataFrame with commodity data
     """
     from .loaders.usgs_commodity import USGSCommodityLoader
+
     loader = USGSCommodityLoader()
     if data_type == "world":
         return loader.load_world_production(commodity)
@@ -74,6 +84,7 @@ def load_ore_deposits(table: str = "all"):
         pandas.DataFrame with ore deposit data
     """
     from .loaders.usgs_ore import USGSOreDepositsLoader
+
     loader = USGSOreDepositsLoader()
     return loader.load(table)
 
@@ -90,6 +101,7 @@ def search_documents(query: str, **kwargs):
         pandas.DataFrame with search results
     """
     from .loaders.osti_docs import OSTIDocumentsLoader
+
     loader = OSTIDocumentsLoader()
     return loader.search_documents(query, **kwargs)
 
@@ -102,6 +114,7 @@ def iter_corpus_documents(**kwargs):
         dict: Document metadata and content
     """
     from .loaders.preprocessed import PreprocessedCorpusLoader
+
     loader = PreprocessedCorpusLoader()
     yield from loader.iter_documents(**kwargs)
 

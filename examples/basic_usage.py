@@ -15,7 +15,7 @@ print("=" * 60)
 
 # View all available datasets
 catalog = cmm_data.get_data_catalog()
-print(catalog[['dataset', 'name', 'available']])
+print(catalog[["dataset", "name", "available"]])
 
 # List commodity codes
 commodities = cmm_data.list_commodities()
@@ -37,7 +37,7 @@ print("=" * 60)
 # Load world production data (convenience function)
 lithium_world = cmm_data.load_usgs_commodity("lithi", "world")
 print("\nLithium World Production:")
-print(lithium_world[['Country', 'Prod_t_est_2022', 'Reserves_t']].head())
+print(lithium_world[["Country", "Prod_t_est_2022", "Reserves_t"]].head())
 
 # Load salient statistics (convenience function)
 lithium_salient = cmm_data.load_usgs_commodity("lithi", "salient")
@@ -50,7 +50,7 @@ loader = cmm_data.USGSCommodityLoader()
 # Get top producers
 print("\nTop 5 Cobalt Producers:")
 top_cobalt = loader.get_top_producers("cobal", top_n=5)
-print(top_cobalt[['Country', 'Prod_t_est_2022']])
+print(top_cobalt[["Country", "Prod_t_est_2022"]])
 
 # Get commodity name from code
 print(f"\n'raree' = {loader.get_commodity_name('raree')}")

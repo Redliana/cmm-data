@@ -21,12 +21,12 @@ class MatrixCell:
     """One cell in the 100-question allocation matrix."""
 
     question_number: int
-    cell_id: str          # e.g. "CMM-HREE-TEC-L1-001"
-    commodity: str        # e.g. "HREE"
-    subdomain: str        # e.g. "T-EC"
-    complexity_level: str # e.g. "L1"
-    stratum: str          # "A" or "B"
-    topic_focus: str      # e.g. "Primary REE separation method"
+    cell_id: str  # e.g. "CMM-HREE-TEC-L1-001"
+    commodity: str  # e.g. "HREE"
+    subdomain: str  # e.g. "T-EC"
+    complexity_level: str  # e.g. "L1"
+    stratum: str  # "A" or "B"
+    topic_focus: str  # e.g. "Primary REE separation method"
 
     @property
     def subdomain_display(self) -> str:
@@ -40,12 +40,12 @@ class MatrixCell:
 # Regex for table rows in the detailed cell assignments sections.
 # Matches: | Q# | CMM-...-... | COMMODITY | L# | A/B | Topic |
 _ROW_RE = re.compile(
-    r"^\|\s*(\d+)\s*\|"          # Q#
-    r"\s*(CMM-[A-Z0-9\-]+)\s*\|" # cell ID
-    r"\s*([A-Z]+)\s*\|"          # commodity
-    r"\s*(L[1-4])\s*\|"          # level
-    r"\s*([AB])\s*\|"            # stratum
-    r"\s*(.+?)\s*\|$",           # topic focus
+    r"^\|\s*(\d+)\s*\|"  # Q#
+    r"\s*(CMM-[A-Z0-9\-]+)\s*\|"  # cell ID
+    r"\s*([A-Z]+)\s*\|"  # commodity
+    r"\s*(L[1-4])\s*\|"  # level
+    r"\s*([AB])\s*\|"  # stratum
+    r"\s*(.+?)\s*\|$",  # topic focus
 )
 
 # Map cell-ID subdomain codes to canonical subdomain keys
@@ -93,15 +93,17 @@ def parse_matrix(md_path: Path | None = None) -> list[MatrixCell]:
 
         subdomain = _extract_subdomain(cell_id)
 
-        cells.append(MatrixCell(
-            question_number=q_num,
-            cell_id=cell_id,
-            commodity=commodity,
-            subdomain=subdomain,
-            complexity_level=level,
-            stratum=stratum,
-            topic_focus=topic,
-        ))
+        cells.append(
+            MatrixCell(
+                question_number=q_num,
+                cell_id=cell_id,
+                commodity=commodity,
+                subdomain=subdomain,
+                complexity_level=level,
+                stratum=stratum,
+                topic_focus=topic,
+            )
+        )
 
     return cells
 
@@ -118,7 +120,7 @@ def get_relevant_cells(
       in that subdomain row.
     """
     if commodity_category.startswith(SUBDOMAIN_CATEGORY_PREFIX):
-        subdomain = commodity_category[len(SUBDOMAIN_CATEGORY_PREFIX):]
+        subdomain = commodity_category[len(SUBDOMAIN_CATEGORY_PREFIX) :]
         return [c for c in matrix if c.subdomain == subdomain]
     else:
         return [c for c in matrix if c.commodity == commodity_category]
