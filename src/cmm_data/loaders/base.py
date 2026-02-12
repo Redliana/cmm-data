@@ -53,7 +53,7 @@ class BaseLoader(ABC):
         pass
 
     @abstractmethod
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """
         List available data items in this dataset.
 
@@ -62,7 +62,7 @@ class BaseLoader(ABC):
         """
         pass
 
-    def describe(self) -> Dict[str, Any]:
+    def describe(self) -> dict[str, Any]:
         """
         Describe this dataset.
 

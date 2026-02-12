@@ -5,9 +5,11 @@ Data export examples for cmm_data package.
 Shows how to export CMM data to various formats.
 """
 
-import cmm_data
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
+
+import cmm_data
 
 
 def export_critical_minerals_summary(output_dir: Path):

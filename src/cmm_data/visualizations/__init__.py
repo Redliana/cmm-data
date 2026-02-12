@@ -1,9 +1,9 @@
 """Visualization functions for CMM data."""
 
 from .commodity import (
-    plot_world_production,
-    plot_production_timeseries,
     plot_import_reliance,
+    plot_production_timeseries,
+    plot_world_production,
 )
 
 __all__ = [

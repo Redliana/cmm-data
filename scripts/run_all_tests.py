@@ -15,8 +15,6 @@ This script tests:
 """
 
 import sys
-import traceback
-from pathlib import Path
 
 
 class TestRunner:
@@ -80,7 +78,6 @@ def main():
     print("-" * 40)
 
     def test_import():
-        import cmm_data
 
         return True
 
@@ -91,19 +88,6 @@ def main():
         return True
 
     def test_all_exports():
-        from cmm_data import (
-            CMMDataConfig,
-            configure,
-            get_config,
-            get_data_catalog,
-            list_commodities,
-            list_critical_minerals,
-            CMMDataError,
-            DataNotFoundError,
-            ConfigurationError,
-            load_usgs_commodity,
-            load_ore_deposits,
-        )
 
         return True
 
@@ -322,8 +306,9 @@ def main():
         return True
 
     def test_parse_na_values():
-        from cmm_data.utils.parsing import parse_numeric_value
         import numpy as np
+
+        from cmm_data.utils.parsing import parse_numeric_value
 
         assert np.isnan(parse_numeric_value("W"))
         assert np.isnan(parse_numeric_value("NA"))
@@ -376,11 +361,6 @@ def main():
     print("-" * 40)
 
     def test_viz_imports():
-        from cmm_data.visualizations import (
-            plot_world_production,
-            plot_production_timeseries,
-            plot_import_reliance,
-        )
 
         return True
 

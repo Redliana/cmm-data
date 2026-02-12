@@ -8,17 +8,17 @@ Focus: Trade Flow questions (Q-TF sub-domain) - 10 questions total
 Years: 2020-2024 (covers both Stratum A and Stratum B temporal requirements)
 """
 
-import os
-import sys
 import json
-import pandas as pd
-from pathlib import Path
-from datetime import datetime
-from typing import Dict, List, Tuple, Optional
+import sys
 import time
+from datetime import datetime
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple
+
+import pandas as pd
 
 # Import the ComtradeQuery class
-from un_comtrade_query import ComtradeQuery, CMM_HS_CODES, COUNTRY_CODES
+from un_comtrade_query import CMM_HS_CODES, COUNTRY_CODES, ComtradeQuery
 
 # Additional HS codes (some may be in main file, these are for reference)
 # Note: Nickel and Copper codes should be in un_comtrade_query.py
@@ -177,11 +177,11 @@ class GoldQADataCollector:
     def pull_commodity_trade_data(
         self,
         commodity_name: str,
-        hs_codes: List[str],
-        countries: List[Tuple[str, str]],
-        years: List[int],
+        hs_codes: list[str],
+        countries: list[tuple[str, str]],
+        years: list[int],
         trade_flow: str = "both",
-    ) -> Dict:
+    ) -> dict:
         """
         Pull trade data for a commodity across multiple HS codes and country pairs.
         Skips data that already exists in the output directory.
@@ -394,7 +394,7 @@ class GoldQADataCollector:
 
         return summary
 
-    def _get_country_pairs_for_commodity(self, key_countries: List[str]) -> List[Tuple[str, str]]:
+    def _get_country_pairs_for_commodity(self, key_countries: list[str]) -> list[tuple[str, str]]:
         """
         Generate country pairs for a commodity based on key countries.
 
@@ -429,7 +429,7 @@ class GoldQADataCollector:
 
         return list(set(pairs))  # Remove duplicates
 
-    def _save_summary(self, summary: List[Dict]):
+    def _save_summary(self, summary: list[dict]):
         """Save collection summary to JSON file."""
         summary_data = {
             "collection_date": datetime.now().isoformat(),

@@ -1,15 +1,13 @@
 """USGS Mineral Commodity Summaries data loader."""
 
 import re
-from pathlib import Path
 from typing import Dict, List, Optional
 
 import pandas as pd
 
-from .base import BaseLoader
 from ..exceptions import DataNotFoundError
-from ..utils.parsing import parse_numeric_value, clean_numeric_column
-
+from ..utils.parsing import clean_numeric_column, parse_numeric_value
+from .base import BaseLoader
 
 # Mapping of commodity codes to full names
 COMMODITY_NAMES = {
@@ -134,7 +132,7 @@ class USGSCommodityLoader(BaseLoader):
 
     dataset_name = "usgs_commodity"
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available commodity codes."""
         if not self.data_path.exists():
             return []
@@ -148,7 +146,7 @@ class USGSCommodityLoader(BaseLoader):
 
         return sorted(codes)
 
-    def list_critical_minerals(self) -> List[str]:
+    def list_critical_minerals(self) -> list[str]:
         """List commodity codes for DOE critical minerals."""
         available = set(self.list_available())
         return [c for c in CRITICAL_MINERALS if c in available]
@@ -326,7 +324,7 @@ class USGSCommodityLoader(BaseLoader):
 
         return df.head(top_n)
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the USGS commodity dataset."""
         base = super().describe()
         base["commodity_count"] = len(self.list_available())

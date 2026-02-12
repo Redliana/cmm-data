@@ -6,7 +6,8 @@ to retrieve CMM trade flow data.
 """
 
 import os
-from un_comtrade_query import ComtradeQuery, CMM_HS_CODES
+
+from un_comtrade_query import CMM_HS_CODES, ComtradeQuery
 
 
 # Example 1: Basic query using API key from environment variable

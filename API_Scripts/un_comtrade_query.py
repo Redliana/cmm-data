@@ -28,14 +28,13 @@ Or set API key as environment variable:
     python un_comtrade_query.py --reporter USA --partner CHN --commodity 2846 --year 2023
 """
 
+import argparse
 import os
 import sys
-import json
-import argparse
 import warnings
+from typing import Optional
+
 import pandas as pd
-from typing import Optional, Dict, Any, List
-from datetime import datetime
 
 warnings.warn(
     "un_comtrade_query.py is deprecated. Use the UNComtrade MCP Server instead "

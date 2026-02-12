@@ -7,16 +7,14 @@ for years 2020-2024 from ScienceBase catalog.
 Based on: https://www.sciencebase.gov/catalog/item/65a6e45fd34e5af967a46749
 """
 
-import os
-import sys
 import json
-import requests
 import zipfile
-import pandas as pd
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional
-from datetime import datetime
-import time
+
+import pandas as pd
+import requests
 
 # CMM Commodities mapping to USGS file name patterns
 # USGS files use format: mcs{year}-{commodity_abbrev}_salient.csv
@@ -69,7 +67,7 @@ class USGSMCSDownloader:
             {"User-Agent": "Mozilla/5.0 (compatible; CMM-Data-Collector/1.0)"}
         )
 
-    def get_sciencebase_item_info(self, item_id: str) -> Dict:
+    def get_sciencebase_item_info(self, item_id: str) -> dict:
         """
         Get information about a ScienceBase catalog item.
 
@@ -144,7 +142,7 @@ class USGSMCSDownloader:
             print(f"    ✗ Error extracting {zip_path}: {e}")
             return False
 
-    def download_year_data(self, year: int, item_id: Optional[str] = None) -> Dict:
+    def download_year_data(self, year: int, item_id: Optional[str] = None) -> dict:
         """
         Download USGS MCS data for a specific year.
 
@@ -224,7 +222,7 @@ class USGSMCSDownloader:
         result["status"] = "complete" if result["downloaded_files"] else "failed"
         return result
 
-    def extract_cmm_commodities(self, year: int) -> Dict:
+    def extract_cmm_commodities(self, year: int) -> dict:
         """
         Extract CMM-relevant commodity data from downloaded files.
 
@@ -281,7 +279,7 @@ class USGSMCSDownloader:
 
         return extracted
 
-    def download_all_years(self, years: List[int] = [2020, 2021, 2022, 2023, 2024]) -> Dict:
+    def download_all_years(self, years: list[int] = [2020, 2021, 2022, 2023, 2024]) -> dict:
         """
         Download USGS MCS data for all specified years.
 

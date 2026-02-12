@@ -5,8 +5,8 @@ from typing import Dict, List, Optional
 
 import pandas as pd
 
-from .base import BaseLoader
 from ..exceptions import DataNotFoundError
+from .base import BaseLoader
 
 
 class OECDSupplyChainLoader(BaseLoader):
@@ -30,7 +30,7 @@ class OECDSupplyChainLoader(BaseLoader):
         "btige": "BTIGE",
     }
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available data categories."""
         if not self.data_path.exists():
             return []
@@ -83,7 +83,7 @@ class OECDSupplyChainLoader(BaseLoader):
 
         return pd.DataFrame(files)
 
-    def get_pdf_paths(self, dataset: str) -> List[Path]:
+    def get_pdf_paths(self, dataset: str) -> list[Path]:
         """
         Get paths to PDF files in a dataset.
 
@@ -97,15 +97,15 @@ class OECDSupplyChainLoader(BaseLoader):
         pdf_df = df[df["extension"] == ".pdf"]
         return [Path(p) for p in pdf_df["path"]]
 
-    def get_export_restrictions_reports(self) -> List[Path]:
+    def get_export_restrictions_reports(self) -> list[Path]:
         """Get paths to Export Restrictions PDF reports."""
         return self.get_pdf_paths("export_restrictions")
 
-    def get_iea_minerals_reports(self) -> List[Path]:
+    def get_iea_minerals_reports(self) -> list[Path]:
         """Get paths to IEA Critical Minerals Outlook PDFs."""
         return self.get_pdf_paths("iea_minerals")
 
-    def get_icio_documentation(self) -> List[Path]:
+    def get_icio_documentation(self) -> list[Path]:
         """Get paths to ICIO documentation files."""
         df = self.load("icio")
         return [Path(p) for p in df["path"]]
@@ -154,7 +154,7 @@ class OECDSupplyChainLoader(BaseLoader):
 
         return pd.concat(dfs, ignore_index=True) if len(dfs) > 1 else dfs[0]
 
-    def get_minerals_coverage(self) -> Dict:
+    def get_minerals_coverage(self) -> dict:
         """
         Get information about minerals covered in OECD data.
 
@@ -205,7 +205,7 @@ class OECDSupplyChainLoader(BaseLoader):
             },
         }
 
-    def get_download_urls(self) -> Dict[str, str]:
+    def get_download_urls(self) -> dict[str, str]:
         """
         Get URLs for manual download of OECD data.
 
@@ -220,7 +220,7 @@ class OECDSupplyChainLoader(BaseLoader):
             "iea_critical_minerals": "https://www.iea.org/data-and-statistics/data-tools/critical-minerals-data-explorer",
         }
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the OECD supply chain dataset."""
         base = super().describe()
         base["subdirectories"] = self.SUBDIRS

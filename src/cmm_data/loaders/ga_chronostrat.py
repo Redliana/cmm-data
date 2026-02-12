@@ -1,15 +1,13 @@
 """Geoscience Australia Chronostratigraphic Model loader."""
 
 import zipfile
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
 
+from ..exceptions import ConfigurationError, DataNotFoundError
 from .base import BaseLoader
-from ..exceptions import DataNotFoundError, ConfigurationError
-
 
 # Surface names in the GA 3D model
 CHRONOSTRAT_SURFACES = [
@@ -50,7 +48,7 @@ class GAChronostratigraphicLoader(BaseLoader):
         "confidence": "149923_3D_Confidence_GEOTIFF*.zip",
     }
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available data formats."""
         if not self.data_path.exists():
             return []
@@ -154,11 +152,11 @@ class GAChronostratigraphicLoader(BaseLoader):
             extracted = zf.extract(surface_file, self.data_path / ".temp")
             return rasterio.open(extracted)
 
-    def list_surfaces(self) -> List[str]:
+    def list_surfaces(self) -> list[str]:
         """List available surface names."""
         return CHRONOSTRAT_SURFACES.copy()
 
-    def get_surface_extent(self, surface: str) -> Dict[str, float]:
+    def get_surface_extent(self, surface: str) -> dict[str, float]:
         """
         Get spatial extent of a surface.
 
@@ -204,7 +202,7 @@ class GAChronostratigraphicLoader(BaseLoader):
 
         return df.loc[min_idx, "z"]
 
-    def get_model_info(self) -> Dict:
+    def get_model_info(self) -> dict:
         """Get information about the 3D model."""
         return {
             "title": "Preliminary 3D Chronostratigraphic Model of Australia",
@@ -216,7 +214,7 @@ class GAChronostratigraphicLoader(BaseLoader):
             "url": "https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/149923",
         }
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the GA chronostratigraphic dataset."""
         base = super().describe()
         base.update(self.get_model_info())

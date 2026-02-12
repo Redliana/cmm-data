@@ -1,13 +1,12 @@
 """OSTI document retrieval loader."""
 
 import json
-from pathlib import Path
 from typing import Dict, List, Optional
 
 import pandas as pd
 
-from .base import BaseLoader
 from ..exceptions import DataNotFoundError
+from .base import BaseLoader
 
 
 class OSTIDocumentsLoader(BaseLoader):
@@ -20,7 +19,7 @@ class OSTIDocumentsLoader(BaseLoader):
 
     dataset_name = "osti"
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available document collections/files."""
         if not self.data_path.exists():
             return []
@@ -56,7 +55,7 @@ class OSTIDocumentsLoader(BaseLoader):
         if collection:
             json_path = self.data_path / f"{collection}.json"
             if json_path.exists():
-                with open(json_path, "r") as f:
+                with open(json_path) as f:
                     data = json.load(f)
                 if isinstance(data, list):
                     df = pd.DataFrame(data)
@@ -69,7 +68,7 @@ class OSTIDocumentsLoader(BaseLoader):
             dfs = []
             for json_file in self.data_path.glob("*.json"):
                 try:
-                    with open(json_file, "r") as f:
+                    with open(json_file) as f:
                         data = json.load(f)
                     if isinstance(data, list):
                         df = pd.DataFrame(data)
@@ -100,7 +99,7 @@ class OSTIDocumentsLoader(BaseLoader):
         return df
 
     def search_documents(
-        self, query: str, fields: Optional[List[str]] = None, limit: int = 100
+        self, query: str, fields: Optional[list[str]] = None, limit: int = 100
     ) -> pd.DataFrame:
         """
         Search documents by keyword.
@@ -179,7 +178,7 @@ class OSTIDocumentsLoader(BaseLoader):
 
         return pd.DataFrame()
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> dict:
         """Get document collection statistics."""
         df = self.load()
 
@@ -200,7 +199,7 @@ class OSTIDocumentsLoader(BaseLoader):
 
         return stats
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the OSTI documents dataset."""
         base = super().describe()
         try:

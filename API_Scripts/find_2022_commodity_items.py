@@ -5,10 +5,10 @@ Since the 2022 release has individual commodity items, we need to find
 the catalog item ID for each CMM commodity.
 """
 
-import requests
-import re
 import json
-from typing import Dict, List
+from typing import Dict
+
+import requests
 
 # CMM commodities we need
 CMM_COMMODITIES_2022 = [
@@ -28,7 +28,7 @@ CMM_COMMODITIES_2022 = [
 ]
 
 
-def search_commodity_item(year: int, commodity: str, parent_id: str = None) -> Dict:
+def search_commodity_item(year: int, commodity: str, parent_id: str = None) -> dict:
     """
     Search for a specific commodity's catalog item ID.
 
@@ -71,7 +71,7 @@ def search_commodity_item(year: int, commodity: str, parent_id: str = None) -> D
     return None
 
 
-def find_all_commodity_items(year: int = 2022) -> Dict[str, Dict]:
+def find_all_commodity_items(year: int = 2022) -> dict[str, dict]:
     """
     Find all CMM commodity item IDs for a given year.
 

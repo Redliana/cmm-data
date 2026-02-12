@@ -6,9 +6,9 @@ Handles PDF reading, metadata, and citations
 import json
 from pathlib import Path
 from typing import Optional
-import fitz  # PyMuPDF
 
-from config import OSTI_CATALOG, OSTI_PDFS_DIR, COMMODITIES, SUBDOMAINS, MAX_PDF_CHARS
+import fitz  # PyMuPDF
+from config import COMMODITIES, MAX_PDF_CHARS, OSTI_CATALOG, OSTI_PDFS_DIR
 
 
 class DocumentManager:
@@ -22,7 +22,7 @@ class DocumentManager:
         """Load document catalog from JSON"""
         if not OSTI_CATALOG.exists():
             return []
-        with open(OSTI_CATALOG, "r") as f:
+        with open(OSTI_CATALOG) as f:
             return json.load(f)
 
     def _build_index(self):

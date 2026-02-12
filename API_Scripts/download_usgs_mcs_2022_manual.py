@@ -10,15 +10,13 @@ Usage:
 3. Run the script to download all commodities
 """
 
-import os
-import sys
 import json
-import requests
-import pandas as pd
-from pathlib import Path
-from typing import Dict, List, Optional
-from datetime import datetime
+import sys
 import time
+from pathlib import Path
+from typing import Dict, List
+
+import requests
 
 # CMM Commodities from methodology (Section 2.2)
 # Map to USGS commodity names and expected catalog item IDs
@@ -60,7 +58,7 @@ class USGSMCS2022Downloader:
             {"User-Agent": "Mozilla/5.0 (compatible; CMM-Data-Collector/1.0)"}
         )
 
-    def get_catalog_item(self, item_id: str) -> Dict:
+    def get_catalog_item(self, item_id: str) -> dict:
         """Get catalog item information."""
         url = f"https://www.sciencebase.gov/catalog/item/{item_id}?format=json"
         try:
@@ -73,7 +71,7 @@ class USGSMCS2022Downloader:
 
     def download_commodity_files(
         self, item_id: str, commodity_name: str, year: int = 2022
-    ) -> List[Path]:
+    ) -> list[Path]:
         """
         Download all CSV files from a commodity catalog item.
 
@@ -131,7 +129,7 @@ class USGSMCS2022Downloader:
 
         return downloaded_files
 
-    def download_all_commodities(self, commodity_ids: Dict, year: int = 2022) -> Dict:
+    def download_all_commodities(self, commodity_ids: dict, year: int = 2022) -> dict:
         """
         Download all CMM commodities for 2022.
 

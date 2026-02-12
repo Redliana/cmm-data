@@ -3,27 +3,24 @@ Search functionality for CMM MCP Server
 Implements full-text search with SQLite FTS5 and similarity search with TF-IDF
 """
 
-import sqlite3
-import pickle
 import json
-from pathlib import Path
-from typing import List, Optional, Tuple
 import logging
+import pickle
+import sqlite3
+from typing import List
 
 import fitz  # PyMuPDF
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
 from config import (
-    SEARCH_DB,
-    TFIDF_VECTORS,
     INDEX_DIR,
+    MAX_SEARCH_RESULTS,
     OSTI_CATALOG,
     OSTI_PDFS_DIR,
-    MAX_SEARCH_RESULTS,
+    SEARCH_DB,
+    TFIDF_VECTORS,
 )
 from ocr import get_mistral_ocr
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +90,7 @@ class SearchIndex:
         if not OSTI_CATALOG.exists():
             return {"error": "Document catalog not found"}
 
-        with open(OSTI_CATALOG, "r") as f:
+        with open(OSTI_CATALOG) as f:
             catalog = json.load(f)
 
         total_docs = len(catalog)
@@ -249,7 +246,7 @@ class SearchIndex:
 
         return ""
 
-    def search(self, query: str, limit: int = MAX_SEARCH_RESULTS) -> List[dict]:
+    def search(self, query: str, limit: int = MAX_SEARCH_RESULTS) -> list[dict]:
         """
         Full-text search across indexed documents.
 
@@ -298,7 +295,7 @@ class SearchIndex:
         conn.close()
         return results
 
-    def find_similar(self, osti_id: str, limit: int = 5) -> List[dict]:
+    def find_similar(self, osti_id: str, limit: int = 5) -> list[dict]:
         """
         Find documents similar to a given document using TF-IDF cosine similarity.
 
@@ -342,7 +339,7 @@ class SearchIndex:
 
         # Enrich with metadata
         if OSTI_CATALOG.exists():
-            with open(OSTI_CATALOG, "r") as f:
+            with open(OSTI_CATALOG) as f:
                 catalog = json.load(f)
                 catalog_dict = {d["osti_id"]: d for d in catalog}
 

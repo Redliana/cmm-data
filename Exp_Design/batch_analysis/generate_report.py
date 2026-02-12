@@ -11,16 +11,15 @@ from collections import defaultdict
 from pathlib import Path
 
 from config import (
-    OUTPUT_DIR,
     COMMODITY_CATEGORIES,
     COMMODITY_DISPLAY,
+    DOCUMENT_CATALOG,
+    DOMAIN_GROUPS,
+    OUTPUT_DIR,
     SUBDOMAIN_CATEGORIES,
     SUBDOMAIN_DISPLAY,
-    DOMAIN_GROUPS,
-    COMPLEXITY_LEVELS,
-    DOCUMENT_CATALOG,
 )
-from matrix_parser import parse_matrix, MatrixCell
+from matrix_parser import MatrixCell, parse_matrix
 
 
 def _load_paper_titles() -> dict[str, str]:

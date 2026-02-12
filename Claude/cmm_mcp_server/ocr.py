@@ -7,13 +7,11 @@ Includes triage functionality to identify PDFs that would benefit from OCR
 import base64
 import json
 import logging
-import re
 from pathlib import Path
-from typing import Optional, List, Callable, Union
+from typing import Callable, List, Optional
 
 import fitz  # PyMuPDF
-
-from config import MISTRAL_API_KEY, OSTI_PDFS_DIR, OSTI_CATALOG, INDEX_DIR
+from config import INDEX_DIR, MISTRAL_API_KEY, OSTI_CATALOG, OSTI_PDFS_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -258,7 +256,7 @@ class MistralOCR:
             logger.error(f"Mistral OCR full extraction failed for {pdf_path}: {e}")
             return {"error": str(e)}
 
-    def _save_images(self, images: List[dict], output_dir: Path) -> List[str]:
+    def _save_images(self, images: list[dict], output_dir: Path) -> list[str]:
         """Save extracted images to disk"""
         saved = []
         for img in images:
@@ -416,7 +414,7 @@ class PDFTriager:
     def _load_catalog(self) -> dict:
         """Load document catalog"""
         if OSTI_CATALOG.exists():
-            with open(OSTI_CATALOG, "r") as f:
+            with open(OSTI_CATALOG) as f:
                 catalog = json.load(f)
                 return {doc["osti_id"]: doc for doc in catalog}
         return {}
@@ -562,7 +560,7 @@ class PDFTriager:
 
         return problematic / max(1, total)
 
-    def _calculate_text_quality(self, page_analyses: List[dict]) -> float:
+    def _calculate_text_quality(self, page_analyses: list[dict]) -> float:
         """Calculate overall text quality score (0-1)"""
         if not page_analyses:
             return 0.0

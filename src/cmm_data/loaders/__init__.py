@@ -1,7 +1,7 @@
 """Data loaders for CMM datasets."""
 
 from .base import BaseLoader
-from .mindat import MindatLoader, CRITICAL_ELEMENTS, ELEMENT_GROUPS
+from .mindat import CRITICAL_ELEMENTS, ELEMENT_GROUPS, MindatLoader
 
 __all__ = [
     "BaseLoader",

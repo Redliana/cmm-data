@@ -22,15 +22,15 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from fastmcp import FastMCP
-from typing import Optional, List
+from typing import List, Optional
 
-from document_tools import get_document_manager
-from data_tools import get_data_manager
-from search import get_search_index
-from ocr import get_mistral_ocr, get_pdf_triager
 from batch_processor import get_batch_processor
 from config import COMMODITIES, SUBDOMAINS
+from data_tools import get_data_manager
+from document_tools import get_document_manager
+from fastmcp import FastMCP
+from ocr import get_mistral_ocr, get_pdf_triager
+from search import get_search_index
 
 # Create MCP server
 mcp = FastMCP(
@@ -273,7 +273,6 @@ def analyze_document_for_ocr(osti_id: str) -> dict:
     Returns:
         Detailed analysis including page-by-page breakdown and OCR recommendation
     """
-    from pathlib import Path
 
     triager = get_pdf_triager()
 
@@ -314,7 +313,6 @@ def extract_document_full(osti_id: str, save_images: bool = True) -> dict:
     Returns:
         Full extraction results including text, images, tables, and statistics
     """
-    from pathlib import Path
     from ocr import EXTRACTED_IMAGES_DIR
 
     ocr = get_mistral_ocr()
@@ -386,7 +384,6 @@ def extract_and_analyze_document(osti_id: str, analyze_charts: bool = True) -> d
     Returns:
         Full extraction results plus chart analyses with extracted data
     """
-    from pathlib import Path
     from ocr import EXTRACTED_IMAGES_DIR
 
     ocr = get_mistral_ocr()
@@ -426,7 +423,7 @@ def extract_and_analyze_document(osti_id: str, analyze_charts: bool = True) -> d
 
 
 @mcp.tool()
-def estimate_batch_cost(osti_ids: Optional[List[str]] = None) -> dict:
+def estimate_batch_cost(osti_ids: Optional[list[str]] = None) -> dict:
     """
     Estimate cost before running batch processing.
 
@@ -442,7 +439,7 @@ def estimate_batch_cost(osti_ids: Optional[List[str]] = None) -> dict:
 
 @mcp.tool()
 def process_documents_batch(
-    osti_ids: Optional[List[str]] = None, analyze_charts: bool = True, resume: bool = True
+    osti_ids: Optional[list[str]] = None, analyze_charts: bool = True, resume: bool = True
 ) -> dict:
     """
     Batch process documents for LLM fine-tuning.
@@ -537,7 +534,7 @@ def get_schema(dataset: str) -> dict:
 def query_csv(
     dataset: str,
     filters: Optional[dict] = None,
-    columns: Optional[List[str]] = None,
+    columns: Optional[list[str]] = None,
     limit: int = 100,
 ) -> dict:
     """

@@ -8,9 +8,9 @@ OECD trade data, and geospatial resources.
 
 __version__ = "0.1.0"
 
-from .config import CMMDataConfig, configure, get_config
 from .catalog import get_data_catalog, list_commodities, list_critical_minerals
-from .exceptions import CMMDataError, DataNotFoundError, ConfigurationError
+from .config import CMMDataConfig, configure, get_config
+from .exceptions import CMMDataError, ConfigurationError, DataNotFoundError
 
 
 # Lazy imports for loaders to avoid import overhead

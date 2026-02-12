@@ -3,16 +3,14 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from config import (
     ALLOCATION_MATRIX_MD,
-    COMMODITY_CATEGORIES,
-    SUBDOMAIN_CATEGORIES,
+    COMPLEXITY_LEVELS,
     SUBDOMAIN_CATEGORY_PREFIX,
     SUBDOMAIN_DISPLAY,
-    COMPLEXITY_LEVELS,
 )
 
 

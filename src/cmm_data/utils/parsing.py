@@ -63,7 +63,7 @@ def parse_numeric_value(value: Any) -> Optional[float]:
         return np.nan
 
 
-def parse_range(value: Any) -> Tuple[Optional[float], Optional[float]]:
+def parse_range(value: Any) -> tuple[Optional[float], Optional[float]]:
     """
     Parse a range value, returning (low, high) bounds.
 

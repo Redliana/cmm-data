@@ -1,7 +1,7 @@
 """Configuration management for CMM Data package."""
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 

@@ -7,9 +7,9 @@ Usage: python scripts/build_wheel.py
 Output: dist/cmm_data-0.1.0-py3-none-any.whl
 """
 
+import shutil
 import subprocess
 import sys
-import shutil
 from pathlib import Path
 
 

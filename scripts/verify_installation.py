@@ -7,7 +7,6 @@ Run this script after installation to check that everything is working:
 """
 
 import sys
-from pathlib import Path
 
 
 def print_header(text):

@@ -12,23 +12,20 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
 
 from config import (
+    COMMODITY_DISPLAY,
     DOCUMENT_CATALOG,
+    MAX_OUTPUT_TOKENS,
     OCR_DIR,
     OUTPUT_DIR,
-    GEMINI_MODEL,
-    TEMPERATURE,
-    MAX_OUTPUT_TOKENS,
-    COMMODITY_DISPLAY,
-    SUBDOMAIN_DISPLAY,
     SUBDOMAIN_CATEGORY_PREFIX,
+    SUBDOMAIN_DISPLAY,
+    TEMPERATURE,
 )
-from matrix_parser import MatrixCell, parse_matrix, get_relevant_cells
-
+from matrix_parser import MatrixCell, get_relevant_cells, parse_matrix
 
 # ---------------------------------------------------------------------------
 # Structured output schema (Vertex AI responseSchema)

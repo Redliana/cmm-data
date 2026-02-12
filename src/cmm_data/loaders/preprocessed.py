@@ -2,12 +2,13 @@
 
 import json
 from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional
+from typing import Any, Dict, List, Optional
+from collections.abc import Generator
 
 import pandas as pd
 
-from .base import BaseLoader
 from ..exceptions import DataNotFoundError
+from .base import BaseLoader
 
 
 class PreprocessedCorpusLoader(BaseLoader):
@@ -20,7 +21,7 @@ class PreprocessedCorpusLoader(BaseLoader):
 
     dataset_name = "preprocessed"
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available corpus files."""
         if not self.data_path.exists():
             return []
@@ -52,7 +53,7 @@ class PreprocessedCorpusLoader(BaseLoader):
             )
 
         records = []
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             for line in f:
                 try:
                     record = json.loads(line.strip())
@@ -67,7 +68,7 @@ class PreprocessedCorpusLoader(BaseLoader):
 
     def iter_documents(
         self, corpus_file: str = "unified_corpus.jsonl", batch_size: Optional[int] = None
-    ) -> Generator[Dict[str, Any], None, None]:
+    ) -> Generator[dict[str, Any], None, None]:
         """
         Iterate over documents in the corpus.
 
@@ -82,7 +83,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         self._validate_path(file_path, f"Corpus file {corpus_file}")
 
         batch = []
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             for line in f:
                 try:
                     record = json.loads(line.strip())
@@ -100,7 +101,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         if batch_size and batch:
             yield batch
 
-    def get_corpus_stats(self, corpus_file: str = "unified_corpus.jsonl") -> Dict:
+    def get_corpus_stats(self, corpus_file: str = "unified_corpus.jsonl") -> dict:
         """
         Get statistics about the corpus.
 
@@ -139,7 +140,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         return stats
 
     def search(
-        self, query: str, fields: Optional[List[str]] = None, limit: int = 100
+        self, query: str, fields: Optional[list[str]] = None, limit: int = 100
     ) -> pd.DataFrame:
         """
         Search documents in the corpus.
@@ -218,7 +219,7 @@ class PreprocessedCorpusLoader(BaseLoader):
 
         return count
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the preprocessed corpus."""
         base = super().describe()
         try:

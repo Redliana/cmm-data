@@ -4,13 +4,12 @@ Convert geodatabase to CSV and generate comprehensive schema documentation
 for all CSV files in the CMM data collection.
 """
 
-import subprocess
-import json
 import csv
-import os
-from pathlib import Path
-from collections import defaultdict
+import json
 import re
+import subprocess
+from collections import defaultdict
+from pathlib import Path
 
 BASE_DIR = Path(
     "/Users/wash198/Documents/Projects/Science_Projects/MPII_CMM/LLM_Fine_Tuning/Claude"
@@ -28,7 +27,7 @@ def get_csv_schema(csv_path, sample_rows=5):
     }
 
     try:
-        with open(csv_path, "r", encoding="utf-8", errors="ignore") as f:
+        with open(csv_path, encoding="utf-8", errors="ignore") as f:
             reader = csv.reader(f)
             headers = next(reader, [])
 

@@ -5,13 +5,14 @@ Since MCS releases contain 5 years of historical data, we can extract
 2020 and 2021 data from the 2022, 2023, and 2024 releases.
 """
 
-import pandas as pd
-from pathlib import Path
-from typing import List, Dict
 import json
+from pathlib import Path
+from typing import List
+
+import pandas as pd
 
 
-def extract_years_from_release(release_year: int, target_years: List[int], output_dir: Path):
+def extract_years_from_release(release_year: int, target_years: list[int], output_dir: Path):
     """
     Extract data for target years from a release.
 

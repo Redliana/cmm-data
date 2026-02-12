@@ -25,14 +25,13 @@ warnings.warn(
     stacklevel=2,
 )
 
-import requests
 import json
 import time
-import os
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
 from typing import Dict, List, Optional
-import hashlib
+
+import requests
 
 # Configuration
 BASE_URL = "https://www.osti.gov/api/v1/records"
@@ -221,7 +220,7 @@ class OSTIRetriever:
         ids = set()
         tracking_file = self.output_dir / "downloaded_ids.txt"
         if tracking_file.exists():
-            with open(tracking_file, "r") as f:
+            with open(tracking_file) as f:
                 ids = set(line.strip() for line in f if line.strip())
         return ids
 
@@ -233,7 +232,7 @@ class OSTIRetriever:
 
     def search(
         self, query: str, max_results: int = MAX_RESULTS_PER_QUERY, has_fulltext: bool = True
-    ) -> List[Dict]:
+    ) -> list[dict]:
         """Search OSTI for documents matching query."""
         all_records = []
         page = 1
@@ -273,7 +272,7 @@ class OSTIRetriever:
         self.stats["records_found"] += len(all_records)
         return all_records[:max_results]
 
-    def download_pdf(self, record: Dict, commodity: str = "unknown") -> Optional[Path]:
+    def download_pdf(self, record: dict, commodity: str = "unknown") -> Optional[Path]:
         """Download PDF for a record if available."""
         osti_id = record.get("osti_id")
 
@@ -460,7 +459,7 @@ class OSTIRetriever:
         for commodity_dir in self.pdf_dir.iterdir():
             if commodity_dir.is_dir():
                 for meta_file in commodity_dir.glob("*_metadata.json"):
-                    with open(meta_file, "r") as f:
+                    with open(meta_file) as f:
                         record = json.load(f)
                         catalog.append(
                             {

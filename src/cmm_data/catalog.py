@@ -94,7 +94,7 @@ def get_data_catalog() -> pd.DataFrame:
     return df
 
 
-def list_commodities() -> List[str]:
+def list_commodities() -> list[str]:
     """
     List all available USGS commodity codes.
 
@@ -104,7 +104,7 @@ def list_commodities() -> List[str]:
     return sorted(COMMODITY_NAMES.keys())
 
 
-def list_critical_minerals() -> List[str]:
+def list_critical_minerals() -> list[str]:
     """
     List DOE critical minerals commodity codes.
 
@@ -114,7 +114,7 @@ def list_critical_minerals() -> List[str]:
     return CRITICAL_MINERALS.copy()
 
 
-def get_commodity_info(code: str) -> Dict:
+def get_commodity_info(code: str) -> dict:
     """
     Get information about a commodity.
 
@@ -135,7 +135,7 @@ def get_commodity_info(code: str) -> Dict:
     }
 
 
-def search_all_datasets(query: str, datasets: Optional[List[str]] = None) -> pd.DataFrame:
+def search_all_datasets(query: str, datasets: Optional[list[str]] = None) -> pd.DataFrame:
     """
     Search across multiple datasets.
 
@@ -146,9 +146,9 @@ def search_all_datasets(query: str, datasets: Optional[List[str]] = None) -> pd.
     Returns:
         DataFrame with search results from all datasets
     """
-    from .loaders.usgs_commodity import USGSCommodityLoader
     from .loaders.osti_docs import OSTIDocumentsLoader
     from .loaders.preprocessed import PreprocessedCorpusLoader
+    from .loaders.usgs_commodity import USGSCommodityLoader
 
     results = []
 
@@ -210,7 +210,7 @@ def search_all_datasets(query: str, datasets: Optional[List[str]] = None) -> pd.
     return pd.DataFrame(results)
 
 
-def get_dataset_summary() -> Dict:
+def get_dataset_summary() -> dict:
     """
     Get a summary of all available data.
 

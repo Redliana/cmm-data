@@ -142,7 +142,7 @@ def plot_surface_depth(
 
 def plot_ree_distribution(
     df: pd.DataFrame,
-    elements: Optional[List[str]] = None,
+    elements: Optional[list[str]] = None,
     title: str = "REE Distribution",
     figsize: tuple = (12, 6),
     ax: Optional[Any] = None,
@@ -161,7 +161,6 @@ def plot_ree_distribution(
         matplotlib Figure object
     """
     plt = _get_matplotlib()
-    import numpy as np
 
     if elements is None:
         elements = [

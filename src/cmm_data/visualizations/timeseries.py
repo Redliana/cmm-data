@@ -21,7 +21,7 @@ def _get_matplotlib():
 
 def plot_commodity_timeseries(
     commodity_code: str,
-    metrics: Optional[List[str]] = None,
+    metrics: Optional[list[str]] = None,
     figsize: tuple = (12, 6),
     ax: Optional[Any] = None,
 ) -> Any:
@@ -149,7 +149,7 @@ def plot_critical_minerals_comparison(
     """
     plt = _get_matplotlib()
 
-    from ..loaders.usgs_commodity import USGSCommodityLoader, CRITICAL_MINERALS
+    from ..loaders.usgs_commodity import CRITICAL_MINERALS, USGSCommodityLoader
 
     loader = USGSCommodityLoader()
 

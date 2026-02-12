@@ -8,16 +8,14 @@ import pytest
 # Add src to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from cmm_fine_tune.constants import COMMODITY_CONFIG, TRADE_DATA_DIR, USGS_DATA_DIR
+from cmm_fine_tune.constants import COMMODITY_CONFIG, TRADE_DATA_DIR
 from cmm_fine_tune.data.csv_loader import (
     _parse_numeric,
     load_all_data,
     load_all_salient_data,
     load_all_trade_data,
     load_all_world_production_data,
-    load_salient_data,
     load_trade_data,
-    load_world_production_data,
 )
 
 
@@ -50,7 +48,6 @@ class TestParseNumeric:
         assert _parse_numeric("> 50") == 50.0
 
     def test_nan(self):
-        import math
 
         assert _parse_numeric(float("nan")) is None
 

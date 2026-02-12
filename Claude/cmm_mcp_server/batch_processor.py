@@ -7,11 +7,10 @@ import json
 import logging
 import time
 from datetime import datetime
-from pathlib import Path
-from typing import Optional, List, Dict, Callable
+from typing import Callable, List, Optional
 
-from config import INDEX_DIR, OSTI_CATALOG
-from ocr import get_mistral_ocr, get_pdf_triager, EXTRACTED_IMAGES_DIR
+from config import INDEX_DIR
+from ocr import EXTRACTED_IMAGES_DIR, get_mistral_ocr, get_pdf_triager
 
 logger = logging.getLogger(__name__)
 
@@ -53,7 +52,7 @@ class BatchProcessor:
             time.sleep(min_interval - elapsed)
         self.last_request_time = time.time()
 
-    def estimate_cost(self, osti_ids: List[str] = None) -> dict:
+    def estimate_cost(self, osti_ids: list[str] = None) -> dict:
         """
         Estimate processing cost before running batch.
 
@@ -127,7 +126,7 @@ class BatchProcessor:
     def load_state(self) -> dict:
         """Load processing state for resumption"""
         if self.state_file.exists():
-            with open(self.state_file, "r") as f:
+            with open(self.state_file) as f:
                 return json.load(f)
         return {"processed": [], "failed": [], "last_updated": None}
 
@@ -215,7 +214,7 @@ class BatchProcessor:
 
     def process_batch(
         self,
-        osti_ids: List[str] = None,
+        osti_ids: list[str] = None,
         analyze_charts: bool = True,
         resume: bool = True,
         progress_callback: Optional[Callable] = None,
@@ -316,7 +315,7 @@ class BatchProcessor:
             if json_file.name == "processing_state.json":
                 continue
             try:
-                with open(json_file, "r") as f:
+                with open(json_file) as f:
                     records.append(json.load(f))
             except:
                 pass

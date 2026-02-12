@@ -7,15 +7,13 @@ and download the data.
 Based on: https://code.usgs.gov/sas/sdm/sciencebasepy
 """
 
-import os
-import sys
 import json
-import requests
-import pandas as pd
-from pathlib import Path
-from typing import Dict, List, Optional
-from datetime import datetime
+import sys
 import time
+from pathlib import Path
+from typing import Dict, List
+
+import requests
 
 try:
     from sciencebasepy import SbSession
@@ -68,7 +66,7 @@ class USGSMCSAutoDownloader:
             {"User-Agent": "Mozilla/5.0 (compatible; CMM-Data-Collector/1.0)"}
         )
 
-    def find_cmm_commodities(self, release_id: str, year: int) -> Dict[str, Dict]:
+    def find_cmm_commodities(self, release_id: str, year: int) -> dict[str, dict]:
         """
         Find CMM commodity item IDs from a release catalog.
 
@@ -130,7 +128,7 @@ class USGSMCSAutoDownloader:
         print(f"\nFound {len(found)}/{len(CMM_COMMODITIES)} CMM commodities")
         return found
 
-    def download_commodity_files(self, item_id: str, commodity_name: str, year: int) -> List[Path]:
+    def download_commodity_files(self, item_id: str, commodity_name: str, year: int) -> list[Path]:
         """
         Download all CSV files from a commodity catalog item.
 
@@ -188,7 +186,7 @@ class USGSMCSAutoDownloader:
 
         return downloaded_files
 
-    def download_year(self, release_id: str, year: int) -> Dict:
+    def download_year(self, release_id: str, year: int) -> dict:
         """
         Find and download all CMM commodities for a year.
 

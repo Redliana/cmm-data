@@ -1,13 +1,11 @@
 """USGS Ore Deposits database loader."""
 
-from pathlib import Path
 from typing import Dict, List, Optional
 
 import pandas as pd
 
-from .base import BaseLoader
 from ..exceptions import DataNotFoundError
-
+from .base import BaseLoader
 
 # REE elements for filtering
 REE_ELEMENTS = [
@@ -57,7 +55,7 @@ class USGSOreDepositsLoader(BaseLoader):
         "Reference": "Reference/citation data",
     }
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available tables in the database."""
         if not self.data_path.exists():
             return []
@@ -115,7 +113,7 @@ class USGSOreDepositsLoader(BaseLoader):
         """
         return self.load("Geology")
 
-    def load_geochemistry(self, elements: Optional[List[str]] = None) -> pd.DataFrame:
+    def load_geochemistry(self, elements: Optional[list[str]] = None) -> pd.DataFrame:
         """
         Load combined geochemistry data.
 
@@ -170,7 +168,7 @@ class USGSOreDepositsLoader(BaseLoader):
         """
         return self.load_geochemistry(elements=REE_ELEMENTS)
 
-    def get_element_statistics(self, element: str) -> Dict:
+    def get_element_statistics(self, element: str) -> dict:
         """
         Get statistics for a specific element.
 
@@ -249,7 +247,7 @@ class USGSOreDepositsLoader(BaseLoader):
 
         return df
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the ore deposits dataset."""
         base = super().describe()
         base["tables"] = self.TABLES

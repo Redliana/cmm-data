@@ -1,7 +1,5 @@
 """Basic tests for cmm_data package."""
 
-import pytest
-
 
 def test_import():
     """Test that the package can be imported."""
@@ -72,7 +70,7 @@ def test_commodity_names():
 
 def test_exceptions():
     """Test custom exceptions."""
-    from cmm_data.exceptions import CMMDataError, DataNotFoundError, ConfigurationError
+    from cmm_data.exceptions import CMMDataError, ConfigurationError, DataNotFoundError
 
     assert issubclass(DataNotFoundError, CMMDataError)
     assert issubclass(ConfigurationError, CMMDataError)

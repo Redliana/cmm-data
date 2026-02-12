@@ -5,12 +5,12 @@ This script provides methods to search for or construct URLs for finding
 ScienceBase catalog items for years 2020-2022.
 """
 
+from typing import List, Optional
+
 import requests
-import json
-from typing import Optional, List
 
 
-def search_sciencebase(query: str, max_results: int = 10) -> List[dict]:
+def search_sciencebase(query: str, max_results: int = 10) -> list[dict]:
     """
     Search ScienceBase catalog for items.
 

@@ -5,10 +5,10 @@ Handles CSV files and schema queries
 
 import json
 from pathlib import Path
-from typing import Optional, List
-import pandas as pd
+from typing import List, Optional
 
-from config import SCHEMAS_JSON, DATA_CATEGORIES, MAX_CSV_ROWS
+import pandas as pd
+from config import MAX_CSV_ROWS, SCHEMAS_JSON
 
 
 class DataManager:
@@ -21,10 +21,10 @@ class DataManager:
         """Load schema definitions from JSON"""
         if not SCHEMAS_JSON.exists():
             return {}
-        with open(SCHEMAS_JSON, "r") as f:
+        with open(SCHEMAS_JSON) as f:
             return json.load(f)
 
-    def list_datasets(self, category: Optional[str] = None) -> List[dict]:
+    def list_datasets(self, category: Optional[str] = None) -> list[dict]:
         """
         List available CSV datasets.
 
@@ -88,7 +88,7 @@ class DataManager:
         self,
         dataset: str,
         filters: Optional[dict] = None,
-        columns: Optional[List[str]] = None,
+        columns: Optional[list[str]] = None,
         limit: int = MAX_CSV_ROWS,
     ) -> dict:
         """

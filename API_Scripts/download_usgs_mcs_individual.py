@@ -7,15 +7,13 @@ This script downloads only CMM-relevant commodities from those releases.
 Based on methodology: CMM_LLM_Baseline_Gold_QA_Methodology.md
 """
 
-import os
-import sys
 import json
-import requests
-import pandas as pd
+import sys
+import time
 from pathlib import Path
 from typing import Dict, List, Optional
-from datetime import datetime
-import time
+
+import requests
 
 # CMM Commodities from methodology (Section 2.2)
 # Priority commodities for CMM supply chain modeling
@@ -74,7 +72,7 @@ class USGSMCSIndividualDownloader:
             {"User-Agent": "Mozilla/5.0 (compatible; CMM-Data-Collector/1.0)"}
         )
 
-    def get_catalog_item(self, item_id: str) -> Dict:
+    def get_catalog_item(self, item_id: str) -> dict:
         """Get catalog item information."""
         url = f"https://www.sciencebase.gov/catalog/item/{item_id}?format=json"
         try:
@@ -85,7 +83,7 @@ class USGSMCSIndividualDownloader:
             print(f"Error fetching item {item_id}: {e}")
         return {}
 
-    def get_child_items(self, parent_id: str) -> List[Dict]:
+    def get_child_items(self, parent_id: str) -> list[dict]:
         """Get child items from a parent catalog item."""
         # Try multiple endpoints
         urls = [
@@ -139,7 +137,7 @@ class USGSMCSIndividualDownloader:
 
     def find_cmm_commodity_items(
         self, parent_id: str, year: Optional[int] = None
-    ) -> Dict[str, List[Dict]]:
+    ) -> dict[str, list[dict]]:
         """
         Find CMM-relevant commodity items from a parent catalog.
 
@@ -203,7 +201,7 @@ class USGSMCSIndividualDownloader:
         )
         return cmm_items
 
-    def download_commodity_item(self, item_id: str, commodity_name: str, year: int) -> List[Path]:
+    def download_commodity_item(self, item_id: str, commodity_name: str, year: int) -> list[Path]:
         """
         Download files from an individual commodity catalog item.
 
@@ -260,7 +258,7 @@ class USGSMCSIndividualDownloader:
 
         return downloaded_files
 
-    def download_year_individual_commodities(self, year: int, parent_id: str) -> Dict:
+    def download_year_individual_commodities(self, year: int, parent_id: str) -> dict:
         """
         Download CMM commodities for a year using individual commodity items.
 

@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
+from ..exceptions import ConfigurationError, DataNotFoundError
 from .base import BaseLoader
-from ..exceptions import DataNotFoundError, ConfigurationError
 
 
 class NETLREECoalLoader(BaseLoader):
@@ -35,7 +35,7 @@ class NETLREECoalLoader(BaseLoader):
                 raise DataNotFoundError("Geodatabase not found in NETL REE directory")
         return self._gdb_path
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available layers in the geodatabase."""
         if self._layers is not None:
             return self._layers
@@ -149,7 +149,7 @@ class NETLREECoalLoader(BaseLoader):
 
         raise DataNotFoundError("Coal basins layer not found")
 
-    def get_ree_statistics(self) -> Dict:
+    def get_ree_statistics(self) -> dict:
         """
         Get statistics for REE concentrations.
 
@@ -240,7 +240,7 @@ class NETLREECoalLoader(BaseLoader):
 
         return pd.DataFrame()
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the NETL REE dataset."""
         base = super().describe()
         base["layers"] = self.list_available()

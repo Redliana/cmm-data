@@ -22,8 +22,8 @@ Usage:
     python scripts/demo_recording.py
 """
 
-import time
 import sys
+import time
 
 
 # Typing effect for commands
