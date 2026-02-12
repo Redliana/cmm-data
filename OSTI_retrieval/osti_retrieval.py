@@ -2,9 +2,27 @@
 """
 OSTI.gov Automated Document Retrieval for CMM Supply Chain Training Data
 
+.. deprecated::
+    This is a duplicate copy. The canonical version is at:
+        Globus_Sharing/OSTI_retrieval/osti_retrieval.py
+
+    For MCP-based OSTI access, use the OSTI MCP Server:
+        Data_Needs/OSTI_MCP/
+
+    This copy is kept for reference only and may be removed in a future cleanup.
+
 Based on the CMM LLM Baseline Gold Q&A Methodology Framework.
 Retrieves DOE technical reports and journal preprints for critical minerals.
 """
+
+import warnings
+warnings.warn(
+    "This is a duplicate copy of osti_retrieval.py. "
+    "The canonical version is at Globus_Sharing/OSTI_retrieval/osti_retrieval.py. "
+    "For MCP-based access, use the OSTI MCP Server (Data_Needs/OSTI_MCP/).",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 import requests
 import json
