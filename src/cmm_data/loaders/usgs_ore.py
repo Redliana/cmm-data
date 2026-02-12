@@ -1,18 +1,31 @@
 """USGS Ore Deposits database loader."""
 
-from pathlib import Path
-from typing import Dict, List, Optional
+from __future__ import annotations
 
 import pandas as pd
 
-from .base import BaseLoader
 from ..exceptions import DataNotFoundError
-
+from .base import BaseLoader
 
 # REE elements for filtering
 REE_ELEMENTS = [
-    "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd",
-    "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Y", "Sc"
+    "La",
+    "Ce",
+    "Pr",
+    "Nd",
+    "Pm",
+    "Sm",
+    "Eu",
+    "Gd",
+    "Tb",
+    "Dy",
+    "Ho",
+    "Er",
+    "Tm",
+    "Yb",
+    "Lu",
+    "Y",
+    "Sc",
 ]
 
 
@@ -42,7 +55,7 @@ class USGSOreDepositsLoader(BaseLoader):
         "Reference": "Reference/citation data",
     }
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available tables in the database."""
         if not self.data_path.exists():
             return []
@@ -75,9 +88,7 @@ class USGSOreDepositsLoader(BaseLoader):
                     break
             else:
                 available = self.list_available()
-                raise DataNotFoundError(
-                    f"Table '{table}' not found. Available: {available}"
-                )
+                raise DataNotFoundError(f"Table '{table}' not found. Available: {available}")
 
         df = self._read_csv(file_path)
 
@@ -102,7 +113,7 @@ class USGSOreDepositsLoader(BaseLoader):
         """
         return self.load("Geology")
 
-    def load_geochemistry(self, elements: Optional[List[str]] = None) -> pd.DataFrame:
+    def load_geochemistry(self, elements: list[str] | None = None) -> pd.DataFrame:
         """
         Load combined geochemistry data.
 
@@ -157,7 +168,7 @@ class USGSOreDepositsLoader(BaseLoader):
         """
         return self.load_geochemistry(elements=REE_ELEMENTS)
 
-    def get_element_statistics(self, element: str) -> Dict:
+    def get_element_statistics(self, element: str) -> dict:
         """
         Get statistics for a specific element.
 
@@ -195,9 +206,9 @@ class USGSOreDepositsLoader(BaseLoader):
 
     def search_deposits(
         self,
-        deposit_type: Optional[str] = None,
-        commodity: Optional[str] = None,
-        country: Optional[str] = None
+        deposit_type: str | None = None,
+        commodity: str | None = None,
+        country: str | None = None,
     ) -> pd.DataFrame:
         """
         Search deposits by type, commodity, or country.
@@ -219,20 +230,24 @@ class USGSOreDepositsLoader(BaseLoader):
                 df = df[mask]
 
         if commodity:
-            comm_cols = [c for c in df.columns if "COMMODITY" in c.upper() or "MINERAL" in c.upper()]
+            comm_cols = [
+                c for c in df.columns if "COMMODITY" in c.upper() or "MINERAL" in c.upper()
+            ]
             for col in comm_cols:
                 mask = df[col].str.contains(commodity, case=False, na=False)
                 df = df[mask]
 
         if country:
-            country_cols = [c for c in df.columns if "COUNTRY" in c.upper() or "NATION" in c.upper()]
+            country_cols = [
+                c for c in df.columns if "COUNTRY" in c.upper() or "NATION" in c.upper()
+            ]
             for col in country_cols:
                 mask = df[col].str.contains(country, case=False, na=False)
                 df = df[mask]
 
         return df
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the ore deposits dataset."""
         base = super().describe()
         base["tables"] = self.TABLES
@@ -242,7 +257,7 @@ class USGSOreDepositsLoader(BaseLoader):
         try:
             geology = self.load_geology()
             base["deposit_count"] = len(geology)
-        except Exception:
+        except (OSError, ValueError):
             base["deposit_count"] = "Unknown"
 
         return base

@@ -16,21 +16,21 @@ Then configure in Claude Code:
     claude mcp add --transport stdio cmm-docs -- python /path/to/server.py
 """
 
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from fastmcp import FastMCP
-from typing import Optional, List
-
-from document_tools import get_document_manager
-from data_tools import get_data_manager
-from search import get_search_index
-from ocr import get_mistral_ocr, get_pdf_triager
 from batch_processor import get_batch_processor
 from config import COMMODITIES, SUBDOMAINS
+from data_tools import get_data_manager
+from document_tools import get_document_manager
+from fastmcp import FastMCP
+from ocr import get_mistral_ocr, get_pdf_triager
+from search import get_search_index
 
 # Create MCP server
 mcp = FastMCP(
@@ -38,15 +38,15 @@ mcp = FastMCP(
     version="1.0.0",
 )
 
-
 # =============================================================================
 # Document Tools
 # =============================================================================
 
+
 @mcp.tool()
-def list_documents(commodity: Optional[str] = None, limit: int = 50) -> list:
+def list_documents(commodity: str | None = None, limit: int = 50) -> list:
     """
-    List available documents from the OSTI collection.
+    list available documents from the OSTI collection.
 
     Args:
         commodity: Filter by commodity code (HREE, LREE, CO, LI, GA, GR, NI, CU, GE, OTH)
@@ -54,7 +54,7 @@ def list_documents(commodity: Optional[str] = None, limit: int = 50) -> list:
         limit: Maximum number of documents to return (default 50)
 
     Returns:
-        List of document summaries with OSTI ID, title, authors, and category
+        list of document summaries with OSTI ID, title, authors, and category
     """
     dm = get_document_manager()
     return dm.list_documents(commodity=commodity, limit=limit)
@@ -129,6 +129,7 @@ def search_by_commodity(commodity: str) -> dict:
 # Search Tools
 # =============================================================================
 
+
 @mcp.tool()
 def search_documents(query: str, limit: int = 20) -> list:
     """
@@ -139,7 +140,7 @@ def search_documents(query: str, limit: int = 20) -> list:
         limit: Maximum results to return (default 20)
 
     Returns:
-        List of matching documents with relevance scores
+        list of matching documents with relevance scores
     """
     idx = get_search_index()
     return idx.search(query, limit=limit)
@@ -155,7 +156,7 @@ def find_similar(osti_id: str, limit: int = 5) -> list:
         limit: Number of similar documents to return (default 5)
 
     Returns:
-        List of similar documents with similarity scores
+        list of similar documents with similarity scores
     """
     idx = get_search_index()
     return idx.find_similar(osti_id, limit=limit)
@@ -196,8 +197,9 @@ def get_index_status() -> dict:
 # OCR Tools
 # =============================================================================
 
+
 @mcp.tool()
-def ocr_document(osti_id: str, commodity: Optional[str] = None) -> dict:
+def ocr_document(osti_id: str, commodity: str | None = None) -> dict:
     """
     Extract text from a PDF document using Mistral OCR.
 
@@ -227,16 +229,14 @@ def get_ocr_status() -> dict:
     return {
         "available": ocr.is_available(),
         "model": ocr.model if ocr.is_available() else None,
-        "message": "Mistral OCR is ready" if ocr.is_available()
-                   else "Set MISTRAL_API_KEY in .env file to enable OCR"
+        "message": "Mistral OCR is ready"
+        if ocr.is_available()
+        else "Set MISTRAL_API_KEY in .env file to enable OCR",
     }
 
 
 @mcp.tool()
-def triage_documents(
-    limit: Optional[int] = None,
-    commodity: Optional[str] = None
-) -> dict:
+def triage_documents(limit: int | None = None, commodity: str | None = None) -> dict:
     """
     Analyze PDFs to identify candidates that would benefit from Mistral OCR.
 
@@ -258,11 +258,7 @@ def triage_documents(
     def progress(current, total, message):
         print(f"[{current}/{total}] {message}", file=sys.stderr)
 
-    return triager.triage_documents(
-        limit=limit,
-        commodity=commodity,
-        progress_callback=progress
-    )
+    return triager.triage_documents(limit=limit, commodity=commodity, progress_callback=progress)
 
 
 @mcp.tool()
@@ -276,7 +272,6 @@ def analyze_document_for_ocr(osti_id: str) -> dict:
     Returns:
         Detailed analysis including page-by-page breakdown and OCR recommendation
     """
-    from pathlib import Path
 
     triager = get_pdf_triager()
 
@@ -285,25 +280,22 @@ def analyze_document_for_ocr(osti_id: str) -> dict:
     if not doc:
         return {"error": f"Document {osti_id} not found in catalog"}
 
-    commodity = doc.get('commodity_category', '')
+    commodity = doc.get("commodity_category", "")
     pdf_path = triager._find_pdf(osti_id, commodity)
 
     if not pdf_path:
         return {"error": f"PDF not found for {osti_id}"}
 
     analysis = triager.analyze_pdf(pdf_path)
-    analysis['osti_id'] = osti_id
-    analysis['title'] = doc.get('title', 'Unknown')
-    analysis['commodity'] = commodity
+    analysis["osti_id"] = osti_id
+    analysis["title"] = doc.get("title", "Unknown")
+    analysis["commodity"] = commodity
 
     return analysis
 
 
 @mcp.tool()
-def extract_document_full(
-    osti_id: str,
-    save_images: bool = True
-) -> dict:
+def extract_document_full(osti_id: str, save_images: bool = True) -> dict:
     """
     Full document extraction with images, tables, and structured content.
 
@@ -320,7 +312,6 @@ def extract_document_full(
     Returns:
         Full extraction results including text, images, tables, and statistics
     """
-    from pathlib import Path
     from ocr import EXTRACTED_IMAGES_DIR
 
     ocr = get_mistral_ocr()
@@ -331,13 +322,13 @@ def extract_document_full(
     if not doc:
         return {"error": f"Document {osti_id} not found in catalog"}
 
-    commodity = doc.get('commodity_category', '')
+    commodity = doc.get("commodity_category", "")
     pdf_path = triager._find_pdf(osti_id, commodity)
 
     if not pdf_path:
         return {"error": f"PDF not found for {osti_id}"}
 
-    # Set up output directory for images
+    # set up output directory for images
     output_dir = None
     if save_images:
         output_dir = EXTRACTED_IMAGES_DIR / osti_id
@@ -347,17 +338,14 @@ def extract_document_full(
 
     if result.get("success"):
         result["osti_id"] = osti_id
-        result["title"] = doc.get('title', 'Unknown')
+        result["title"] = doc.get("title", "Unknown")
         result["commodity"] = commodity
 
     return result
 
 
 @mcp.tool()
-def analyze_chart(
-    image_path: str,
-    custom_prompt: Optional[str] = None
-) -> dict:
+def analyze_chart(image_path: str, custom_prompt: str | None = None) -> dict:
     """
     Analyze a chart/plot image using Pixtral Large to extract numerical data.
 
@@ -379,10 +367,7 @@ def analyze_chart(
 
 
 @mcp.tool()
-def extract_and_analyze_document(
-    osti_id: str,
-    analyze_charts: bool = True
-) -> dict:
+def extract_and_analyze_document(osti_id: str, analyze_charts: bool = True) -> dict:
     """
     Full document extraction with automatic chart analysis.
 
@@ -398,7 +383,6 @@ def extract_and_analyze_document(
     Returns:
         Full extraction results plus chart analyses with extracted data
     """
-    from pathlib import Path
     from ocr import EXTRACTED_IMAGES_DIR
 
     ocr = get_mistral_ocr()
@@ -409,13 +393,13 @@ def extract_and_analyze_document(
     if not doc:
         return {"error": f"Document {osti_id} not found in catalog"}
 
-    commodity = doc.get('commodity_category', '')
+    commodity = doc.get("commodity_category", "")
     pdf_path = triager._find_pdf(osti_id, commodity)
 
     if not pdf_path:
         return {"error": f"PDF not found for {osti_id}"}
 
-    # Set up output directory
+    # set up output directory
     output_dir = EXTRACTED_IMAGES_DIR / osti_id
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -426,7 +410,7 @@ def extract_and_analyze_document(
 
     if result.get("success"):
         result["osti_id"] = osti_id
-        result["title"] = doc.get('title', 'Unknown')
+        result["title"] = doc.get("title", "Unknown")
         result["commodity"] = commodity
 
     return result
@@ -436,13 +420,14 @@ def extract_and_analyze_document(
 # Batch Processing Tools
 # =============================================================================
 
+
 @mcp.tool()
-def estimate_batch_cost(osti_ids: Optional[List[str]] = None) -> dict:
+def estimate_batch_cost(osti_ids: list[str] | None = None) -> dict:
     """
     Estimate cost before running batch processing.
 
     Args:
-        osti_ids: List of document IDs (None = all 81 OCR candidates)
+        osti_ids: list of document IDs (None = all 81 OCR candidates)
 
     Returns:
         Cost estimate with page counts and pricing breakdown
@@ -453,9 +438,7 @@ def estimate_batch_cost(osti_ids: Optional[List[str]] = None) -> dict:
 
 @mcp.tool()
 def process_documents_batch(
-    osti_ids: Optional[List[str]] = None,
-    analyze_charts: bool = True,
-    resume: bool = True
+    osti_ids: list[str] | None = None, analyze_charts: bool = True, resume: bool = True
 ) -> dict:
     """
     Batch process documents for LLM fine-tuning.
@@ -466,7 +449,7 @@ def process_documents_batch(
     3. Output saved as JSONL for fine-tuning
 
     Args:
-        osti_ids: List of document IDs (None = all OCR candidates)
+        osti_ids: list of document IDs (None = all OCR candidates)
         analyze_charts: Whether to analyze images with Pixtral
         resume: Whether to resume from previous state
 
@@ -479,10 +462,7 @@ def process_documents_batch(
         print(f"[{current}/{total}] {message}", file=sys.stderr)
 
     return processor.process_batch(
-        osti_ids=osti_ids,
-        analyze_charts=analyze_charts,
-        resume=resume,
-        progress_callback=progress
+        osti_ids=osti_ids, analyze_charts=analyze_charts, resume=resume, progress_callback=progress
     )
 
 
@@ -518,16 +498,17 @@ def process_single_for_finetune(osti_id: str, analyze_charts: bool = True) -> di
 # Data Tools
 # =============================================================================
 
+
 @mcp.tool()
-def list_datasets(category: Optional[str] = None) -> list:
+def list_datasets(category: str | None = None) -> list:
     """
-    List available CSV datasets.
+    list available CSV datasets.
 
     Args:
         category: Optional category filter (e.g., "USGS", "LISA", "NETL")
 
     Returns:
-        List of available datasets with file counts and row counts
+        list of available datasets with file counts and row counts
     """
     dm = get_data_manager()
     return dm.list_datasets(category=category)
@@ -551,9 +532,9 @@ def get_schema(dataset: str) -> dict:
 @mcp.tool()
 def query_csv(
     dataset: str,
-    filters: Optional[dict] = None,
-    columns: Optional[List[str]] = None,
-    limit: int = 100
+    filters: dict | None = None,
+    columns: list[str] | None = None,
+    limit: int = 100,
 ) -> dict:
     """
     Query a CSV file with optional filters.
@@ -563,7 +544,7 @@ def query_csv(
         filters: Column filters (e.g., {"Year": 2023, "Element": "~lithium"})
                  Prefix with > or < for numeric comparisons
                  Prefix with ~ for contains/substring search
-        columns: List of columns to return (None for all)
+        columns: list of columns to return (None for all)
         limit: Maximum rows to return (default 100)
 
     Returns:
@@ -593,6 +574,7 @@ def read_csv_sample(dataset: str, n_rows: int = 10) -> dict:
 # Utility Tools
 # =============================================================================
 
+
 @mcp.tool()
 def get_statistics() -> dict:
     """
@@ -606,11 +588,11 @@ def get_statistics() -> dict:
     idx = get_search_index()
 
     return {
-        'documents': dm.get_statistics(),
-        'datasets': data_mgr.get_statistics(),
-        'search_index': idx.get_index_stats(),
-        'commodities': COMMODITIES,
-        'subdomains': SUBDOMAINS,
+        "documents": dm.get_statistics(),
+        "datasets": data_mgr.get_statistics(),
+        "search_index": idx.get_index_stats(),
+        "commodities": COMMODITIES,
+        "subdomains": SUBDOMAINS,
     }
 
 
@@ -623,8 +605,8 @@ def get_commodities() -> dict:
         Dictionary of commodity codes and their descriptions
     """
     return {
-        'commodities': COMMODITIES,
-        'subdomains': SUBDOMAINS,
+        "commodities": COMMODITIES,
+        "subdomains": SUBDOMAINS,
     }
 
 

@@ -1,17 +1,21 @@
 """Base loader class for all CMM data loaders."""
 
+from __future__ import annotations
+
 import hashlib
 import json
 import pickle
 import time
 from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
 from ..config import get_config
 from ..exceptions import DataNotFoundError
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class BaseLoader(ABC):
@@ -53,16 +57,16 @@ class BaseLoader(ABC):
         pass
 
     @abstractmethod
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """
-        List available data items in this dataset.
+        list available data items in this dataset.
 
         Returns:
-            List of available data item identifiers
+            list of available data item identifiers
         """
         pass
 
-    def describe(self) -> Dict[str, Any]:
+    def describe(self) -> dict[str, Any]:
         """
         Describe this dataset.
 
@@ -110,7 +114,7 @@ class BaseLoader(ABC):
         key_str = json.dumps(key_data, sort_keys=True, default=str)
         return hashlib.md5(key_str.encode()).hexdigest()
 
-    def _get_cached(self, key: str) -> Optional[Any]:
+    def _get_cached(self, key: str) -> Any | None:
         """
         Get a value from the cache.
 
@@ -144,7 +148,7 @@ class BaseLoader(ABC):
                         return data
                     else:
                         cache_file.unlink()
-                except Exception:
+                except (OSError, ValueError, pickle.UnpicklingError):
                     pass
 
         return None
@@ -170,7 +174,7 @@ class BaseLoader(ABC):
                 cache_file = self.config.cache_dir / f"{key}.pkl"
                 with open(cache_file, "wb") as f:
                     pickle.dump(data, f)
-            except Exception:
+            except OSError:
                 pass  # Silently fail disk caching
 
     def _validate_path(self, path: Path, description: str = "File") -> None:
@@ -187,7 +191,7 @@ class BaseLoader(ABC):
         if not path.exists():
             raise DataNotFoundError(f"{description} not found: {path}")
 
-    def _find_file(self, pattern: str, directory: Optional[Path] = None) -> Path:
+    def _find_file(self, pattern: str, directory: Path | None = None) -> Path:
         """
         Find a file matching a pattern.
 
@@ -205,9 +209,7 @@ class BaseLoader(ABC):
         matches = list(directory.glob(pattern))
 
         if not matches:
-            raise DataNotFoundError(
-                f"No file matching '{pattern}' found in {directory}"
-            )
+            raise DataNotFoundError(f"No file matching '{pattern}' found in {directory}")
 
         return matches[0]
 

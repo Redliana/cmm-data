@@ -89,7 +89,7 @@ def main() -> None:
         write_report(report, args.output)
 
         # Print summary
-        print(f"\nEvaluation complete:")
+        print("\nEvaluation complete:")
         print(f"  Total questions: {report.total_questions}")
         print(f"  Mean score: {report.mean_score:.3f}")
         print(f"  Mean ROUGE-L: {report.mean_rouge_l:.3f}")

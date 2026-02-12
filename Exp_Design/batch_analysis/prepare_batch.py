@@ -12,23 +12,23 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
-from pathlib import Path
 from collections import Counter
+from typing import TYPE_CHECKING
 
 from config import (
+    COMMODITY_DISPLAY,
     DOCUMENT_CATALOG,
+    MAX_OUTPUT_TOKENS,
     OCR_DIR,
     OUTPUT_DIR,
-    GEMINI_MODEL,
-    TEMPERATURE,
-    MAX_OUTPUT_TOKENS,
-    COMMODITY_DISPLAY,
-    SUBDOMAIN_DISPLAY,
     SUBDOMAIN_CATEGORY_PREFIX,
+    SUBDOMAIN_DISPLAY,
+    TEMPERATURE,
 )
-from matrix_parser import MatrixCell, parse_matrix, get_relevant_cells
+from matrix_parser import MatrixCell, get_relevant_cells, parse_matrix
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Structured output schema (Vertex AI responseSchema)
@@ -69,8 +69,11 @@ RESPONSE_SCHEMA = {
                     },
                 },
                 "required": [
-                    "cell_id", "relevance_score", "justification",
-                    "suggested_question_angle", "supports_l3_l4",
+                    "cell_id",
+                    "relevance_score",
+                    "justification",
+                    "suggested_question_angle",
+                    "supports_l3_l4",
                 ],
             },
         },
@@ -85,11 +88,14 @@ RESPONSE_SCHEMA = {
         },
     },
     "required": [
-        "osti_id", "overall_cmm_relevance", "depth_assessment",
-        "cell_evaluations", "best_matching_cells", "recommended_for_gold_qa",
+        "osti_id",
+        "overall_cmm_relevance",
+        "depth_assessment",
+        "cell_evaluations",
+        "best_matching_cells",
+        "recommended_for_gold_qa",
     ],
 }
-
 
 # ---------------------------------------------------------------------------
 # System instruction
@@ -116,7 +122,7 @@ Scoring guide (relevance_score 1-5):
 - 1: Paper has no meaningful connection to this cell's topic
 
 For L3 (Inferential) and L4 (Analytical) cells, the paper needs sufficient depth \
-for multi-step reasoning or synthesis questions. Set supports_l3_l4=true only if \
+for multi-step reasoning or synthesis questions. set supports_l3_l4=true only if \
 the paper goes beyond surface-level coverage."""
 
 
@@ -136,7 +142,7 @@ def _format_cells_for_prompt(cells: list[MatrixCell]) -> str:
 def _get_category_label(commodity_category: str) -> str:
     """Human-readable label for a commodity_category value."""
     if commodity_category.startswith(SUBDOMAIN_CATEGORY_PREFIX):
-        sub = commodity_category[len(SUBDOMAIN_CATEGORY_PREFIX):]
+        sub = commodity_category[len(SUBDOMAIN_CATEGORY_PREFIX) :]
         return f"Subdomain: {SUBDOMAIN_DISPLAY.get(sub, sub)} ({sub})"
     return f"Commodity: {COMMODITY_DISPLAY.get(commodity_category, commodity_category)} ({commodity_category})"
 
@@ -191,7 +197,9 @@ def build_user_prompt(doc: dict, cells: list[MatrixCell]) -> tuple[str, bool]:
             abstract_source = "(abstract recovered from OCR extraction)"
         else:
             limited_metadata = True
-            abstract_source = "(no abstract available -- evaluation based on title and subjects only)"
+            abstract_source = (
+                "(no abstract available -- evaluation based on title and subjects only)"
+            )
     else:
         abstract_source = ""
 
@@ -304,14 +312,14 @@ def prepare_batch(
             requests.append(request)
 
     # Print stats
-    print(f"\n--- Batch Preparation Stats ---")
+    print("\n--- Batch Preparation Stats ---")
     print(f"Total requests: {stats.get('total_requests', 0)}")
     print(f"  With abstract: {stats.get('has_abstract', 0)}")
     print(f"  OCR fallback: {stats.get('ocr_fallback', 0)}")
     print(f"  Limited metadata: {stats.get('limited_metadata', 0)}")
     print(f"  No relevant cells (skipped): {stats.get('no_relevant_cells', 0)}")
 
-    print(f"\nDocuments per category:")
+    print("\nDocuments per category:")
     for cat, count in sorted(cell_counts.items(), key=lambda x: -x[1]):
         cells = get_relevant_cells(matrix, cat)
         print(f"  {cat}: {count} docs x {len(cells)} cells each")
@@ -342,9 +350,7 @@ def prepare_batch(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Generate Vertex AI batch input JSONL"
-    )
+    parser = argparse.ArgumentParser(description="Generate Vertex AI batch input JSONL")
     parser.add_argument(
         "--dry-run",
         action="store_true",

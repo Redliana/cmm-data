@@ -1,9 +1,10 @@
 """Configuration management for CMM Data package."""
 
+from __future__ import annotations
+
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 from .exceptions import ConfigurationError
 
@@ -54,7 +55,7 @@ class CMMDataConfig:
     """Configuration for CMM Data package."""
 
     # Root data directory
-    data_root: Optional[Path] = None
+    data_root: Path | None = None
 
     # Individual dataset paths (relative to data_root)
     usgs_data_dir: str = "USGS_Data"
@@ -68,7 +69,7 @@ class CMMDataConfig:
 
     # Caching settings
     cache_enabled: bool = True
-    cache_dir: Optional[Path] = None
+    cache_dir: Path | None = None
     cache_ttl_seconds: int = 3600  # 1 hour
 
     def __post_init__(self):
@@ -84,7 +85,7 @@ class CMMDataConfig:
         """Get the full path to a dataset directory."""
         if self.data_root is None:
             raise ConfigurationError(
-                "Data root not configured. Set CMM_DATA_PATH environment variable "
+                "Data root not configured. set CMM_DATA_PATH environment variable "
                 "or call cmm_data.configure(data_root='/path/to/Globus_Sharing')"
             )
 
@@ -116,8 +117,14 @@ class CMMDataConfig:
             dict mapping dataset names to availability status
         """
         datasets = [
-            "usgs_commodity", "usgs_ore", "osti", "preprocessed",
-            "ga_chronostrat", "netl_ree", "oecd", "mindat"
+            "usgs_commodity",
+            "usgs_ore",
+            "osti",
+            "preprocessed",
+            "ga_chronostrat",
+            "netl_ree",
+            "oecd",
+            "mindat",
         ]
 
         status = {}
@@ -132,7 +139,7 @@ class CMMDataConfig:
 
 
 # Global configuration instance
-_config: Optional[CMMDataConfig] = None
+_config: CMMDataConfig | None = None
 
 
 def get_config() -> CMMDataConfig:
@@ -144,11 +151,11 @@ def get_config() -> CMMDataConfig:
 
 
 def configure(
-    data_root: Optional[str] = None,
-    cache_enabled: Optional[bool] = None,
-    cache_dir: Optional[str] = None,
-    cache_ttl_seconds: Optional[int] = None,
-    **kwargs
+    data_root: str | None = None,
+    cache_enabled: bool | None = None,
+    cache_dir: str | None = None,
+    cache_ttl_seconds: int | None = None,
+    **kwargs,
 ) -> CMMDataConfig:
     """
     Configure the CMM Data package.

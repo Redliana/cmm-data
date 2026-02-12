@@ -22,8 +22,11 @@ Usage:
     python scripts/demo_recording.py
 """
 
-import time
+from __future__ import annotations
+
 import sys
+import time
+
 
 # Typing effect for commands
 def type_command(text, delay=0.03):
@@ -34,15 +37,18 @@ def type_command(text, delay=0.03):
         time.sleep(delay)
     print()
 
+
 def print_slow(text, delay=0.01):
     """Print text with slight delay for readability."""
-    for line in text.split('\n'):
+    for line in text.split("\n"):
         print(line)
         time.sleep(delay)
+
 
 def section_pause():
     """Pause between sections."""
     time.sleep(1.5)
+
 
 def main():
     print("\033[1;36m" + "=" * 60 + "\033[0m")
@@ -55,12 +61,13 @@ def main():
     print("\033[1;33m>>> \033[0m", end="")
     type_command("import cmm_data")
     import cmm_data
+
     print("\033[32m✓ Package imported successfully\033[0m")
     section_pause()
 
     # Version
     print("\033[1;33m>>> \033[0m", end="")
-    type_command(f'print(f"Version: {{cmm_data.__version__}}")')
+    type_command('print(f"Version: {cmm_data.__version__}")')
     print(f"Version: {cmm_data.__version__}")
     section_pause()
 
@@ -75,14 +82,14 @@ def main():
     print(catalog.to_string())
     section_pause()
 
-    # List commodities
+    # list commodities
     print("\n\033[1;35m── Available Commodities ──\033[0m")
     print("\033[1;33m>>> \033[0m", end="")
     type_command("commodities = cmm_data.list_commodities()")
     commodities = cmm_data.list_commodities()
 
     print("\033[1;33m>>> \033[0m", end="")
-    type_command(f'print(f"Total commodities: {{len(commodities)}}")')
+    type_command('print(f"Total commodities: {len(commodities)}")')
     print(f"Total commodities: {len(commodities)}")
 
     print("\033[1;33m>>> \033[0m", end="")
@@ -97,7 +104,7 @@ def main():
     critical = cmm_data.list_critical_minerals()
 
     print("\033[1;33m>>> \033[0m", end="")
-    type_command(f'print(f"Critical minerals: {{len(critical)}}")')
+    type_command('print(f"Critical minerals: {len(critical)}")')
     print(f"Critical minerals: {len(critical)}")
 
     print("\033[1;33m>>> \033[0m", end="")
@@ -114,8 +121,8 @@ def main():
         df = cmm_data.load_usgs_commodity("lithi", "world")
         print("\033[1;33m>>> \033[0m", end="")
         type_command("print(df[['Country', 'Prod_t_est_2022', 'Reserves_t']].head(8))")
-        print(df[['Country', 'Prod_t_est_2022', 'Reserves_t']].head(8).to_string())
-    except Exception as e:
+        print(df[["Country", "Prod_t_est_2022", "Reserves_t"]].head(8).to_string())
+    except (OSError, ValueError) as e:
         print(f"\033[33m[Data not available: {e}]\033[0m")
     section_pause()
 

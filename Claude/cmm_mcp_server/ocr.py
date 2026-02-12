@@ -4,16 +4,19 @@ Provides high-quality text extraction from PDFs using Mistral's OCR API
 Includes triage functionality to identify PDFs that would benefit from OCR
 """
 
+from __future__ import annotations
+
 import base64
 import json
 import logging
-import re
 from pathlib import Path
-from typing import Optional, List, Callable, Union
+from typing import TYPE_CHECKING
 
 import fitz  # PyMuPDF
+from config import INDEX_DIR, MISTRAL_API_KEY, OSTI_CATALOG, OSTI_PDFS_DIR
 
-from config import MISTRAL_API_KEY, OSTI_PDFS_DIR, OSTI_CATALOG, INDEX_DIR
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +35,7 @@ class MistralOCR:
 
         if self.api_key and self.api_key != "your_api_key_here":
             from mistralai import Mistral
+
             self.client = Mistral(api_key=self.api_key)
 
     def is_available(self) -> bool:
@@ -39,10 +43,7 @@ class MistralOCR:
         return self.client is not None
 
     def extract_text_from_pdf(
-        self,
-        pdf_path: Path,
-        include_images: bool = False,
-        table_format: str = "markdown"
+        self, pdf_path: Path, include_images: bool = False, table_format: str = "markdown"
     ) -> dict:
         """
         Extract text from a PDF file using Mistral OCR.
@@ -56,7 +57,7 @@ class MistralOCR:
             Dictionary with extracted content and metadata
         """
         if not self.is_available():
-            return {"error": "Mistral OCR not configured. Set MISTRAL_API_KEY in .env file."}
+            return {"error": "Mistral OCR not configured. set MISTRAL_API_KEY in .env file."}
 
         if not pdf_path.exists():
             return {"error": f"PDF file not found: {pdf_path}"}
@@ -71,9 +72,9 @@ class MistralOCR:
                 model=self.model,
                 document={
                     "type": "document_url",
-                    "document_url": f"data:application/pdf;base64,{pdf_data}"
+                    "document_url": f"data:application/pdf;base64,{pdf_data}",
                 },
-                include_image_base64=include_images
+                include_image_base64=include_images,
             )
 
             # Extract text from all pages
@@ -81,12 +82,16 @@ class MistralOCR:
             page_contents = []
 
             for page in response.pages:
-                page_text = page.markdown if hasattr(page, 'markdown') else str(page)
+                page_text = page.markdown if hasattr(page, "markdown") else str(page)
                 full_text.append(page_text)
-                page_contents.append({
-                    "page_number": page.index + 1 if hasattr(page, 'index') else len(page_contents) + 1,
-                    "content": page_text
-                })
+                page_contents.append(
+                    {
+                        "page_number": page.index + 1
+                        if hasattr(page, "index")
+                        else len(page_contents) + 1,
+                        "content": page_text,
+                    }
+                )
 
             return {
                 "success": True,
@@ -96,15 +101,11 @@ class MistralOCR:
                 "model": self.model,
             }
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             logger.error(f"Mistral OCR failed for {pdf_path}: {e}")
             return {"error": str(e)}
 
-    def extract_text_by_osti_id(
-        self,
-        osti_id: str,
-        commodity: Optional[str] = None
-    ) -> dict:
+    def extract_text_by_osti_id(self, osti_id: str, commodity: str | None = None) -> dict:
         """
         Extract text from a PDF by OSTI ID.
 
@@ -128,7 +129,7 @@ class MistralOCR:
 
         return result
 
-    def _find_pdf(self, osti_id: str, commodity: Optional[str] = None) -> Optional[Path]:
+    def _find_pdf(self, osti_id: str, commodity: str | None = None) -> Path | None:
         """Find PDF file by OSTI ID"""
         if commodity:
             # Search in specific commodity directory
@@ -146,10 +147,7 @@ class MistralOCR:
         return None
 
     def extract_full(
-        self,
-        pdf_path: Path,
-        table_format: str = "markdown",
-        output_dir: Optional[Path] = None
+        self, pdf_path: Path, table_format: str = "markdown", output_dir: Path | None = None
     ) -> dict:
         """
         Full extraction with images, tables, and structured content.
@@ -163,12 +161,12 @@ class MistralOCR:
             Dictionary with:
             - text: Full extracted text
             - pages: Per-page content with markdown
-            - images: List of extracted images with metadata
-            - tables: List of extracted tables
+            - images: list of extracted images with metadata
+            - tables: list of extracted tables
             - statistics: Extraction statistics
         """
         if not self.is_available():
-            return {"error": "Mistral OCR not configured. Set MISTRAL_API_KEY in .env file."}
+            return {"error": "Mistral OCR not configured. set MISTRAL_API_KEY in .env file."}
 
         if not pdf_path.exists():
             return {"error": f"PDF file not found: {pdf_path}"}
@@ -183,9 +181,9 @@ class MistralOCR:
                 model=self.model,
                 document={
                     "type": "document_url",
-                    "document_url": f"data:application/pdf;base64,{pdf_data}"
+                    "document_url": f"data:application/pdf;base64,{pdf_data}",
                 },
-                include_image_base64=True
+                include_image_base64=True,
             )
 
             # Process response
@@ -195,39 +193,43 @@ class MistralOCR:
             all_tables = []
 
             for page in response.pages:
-                page_num = page.index + 1 if hasattr(page, 'index') else len(pages) + 1
-                page_text = page.markdown if hasattr(page, 'markdown') else str(page)
+                page_num = page.index + 1 if hasattr(page, "index") else len(pages) + 1
+                page_text = page.markdown if hasattr(page, "markdown") else str(page)
                 full_text.append(page_text)
 
                 # Extract images from this page
                 page_images = []
-                if hasattr(page, 'images') and page.images:
+                if hasattr(page, "images") and page.images:
                     for img in page.images:
                         img_data = {
                             "page": page_num,
-                            "id": img.id if hasattr(img, 'id') else f"img-{len(all_images)}",
-                            "image_base64": img.image_base64 if hasattr(img, 'image_base64') else None,
+                            "id": img.id if hasattr(img, "id") else f"img-{len(all_images)}",
+                            "image_base64": img.image_base64
+                            if hasattr(img, "image_base64")
+                            else None,
                         }
                         page_images.append(img_data)
                         all_images.append(img_data)
 
                 # Extract tables from this page
                 page_tables = []
-                if hasattr(page, 'tables') and page.tables:
+                if hasattr(page, "tables") and page.tables:
                     for tbl in page.tables:
                         tbl_data = {
                             "page": page_num,
-                            "content": tbl.markdown if hasattr(tbl, 'markdown') else str(tbl),
+                            "content": tbl.markdown if hasattr(tbl, "markdown") else str(tbl),
                         }
                         page_tables.append(tbl_data)
                         all_tables.append(tbl_data)
 
-                pages.append({
-                    "page_number": page_num,
-                    "content": page_text,
-                    "image_count": len(page_images),
-                    "table_count": len(page_tables),
-                })
+                pages.append(
+                    {
+                        "page_number": page_num,
+                        "content": page_text,
+                        "image_count": len(page_images),
+                        "table_count": len(page_tables),
+                    }
+                )
 
             # Save images if output directory specified
             saved_images = []
@@ -252,14 +254,14 @@ class MistralOCR:
                     "chars_per_page": len("\n\n".join(full_text)) / max(1, len(pages)),
                     "pages_with_images": sum(1 for p in pages if p["image_count"] > 0),
                     "pages_with_tables": sum(1 for p in pages if p["table_count"] > 0),
-                }
+                },
             }
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             logger.error(f"Mistral OCR full extraction failed for {pdf_path}: {e}")
             return {"error": str(e)}
 
-    def _save_images(self, images: List[dict], output_dir: Path) -> List[str]:
+    def _save_images(self, images: list[dict], output_dir: Path) -> list[str]:
         """Save extracted images to disk"""
         saved = []
         for img in images:
@@ -287,16 +289,12 @@ class MistralOCR:
                         f.write(base64.b64decode(data))
 
                     saved.append(str(filepath))
-                except Exception as e:
+                except (OSError, ValueError) as e:
                     logger.warning(f"Failed to save image {img['id']}: {e}")
 
         return saved
 
-    def analyze_chart(
-        self,
-        image_source: str,
-        prompt: Optional[str] = None
-    ) -> dict:
+    def analyze_chart(self, image_source: str, prompt: str | None = None) -> dict:
         """
         Analyze a chart/plot image using Pixtral Large to extract data.
 
@@ -328,17 +326,16 @@ Format the data points as a markdown table for easy parsing."""
                 with open(image_source, "rb") as f:
                     img_data = base64.standard_b64encode(f.read()).decode("utf-8")
                 # Detect format
-                if image_source.lower().endswith(('.jpg', '.jpeg')):
+                if image_source.lower().endswith((".jpg", ".jpeg")):
                     mime = "image/jpeg"
                 else:
                     mime = "image/png"
                 image_url = f"data:{mime};base64,{img_data}"
+            # Assume it's already base64
+            elif not image_source.startswith("data:"):
+                image_url = f"data:image/png;base64,{image_source}"
             else:
-                # Assume it's already base64
-                if not image_source.startswith("data:"):
-                    image_url = f"data:image/png;base64,{image_source}"
-                else:
-                    image_url = image_source
+                image_url = image_source
 
             # Call Pixtral Large for chart analysis
             response = self.client.chat.complete(
@@ -348,10 +345,10 @@ Format the data points as a markdown table for easy parsing."""
                         "role": "user",
                         "content": [
                             {"type": "image_url", "image_url": {"url": image_url}},
-                            {"type": "text", "text": prompt}
-                        ]
+                            {"type": "text", "text": prompt},
+                        ],
                     }
-                ]
+                ],
             )
 
             return {
@@ -360,15 +357,12 @@ Format the data points as a markdown table for easy parsing."""
                 "model": self.vision_model,
             }
 
-        except Exception as e:
+        except (OSError, ValueError, KeyError) as e:
             logger.error(f"Chart analysis failed: {e}")
             return {"error": str(e)}
 
     def extract_and_analyze_charts(
-        self,
-        pdf_path: Path,
-        output_dir: Optional[Path] = None,
-        chart_prompt: Optional[str] = None
+        self, pdf_path: Path, output_dir: Path | None = None, chart_prompt: str | None = None
     ) -> dict:
         """
         Full extraction with automatic chart analysis.
@@ -396,11 +390,13 @@ Format the data points as a markdown table for easy parsing."""
             if img.get("image_base64"):
                 analysis = self.analyze_chart(img["image_base64"], chart_prompt)
                 if analysis.get("success"):
-                    chart_analyses.append({
-                        "page": img["page"],
-                        "image_id": img["id"],
-                        "analysis": analysis["analysis"],
-                    })
+                    chart_analyses.append(
+                        {
+                            "page": img["page"],
+                            "image_id": img["id"],
+                            "analysis": analysis["analysis"],
+                        }
+                    )
 
         result["chart_analyses"] = chart_analyses
         result["charts_analyzed"] = len(chart_analyses)
@@ -422,9 +418,9 @@ class PDFTriager:
     def _load_catalog(self) -> dict:
         """Load document catalog"""
         if OSTI_CATALOG.exists():
-            with open(OSTI_CATALOG, 'r') as f:
+            with open(OSTI_CATALOG) as f:
                 catalog = json.load(f)
-                return {doc['osti_id']: doc for doc in catalog}
+                return {doc["osti_id"]: doc for doc in catalog}
         return {}
 
     def analyze_pdf(self, pdf_path: Path) -> dict:
@@ -438,7 +434,7 @@ class PDFTriager:
         - image_pages: Pages that are primarily images
         - text_quality: Quality score (0-1)
         - ocr_recommended: Whether OCR would help
-        - reasons: List of reasons for recommendation
+        - reasons: list of reasons for recommendation
         """
         result = {
             "pdf_path": str(pdf_path),
@@ -490,8 +486,8 @@ class PDFTriager:
             # Determine if OCR is recommended
             self._evaluate_ocr_recommendation(result)
 
-        except Exception as e:
-            result["reasons"].append(f"Error analyzing PDF: {str(e)}")
+        except (OSError, ValueError) as e:
+            result["reasons"].append(f"Error analyzing PDF: {e!s}")
             result["ocr_recommended"] = True
             result["priority"] = 5
 
@@ -518,7 +514,7 @@ class PDFTriager:
                 img_rect = page.get_image_bbox(xref)
                 if img_rect:
                     image_area += img_rect.width * img_rect.height
-            except:
+            except (OSError, ValueError):
                 pass
 
         image_coverage = image_area / max(1, page_area)
@@ -527,9 +523,8 @@ class PDFTriager:
         gibberish_ratio = self._detect_gibberish(text)
 
         # Determine if this is primarily an image page
-        is_image_page = (
-            (image_count > 0 and image_coverage > 0.5 and char_count < 500) or
-            (image_count > 0 and char_count < 100)
+        is_image_page = (image_count > 0 and image_coverage > 0.5 and char_count < 500) or (
+            image_count > 0 and char_count < 100
         )
 
         is_low_text = char_count < self.MIN_CHARS_PER_PAGE and not is_image_page
@@ -560,16 +555,16 @@ class PDFTriager:
         for char in text:
             code = ord(char)
             if (
-                char == '\ufffd' or  # Replacement character
-                (code < 32 and char not in '\n\r\t') or  # Non-printable
-                (code >= 0xFFF0 and code <= 0xFFFF) or  # Specials block
-                char in '□■●○◊◘◙'  # Common PDF extraction artifacts
+                char == "\ufffd"  # Replacement character
+                or (code < 32 and char not in "\n\r\t")  # Non-printable
+                or (code >= 0xFFF0 and code <= 0xFFFF)  # Specials block
+                or char in "□■●○◊◘◙"  # Common PDF extraction artifacts
             ):
                 problematic += 1
 
         return problematic / max(1, total)
 
-    def _calculate_text_quality(self, page_analyses: List[dict]) -> float:
+    def _calculate_text_quality(self, page_analyses: list[dict]) -> float:
         """Calculate overall text quality score (0-1)"""
         if not page_analyses:
             return 0.0
@@ -589,7 +584,9 @@ class PDFTriager:
         if result["image_pages"]:
             image_ratio = len(result["image_pages"]) / max(1, result["page_count"])
             if image_ratio > 0.3:
-                reasons.append(f"{len(result['image_pages'])} image-heavy pages ({image_ratio:.0%})")
+                reasons.append(
+                    f"{len(result['image_pages'])} image-heavy pages ({image_ratio:.0%})"
+                )
                 priority += 3
             elif image_ratio > 0.1:
                 reasons.append(f"{len(result['image_pages'])} image-heavy pages")
@@ -621,9 +618,9 @@ class PDFTriager:
 
     def triage_documents(
         self,
-        limit: Optional[int] = None,
-        commodity: Optional[str] = None,
-        progress_callback: Optional[Callable] = None
+        limit: int | None = None,
+        commodity: str | None = None,
+        progress_callback: Callable | None = None,
     ) -> dict:
         """
         Triage all documents to identify OCR candidates.
@@ -640,19 +637,21 @@ class PDFTriager:
         docs_to_analyze = []
 
         for osti_id, doc in self.catalog.items():
-            doc_commodity = doc.get('commodity_category', '')
+            doc_commodity = doc.get("commodity_category", "")
 
             if commodity and doc_commodity != commodity:
                 continue
 
             pdf_path = self._find_pdf(osti_id, doc_commodity)
             if pdf_path:
-                docs_to_analyze.append({
-                    'osti_id': osti_id,
-                    'title': doc.get('title', 'Unknown'),
-                    'commodity': doc_commodity,
-                    'pdf_path': pdf_path,
-                })
+                docs_to_analyze.append(
+                    {
+                        "osti_id": osti_id,
+                        "title": doc.get("title", "Unknown"),
+                        "commodity": doc_commodity,
+                        "pdf_path": pdf_path,
+                    }
+                )
 
         if limit:
             docs_to_analyze = docs_to_analyze[:limit]
@@ -671,10 +670,10 @@ class PDFTriager:
             if progress_callback and i % 50 == 0:
                 progress_callback(i, total, f"Analyzing {doc['osti_id']}")
 
-            analysis = self.analyze_pdf(doc['pdf_path'])
-            analysis['osti_id'] = doc['osti_id']
-            analysis['title'] = doc['title']
-            analysis['commodity'] = doc['commodity']
+            analysis = self.analyze_pdf(doc["pdf_path"])
+            analysis["osti_id"] = doc["osti_id"]
+            analysis["title"] = doc["title"]
+            analysis["commodity"] = doc["commodity"]
 
             stats["total_analyzed"] += 1
 
@@ -700,10 +699,10 @@ class PDFTriager:
                 "total_documents": total,
                 "ocr_candidates": len(candidates),
                 "recommendation_rate": len(candidates) / max(1, total),
-            }
+            },
         }
 
-    def _find_pdf(self, osti_id: str, commodity: Optional[str] = None) -> Optional[Path]:
+    def _find_pdf(self, osti_id: str, commodity: str | None = None) -> Path | None:
         """Find PDF file by OSTI ID"""
         if commodity:
             commodity_dir = OSTI_PDFS_DIR / commodity

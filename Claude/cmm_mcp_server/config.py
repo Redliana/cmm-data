@@ -2,8 +2,11 @@
 Configuration for CMM MCP Server
 """
 
+from __future__ import annotations
+
 import os
 from pathlib import Path
+
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -13,7 +16,9 @@ load_dotenv(Path(__file__).parent / ".env")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
 # Base data directory
-DATA_ROOT = Path("/Users/wash198/Documents/Projects/Science_Projects/MPII_CMM/LLM_Fine_Tuning/Claude")
+DATA_ROOT = Path(
+    "/Users/wash198/Documents/Projects/Science_Projects/MPII_CMM/LLM_Fine_Tuning/Claude"
+)
 
 # Data source directories
 OSTI_DIR = DATA_ROOT / "OSTI_retrieval"

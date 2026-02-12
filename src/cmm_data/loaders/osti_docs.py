@@ -1,13 +1,13 @@
 """OSTI document retrieval loader."""
 
+from __future__ import annotations
+
 import json
-from pathlib import Path
-from typing import Dict, List, Optional
 
 import pandas as pd
 
-from .base import BaseLoader
 from ..exceptions import DataNotFoundError
+from .base import BaseLoader
 
 
 class OSTIDocumentsLoader(BaseLoader):
@@ -20,7 +20,7 @@ class OSTIDocumentsLoader(BaseLoader):
 
     dataset_name = "osti"
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available document collections/files."""
         if not self.data_path.exists():
             return []
@@ -36,7 +36,7 @@ class OSTIDocumentsLoader(BaseLoader):
 
         return sorted(items)
 
-    def load(self, collection: Optional[str] = None) -> pd.DataFrame:
+    def load(self, collection: str | None = None) -> pd.DataFrame:
         """
         Load OSTI document metadata.
 
@@ -56,12 +56,9 @@ class OSTIDocumentsLoader(BaseLoader):
         if collection:
             json_path = self.data_path / f"{collection}.json"
             if json_path.exists():
-                with open(json_path, "r") as f:
+                with open(json_path) as f:
                     data = json.load(f)
-                if isinstance(data, list):
-                    df = pd.DataFrame(data)
-                else:
-                    df = pd.DataFrame([data])
+                df = pd.DataFrame(data) if isinstance(data, list) else pd.DataFrame([data])
             else:
                 raise DataNotFoundError(f"Collection '{collection}' not found")
         else:
@@ -69,34 +66,35 @@ class OSTIDocumentsLoader(BaseLoader):
             dfs = []
             for json_file in self.data_path.glob("*.json"):
                 try:
-                    with open(json_file, "r") as f:
+                    with open(json_file) as f:
                         data = json.load(f)
-                    if isinstance(data, list):
-                        df = pd.DataFrame(data)
-                    else:
-                        df = pd.DataFrame([data])
+                    df = pd.DataFrame(data) if isinstance(data, list) else pd.DataFrame([data])
                     df["_source_file"] = json_file.name
                     dfs.append(df)
-                except (json.JSONDecodeError, Exception):
+                except (json.JSONDecodeError, OSError):
                     continue
 
             if dfs:
                 df = pd.concat(dfs, ignore_index=True)
             else:
                 # Create empty DataFrame with expected columns
-                df = pd.DataFrame(columns=[
-                    "osti_id", "title", "authors", "publication_date",
-                    "abstract", "doi", "url"
-                ])
+                df = pd.DataFrame(
+                    columns=[
+                        "osti_id",
+                        "title",
+                        "authors",
+                        "publication_date",
+                        "abstract",
+                        "doi",
+                        "url",
+                    ]
+                )
 
         self._set_cached(cache_key, df)
         return df
 
     def search_documents(
-        self,
-        query: str,
-        fields: Optional[List[str]] = None,
-        limit: int = 100
+        self, query: str, fields: list[str] | None = None, limit: int = 100
     ) -> pd.DataFrame:
         """
         Search documents by keyword.
@@ -121,15 +119,13 @@ class OSTIDocumentsLoader(BaseLoader):
         mask = pd.Series([False] * len(df))
         for field in fields:
             if field in df.columns:
-                field_mask = df[field].astype(str).str.contains(
-                    query, case=False, na=False
-                )
+                field_mask = df[field].astype(str).str.contains(query, case=False, na=False)
                 mask = mask | field_mask
 
         results = df[mask].head(limit)
         return results
 
-    def get_document_text(self, doc_id: str) -> Optional[str]:
+    def get_document_text(self, doc_id: str) -> str | None:
         """
         Get full text of a document.
 
@@ -172,12 +168,12 @@ class OSTIDocumentsLoader(BaseLoader):
                 mask = years == year
                 if mask.any():
                     return df[mask]
-            except Exception:
+            except (ValueError, TypeError):
                 continue
 
         return pd.DataFrame()
 
-    def get_statistics(self) -> Dict:
+    def get_statistics(self) -> dict:
         """Get document collection statistics."""
         df = self.load()
 
@@ -193,17 +189,17 @@ class OSTIDocumentsLoader(BaseLoader):
                 years = pd.to_datetime(df[col], errors="coerce").dt.year
                 stats["year_distribution"] = years.value_counts().to_dict()
                 break
-            except Exception:
+            except (ValueError, TypeError):
                 continue
 
         return stats
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the OSTI documents dataset."""
         base = super().describe()
         try:
             stats = self.get_statistics()
             base.update(stats)
-        except Exception:
+        except (OSError, ValueError):
             pass
         return base

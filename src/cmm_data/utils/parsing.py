@@ -1,13 +1,15 @@
 """Value parsing utilities for CMM data."""
 
+from __future__ import annotations
+
 import re
-from typing import Any, Optional, Tuple, Union
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
 
-def parse_numeric_value(value: Any) -> Optional[float]:
+def parse_numeric_value(value: Any) -> float | None:
     """
     Parse a numeric value from USGS data, handling special codes.
 
@@ -36,26 +38,26 @@ def parse_numeric_value(value: Any) -> Optional[float]:
     s = str(value).strip()
 
     # Handle special codes
-    if s.upper() in ('W', 'XX', '--', '—', 'NA', 'N/A', 'N.A.', ''):
+    if s.upper() in ("W", "XX", "--", "—", "NA", "N/A", "N.A.", ""):
         return np.nan
 
     # Handle greater/less than
-    if s.startswith('>') or s.startswith('<'):
+    if s.startswith(">") or s.startswith("<"):
         s = s[1:]
 
     # Handle range (return midpoint)
-    if '-' in s and not s.startswith('-'):
-        parts = s.split('-')
+    if "-" in s and not s.startswith("-"):
+        parts = s.split("-")
         if len(parts) == 2:
             try:
-                low = float(parts[0].replace(',', ''))
-                high = float(parts[1].replace(',', ''))
+                low = float(parts[0].replace(",", ""))
+                high = float(parts[1].replace(",", ""))
                 return (low + high) / 2
             except ValueError:
                 pass
 
     # Remove commas and try to parse
-    s = s.replace(',', '')
+    s = s.replace(",", "")
 
     try:
         return float(s)
@@ -63,7 +65,7 @@ def parse_numeric_value(value: Any) -> Optional[float]:
         return np.nan
 
 
-def parse_range(value: Any) -> Tuple[Optional[float], Optional[float]]:
+def parse_range(value: Any) -> tuple[float | None, float | None]:
     """
     Parse a range value, returning (low, high) bounds.
 
@@ -71,7 +73,7 @@ def parse_range(value: Any) -> Tuple[Optional[float], Optional[float]]:
         value: Value containing a range (e.g., '100-200', '>50', '<100')
 
     Returns:
-        Tuple of (low_bound, high_bound), with None for unbounded sides
+        tuple of (low_bound, high_bound), with None for unbounded sides
     """
     if value is None or pd.isna(value):
         return (None, None)
@@ -79,41 +81,43 @@ def parse_range(value: Any) -> Tuple[Optional[float], Optional[float]]:
     s = str(value).strip()
 
     # Greater than
-    if s.startswith('>'):
+    if s.startswith(">"):
         try:
-            v = float(s[1:].replace(',', ''))
+            v = float(s[1:].replace(",", ""))
             return (v, None)
         except ValueError:
             return (None, None)
 
     # Less than
-    if s.startswith('<'):
+    if s.startswith("<"):
         try:
-            v = float(s[1:].replace(',', ''))
+            v = float(s[1:].replace(",", ""))
             return (None, v)
         except ValueError:
             return (None, None)
 
     # Range
-    if '-' in s and not s.startswith('-'):
-        parts = s.split('-')
+    if "-" in s and not s.startswith("-"):
+        parts = s.split("-")
         if len(parts) == 2:
             try:
-                low = float(parts[0].replace(',', ''))
-                high = float(parts[1].replace(',', ''))
+                low = float(parts[0].replace(",", ""))
+                high = float(parts[1].replace(",", ""))
                 return (low, high)
             except ValueError:
                 pass
 
     # Single value
     try:
-        v = float(s.replace(',', ''))
+        v = float(s.replace(",", ""))
         return (v, v)
     except ValueError:
         return (None, None)
 
 
-def clean_numeric_column(series: pd.Series, keep_original: bool = False) -> Union[pd.Series, pd.DataFrame]:
+def clean_numeric_column(
+    series: pd.Series, keep_original: bool = False
+) -> pd.Series | pd.DataFrame:
     """
     Clean a pandas Series containing numeric values with special codes.
 
@@ -127,10 +131,7 @@ def clean_numeric_column(series: pd.Series, keep_original: bool = False) -> Unio
     cleaned = series.apply(parse_numeric_value)
 
     if keep_original:
-        return pd.DataFrame({
-            'original': series,
-            'cleaned': cleaned
-        })
+        return pd.DataFrame({"original": series, "cleaned": cleaned})
 
     return cleaned
 
@@ -150,21 +151,21 @@ def standardize_country_name(name: str) -> str:
 
     # Common standardizations
     mappings = {
-        'United States': 'United States',
-        'USA': 'United States',
-        'U.S.': 'United States',
-        'United States of America': 'United States',
-        'UK': 'United Kingdom',
-        'Great Britain': 'United Kingdom',
-        "People's Republic of China": 'China',
-        "China, People's Republic of": 'China',
-        'Republic of Korea': 'South Korea',
-        'Korea, Republic of': 'South Korea',
-        'Korea (South)': 'South Korea',
-        'Russian Federation': 'Russia',
-        'Congo (Kinshasa)': 'Democratic Republic of the Congo',
-        'DRC': 'Democratic Republic of the Congo',
-        'Czechia': 'Czech Republic',
+        "United States": "United States",
+        "USA": "United States",
+        "U.S.": "United States",
+        "United States of America": "United States",
+        "UK": "United Kingdom",
+        "Great Britain": "United Kingdom",
+        "People's Republic of China": "China",
+        "China, People's Republic of": "China",
+        "Republic of Korea": "South Korea",
+        "Korea, Republic of": "South Korea",
+        "Korea (South)": "South Korea",
+        "Russian Federation": "Russia",
+        "Congo (Kinshasa)": "Democratic Republic of the Congo",
+        "DRC": "Democratic Republic of the Congo",
+        "Czechia": "Czech Republic",
     }
 
     name_clean = str(name).strip()
@@ -176,7 +177,7 @@ def standardize_country_name(name: str) -> str:
     return name_clean
 
 
-def extract_commodity_code(filename: str) -> Optional[str]:
+def extract_commodity_code(filename: str) -> str | None:
     """
     Extract commodity code from USGS filename.
 
@@ -186,7 +187,7 @@ def extract_commodity_code(filename: str) -> Optional[str]:
     Returns:
         Commodity code like 'lithi' or None
     """
-    match = re.search(r'mcs\d{4}-(\w+)_(?:world|salient)', filename)
+    match = re.search(r"mcs\d{4}-(\w+)_(?:world|salient)", filename)
     if match:
         return match.group(1)
     return None

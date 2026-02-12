@@ -1,12 +1,16 @@
 """NETL REE and Coal geodatabase loader."""
 
-from pathlib import Path
-from typing import Any, Dict, List, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
+from ..exceptions import ConfigurationError, DataNotFoundError
 from .base import BaseLoader
-from ..exceptions import DataNotFoundError, ConfigurationError
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class NETLREECoalLoader(BaseLoader):
@@ -32,18 +36,17 @@ class NETLREECoalLoader(BaseLoader):
             if gdb_files:
                 self._gdb_path = gdb_files[0]
             else:
-                raise DataNotFoundError(
-                    "Geodatabase not found in NETL REE directory"
-                )
+                raise DataNotFoundError("Geodatabase not found in NETL REE directory")
         return self._gdb_path
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available layers in the geodatabase."""
         if self._layers is not None:
             return self._layers
 
         try:
             import fiona
+
             with fiona.open(self.gdb_path) as src:
                 self._layers = list(src)
             return self._layers
@@ -54,10 +57,10 @@ class NETLREECoalLoader(BaseLoader):
                 "REE_Coal_Basins",
                 "Coal_Resources",
             ]
-        except Exception:
+        except (OSError, ValueError):
             return []
 
-    def load(self, layer: Optional[str] = None) -> pd.DataFrame:
+    def load(self, layer: str | None = None) -> pd.DataFrame:
         """
         Load data from the geodatabase.
 
@@ -69,6 +72,7 @@ class NETLREECoalLoader(BaseLoader):
         """
         try:
             import geopandas as gpd
+
             gdf = self.load_with_geometry(layer)
             # Drop geometry for regular DataFrame
             return pd.DataFrame(gdf.drop(columns="geometry", errors="ignore"))
@@ -78,7 +82,7 @@ class NETLREECoalLoader(BaseLoader):
                 "Install with: pip install cmm-data[geo]"
             )
 
-    def load_with_geometry(self, layer: Optional[str] = None) -> Any:
+    def load_with_geometry(self, layer: str | None = None) -> Any:
         """
         Load layer with geometry as GeoDataFrame.
 
@@ -110,9 +114,7 @@ class NETLREECoalLoader(BaseLoader):
             else:
                 raise DataNotFoundError("No layers available in geodatabase")
         elif layer not in available:
-            raise DataNotFoundError(
-                f"Layer '{layer}' not found. Available: {available}"
-            )
+            raise DataNotFoundError(f"Layer '{layer}' not found. Available: {available}")
 
         gdf = gpd.read_file(self.gdb_path, layer=layer)
 
@@ -151,7 +153,7 @@ class NETLREECoalLoader(BaseLoader):
 
         raise DataNotFoundError("Coal basins layer not found")
 
-    def get_ree_statistics(self) -> Dict:
+    def get_ree_statistics(self) -> dict:
         """
         Get statistics for REE concentrations.
 
@@ -161,8 +163,23 @@ class NETLREECoalLoader(BaseLoader):
         df = self.get_ree_samples()
 
         # Find REE columns (typically La, Ce, Pr, Nd, etc.)
-        ree_elements = ["La", "Ce", "Pr", "Nd", "Sm", "Eu", "Gd",
-                        "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Y"]
+        ree_elements = [
+            "La",
+            "Ce",
+            "Pr",
+            "Nd",
+            "Sm",
+            "Eu",
+            "Gd",
+            "Tb",
+            "Dy",
+            "Ho",
+            "Er",
+            "Tm",
+            "Yb",
+            "Lu",
+            "Y",
+        ]
 
         stats = {}
         for elem in ree_elements:
@@ -227,7 +244,7 @@ class NETLREECoalLoader(BaseLoader):
 
         return pd.DataFrame()
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the NETL REE dataset."""
         base = super().describe()
         base["layers"] = self.list_available()
@@ -236,7 +253,7 @@ class NETLREECoalLoader(BaseLoader):
         try:
             stats = self.get_ree_statistics()
             base["ree_elements_available"] = list(stats.keys())
-        except Exception:
+        except (OSError, ValueError):
             pass
 
         return base

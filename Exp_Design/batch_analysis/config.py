@@ -1,5 +1,7 @@
 """Central configuration for the Vertex AI batch analysis pipeline."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
@@ -9,12 +11,8 @@ BATCH_DIR = Path(__file__).resolve().parent
 REPO_ROOT = BATCH_DIR.parent  # Exp_Design/
 OUTPUT_DIR = BATCH_DIR / "output"
 
-DOCUMENT_CATALOG = (
-    REPO_ROOT.parent / "OSTI_retrieval" / "document_catalog.json"
-)
-OCR_DIR = (
-    REPO_ROOT.parent / "OSTI_OCR_Extracted" / "batch_output"
-)
+DOCUMENT_CATALOG = REPO_ROOT.parent / "OSTI_retrieval" / "document_catalog.json"
+OCR_DIR = REPO_ROOT.parent / "OSTI_OCR_Extracted" / "batch_output"
 ALLOCATION_MATRIX_MD = REPO_ROOT / "CMM_Gold_QA_Allocation_Matrix.md"
 
 # ---------------------------------------------------------------------------
@@ -34,7 +32,16 @@ MAX_OUTPUT_TOKENS = 4096
 # Commodity categories (from document_catalog commodity_category values)
 # ---------------------------------------------------------------------------
 COMMODITY_CATEGORIES: list[str] = [
-    "HREE", "CO", "LI", "GA", "GR", "LREE", "NI", "CU", "GE", "OTH",
+    "HREE",
+    "CO",
+    "LI",
+    "GA",
+    "GR",
+    "LREE",
+    "NI",
+    "CU",
+    "GE",
+    "OTH",
 ]
 
 # Display names for commodity codes
@@ -55,8 +62,16 @@ COMMODITY_DISPLAY: dict[str, str] = {
 # Subdomain categories
 # ---------------------------------------------------------------------------
 SUBDOMAIN_CATEGORIES: list[str] = [
-    "T-EC", "T-PM", "T-GO", "Q-PS", "Q-TF", "Q-EP", "G-PR", "G-BM",
-    "S-CC", "S-ST",
+    "T-EC",
+    "T-PM",
+    "T-GO",
+    "Q-PS",
+    "Q-TF",
+    "Q-EP",
+    "G-PR",
+    "G-BM",
+    "S-CC",
+    "S-ST",
 ]
 
 SUBDOMAIN_DISPLAY: dict[str, str] = {
@@ -85,9 +100,7 @@ DOMAIN_GROUPS: dict[str, list[str]] = {
 # ---------------------------------------------------------------------------
 # Commodity-specific papers evaluate all cells for that commodity.
 # Subdomain-specific papers evaluate all 10 commodity cells in that subdomain.
-CATEGORY_TO_COMMODITIES: dict[str, list[str]] = {
-    cat: [cat] for cat in COMMODITY_CATEGORIES
-}
+CATEGORY_TO_COMMODITIES: dict[str, list[str]] = {cat: [cat] for cat in COMMODITY_CATEGORIES}
 
 # Subdomain categories from document_catalog (prefixed with "subdomain_")
 SUBDOMAIN_CATEGORY_PREFIX = "subdomain_"

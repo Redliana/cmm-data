@@ -27,7 +27,7 @@ def build_report(
     by_subdomain: dict[str, list[float]] = defaultdict(list)
     by_commodity: dict[str, list[float]] = defaultdict(list)
 
-    for gold, score in zip(golds, scores):
+    for gold, score in zip(golds, scores, strict=False):
         by_level[gold.complexity_level].append(score.score)
         by_subdomain[gold.subdomain].append(score.score)
         by_commodity[gold.commodity].append(score.score)
@@ -68,53 +68,61 @@ def write_report(report: EvaluationReport, output_dir: Path) -> None:
 
 def _render_markdown(report: EvaluationReport) -> str:
     lines = [
-        f"# CMM Evaluation Report",
-        f"",
+        "# CMM Evaluation Report",
+        "",
         f"**Model**: `{report.model_id}`",
     ]
     if report.adapter_path:
         lines.append(f"**Adapter**: `{report.adapter_path}`")
-    lines.extend([
-        f"",
-        f"## Summary",
-        f"",
-        f"| Metric | Value |",
-        f"|--------|-------|",
-        f"| Total questions | {report.total_questions} |",
-        f"| Mean score | {report.mean_score:.3f} |",
-        f"| Mean ROUGE-L | {report.mean_rouge_l:.3f} |",
-        f"",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Summary",
+            "",
+            "| Metric | Value |",
+            "|--------|-------|",
+            f"| Total questions | {report.total_questions} |",
+            f"| Mean score | {report.mean_score:.3f} |",
+            f"| Mean ROUGE-L | {report.mean_rouge_l:.3f} |",
+            "",
+        ]
+    )
 
     if report.scores_by_level:
-        lines.extend([
-            "## Scores by Complexity Level",
-            "",
-            "| Level | Mean Score |",
-            "|-------|-----------|",
-        ])
+        lines.extend(
+            [
+                "## Scores by Complexity Level",
+                "",
+                "| Level | Mean Score |",
+                "|-------|-----------|",
+            ]
+        )
         for level, score in report.scores_by_level.items():
             lines.append(f"| {level} | {score:.3f} |")
         lines.append("")
 
     if report.scores_by_commodity:
-        lines.extend([
-            "## Scores by Commodity",
-            "",
-            "| Commodity | Mean Score |",
-            "|-----------|-----------|",
-        ])
+        lines.extend(
+            [
+                "## Scores by Commodity",
+                "",
+                "| Commodity | Mean Score |",
+                "|-----------|-----------|",
+            ]
+        )
         for commodity, score in report.scores_by_commodity.items():
             lines.append(f"| {commodity} | {score:.3f} |")
         lines.append("")
 
     if report.scores_by_subdomain:
-        lines.extend([
-            "## Scores by Subdomain",
-            "",
-            "| Subdomain | Mean Score |",
-            "|-----------|-----------|",
-        ])
+        lines.extend(
+            [
+                "## Scores by Subdomain",
+                "",
+                "| Subdomain | Mean Score |",
+                "|-----------|-----------|",
+            ]
+        )
         for subdomain, score in report.scores_by_subdomain.items():
             lines.append(f"| {subdomain} | {score:.3f} |")
         lines.append("")

@@ -8,19 +8,21 @@ from __future__ import annotations
 
 import json
 from collections import defaultdict
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from config import (
-    OUTPUT_DIR,
     COMMODITY_CATEGORIES,
     COMMODITY_DISPLAY,
+    DOCUMENT_CATALOG,
+    DOMAIN_GROUPS,
+    OUTPUT_DIR,
     SUBDOMAIN_CATEGORIES,
     SUBDOMAIN_DISPLAY,
-    DOMAIN_GROUPS,
-    COMPLEXITY_LEVELS,
-    DOCUMENT_CATALOG,
 )
-from matrix_parser import parse_matrix, MatrixCell
+from matrix_parser import MatrixCell, parse_matrix
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _load_paper_titles() -> dict[str, str]:
@@ -54,7 +56,7 @@ def _cell_lookup(matrix: list[MatrixCell]) -> dict[str, MatrixCell]:
 def generate_report() -> Path:
     """Generate the full recommendation report."""
     matrix = parse_matrix()
-    cell_map = _cell_lookup(matrix)
+    _cell_lookup(matrix)
     evaluations, rec_matrix, stats = _load_results()
     titles = _load_paper_titles()
 
@@ -73,12 +75,10 @@ def generate_report() -> Path:
     recommended = stats.get("recommended_papers", 0)
     high_rel = stats.get("high_relevance_papers", 0)
     cells_covered = sum(
-        1 for papers in rec_matrix.values()
-        if any(p["relevance_score"] >= 3 for p in papers)
+        1 for papers in rec_matrix.values() if any(p["relevance_score"] >= 3 for p in papers)
     )
     cells_strong = sum(
-        1 for papers in rec_matrix.values()
-        if any(p["relevance_score"] >= 4 for p in papers)
+        1 for papers in rec_matrix.values() if any(p["relevance_score"] >= 4 for p in papers)
     )
     gap_count = 100 - cells_covered
 
@@ -118,8 +118,10 @@ def generate_report() -> Path:
                     covered += 1
 
         avg_top = f"{sum(top_scores) / len(top_scores):.1f}" if top_scores else "N/A"
-        w(f"| {COMMODITY_DISPLAY.get(comm, comm)} ({comm}) | {paper_count} | "
-          f"{len(comm_cells)} | {covered} | {avg_top} |")
+        w(
+            f"| {COMMODITY_DISPLAY.get(comm, comm)} ({comm}) | {paper_count} | "
+            f"{len(comm_cells)} | {covered} | {avg_top} |"
+        )
 
     w()
 
@@ -171,7 +173,9 @@ def generate_report() -> Path:
                 top_5 = papers[:5]
 
                 w(f"**Q{cell.question_number}: {cid}**")
-                w(f"- Commodity: {cell.commodity} | Level: {cell.complexity_display} ({cell.complexity_level}) | Stratum: {cell.stratum}")
+                w(
+                    f"- Commodity: {cell.commodity} | Level: {cell.complexity_display} ({cell.complexity_level}) | Stratum: {cell.stratum}"
+                )
                 w(f"- Topic: {cell.topic_focus}")
                 w()
 
@@ -214,9 +218,11 @@ def generate_report() -> Path:
         w("| Q# | Cell ID | Commodity | Subdomain | Level | Topic | Best Score |")
         w("|----|---------|-----------|-----------|-------|-------|------------|")
         for cell, score in gap_cells:
-            w(f"| Q{cell.question_number} | {cell.cell_id} | {cell.commodity} | "
-              f"{cell.subdomain} | {cell.complexity_level} | {cell.topic_focus} | "
-              f"{score}/5 |")
+            w(
+                f"| Q{cell.question_number} | {cell.cell_id} | {cell.commodity} | "
+                f"{cell.subdomain} | {cell.complexity_level} | {cell.topic_focus} | "
+                f"{score}/5 |"
+            )
         w()
 
         # Group gaps by commodity
@@ -228,8 +234,10 @@ def generate_report() -> Path:
         w()
         for comm in COMMODITY_CATEGORIES:
             if comm in gap_by_comm:
-                w(f"- **{comm}**: {len(gap_by_comm[comm])} cells -- "
-                  f"{', '.join(c.subdomain + '/' + c.complexity_level for c in gap_by_comm[comm])}")
+                w(
+                    f"- **{comm}**: {len(gap_by_comm[comm])} cells -- "
+                    f"{', '.join(c.subdomain + '/' + c.complexity_level for c in gap_by_comm[comm])}"
+                )
 
     w()
     w("---")

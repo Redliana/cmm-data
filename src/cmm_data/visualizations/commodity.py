@@ -1,21 +1,24 @@
 """Commodity data visualizations."""
 
-from typing import Any, Optional
+from __future__ import annotations
 
-import pandas as pd
+from typing import TYPE_CHECKING, Any
 
 from ..exceptions import ConfigurationError
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def _get_matplotlib():
     """Get matplotlib.pyplot, raising helpful error if not installed."""
     try:
         import matplotlib.pyplot as plt
+
         return plt
     except ImportError:
         raise ConfigurationError(
-            "matplotlib required for visualizations. "
-            "Install with: pip install cmm-data[viz]"
+            "matplotlib required for visualizations. Install with: pip install cmm-data[viz]"
         )
 
 
@@ -26,7 +29,7 @@ def plot_world_production(
     year_col: str = "Prod_t_est_2022",
     country_col: str = "Country",
     figsize: tuple = (10, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot bar chart of world production by country.
@@ -67,8 +70,13 @@ def plot_world_production(
 
     # Add value labels
     for bar, val in zip(bars, plot_df[year_col]):
-        ax.text(bar.get_width(), bar.get_y() + bar.get_height()/2,
-                f" {val:,.0f}", va="center", fontsize=9)
+        ax.text(
+            bar.get_width(),
+            bar.get_y() + bar.get_height() / 2,
+            f" {val:,.0f}",
+            va="center",
+            fontsize=9,
+        )
 
     plt.tight_layout()
     return fig
@@ -77,9 +85,9 @@ def plot_world_production(
 def plot_production_timeseries(
     df: pd.DataFrame,
     commodity_name: str,
-    country: Optional[str] = None,
+    country: str | None = None,
     figsize: tuple = (10, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot production over time from salient statistics.
@@ -116,11 +124,25 @@ def plot_production_timeseries(
 
     # Add imports/exports if available
     if "Imports_t_clean" in df.columns:
-        ax.plot(x, df["Imports_t_clean"], marker="s", linewidth=1,
-                linestyle="--", label="Imports", alpha=0.7)
+        ax.plot(
+            x,
+            df["Imports_t_clean"],
+            marker="s",
+            linewidth=1,
+            linestyle="--",
+            label="Imports",
+            alpha=0.7,
+        )
     if "Exports_t_clean" in df.columns:
-        ax.plot(x, df["Exports_t_clean"], marker="^", linewidth=1,
-                linestyle="--", label="Exports", alpha=0.7)
+        ax.plot(
+            x,
+            df["Exports_t_clean"],
+            marker="^",
+            linewidth=1,
+            linestyle="--",
+            label="Exports",
+            alpha=0.7,
+        )
 
     ax.set_xlabel("Year")
     ax.set_ylabel("Quantity (metric tons)")
@@ -136,7 +158,7 @@ def plot_import_reliance(
     df: pd.DataFrame,
     commodity_name: str,
     figsize: tuple = (10, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot net import reliance over time.
@@ -194,7 +216,7 @@ def plot_multiple_commodities(
     Compare multiple commodities in a single chart.
 
     Args:
-        commodities: List of commodity codes
+        commodities: list of commodity codes
         data_type: 'world' or 'salient'
         metric: Metric to compare
         figsize: Figure size tuple
@@ -225,7 +247,7 @@ def plot_multiple_commodities(
                 latest = df.iloc[-1]
                 value = latest.get("USprod_t_clean", 0)
                 ax.bar(loader.get_commodity_name(commodity), value)
-        except Exception:
+        except (OSError, ValueError):
             continue
 
     ax.set_xlabel("Commodity")

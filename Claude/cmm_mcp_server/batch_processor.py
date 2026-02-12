@@ -3,15 +3,19 @@ Batch processing for OCR extraction and chart analysis.
 Converts scanned PDFs and scientific figures to text for LLM fine-tuning.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import time
 from datetime import datetime
-from pathlib import Path
-from typing import Optional, List, Dict, Callable
+from typing import TYPE_CHECKING
 
-from config import INDEX_DIR, OSTI_CATALOG
-from ocr import get_mistral_ocr, get_pdf_triager, EXTRACTED_IMAGES_DIR
+from config import INDEX_DIR
+from ocr import EXTRACTED_IMAGES_DIR, get_mistral_ocr, get_pdf_triager
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -53,12 +57,12 @@ class BatchProcessor:
             time.sleep(min_interval - elapsed)
         self.last_request_time = time.time()
 
-    def estimate_cost(self, osti_ids: List[str] = None) -> dict:
+    def estimate_cost(self, osti_ids: list[str] | None = None) -> dict:
         """
         Estimate processing cost before running batch.
 
         Args:
-            osti_ids: List of document IDs to process (None = all OCR candidates)
+            osti_ids: list of document IDs to process (None = all OCR candidates)
 
         Returns:
             Cost estimate with page counts and pricing
@@ -78,12 +82,13 @@ class BatchProcessor:
             if not doc:
                 continue
 
-            commodity = doc.get('commodity_category', '')
+            commodity = doc.get("commodity_category", "")
             pdf_path = self.triager._find_pdf(osti_id, commodity)
 
             if pdf_path and pdf_path.exists():
                 # Get page count using PyMuPDF
                 import fitz
+
                 try:
                     pdf_doc = fitz.open(pdf_path)
                     page_count = len(pdf_doc)
@@ -93,12 +98,14 @@ class BatchProcessor:
 
                     total_pages += page_count
                     total_images_est += image_est
-                    documents.append({
-                        "osti_id": osti_id,
-                        "pages": page_count,
-                        "title": doc.get("title", "Unknown")[:60]
-                    })
-                except:
+                    documents.append(
+                        {
+                            "osti_id": osti_id,
+                            "pages": page_count,
+                            "title": doc.get("title", "Unknown")[:60],
+                        }
+                    )
+                except (OSError, ValueError):
                     pass
 
         # Pricing estimates (as of 2025)
@@ -118,27 +125,24 @@ class BatchProcessor:
                 "total": f"${ocr_cost + pixtral_cost:.2f}",
             },
             "documents": documents[:20],  # Show first 20
-            "note": "Pixtral cost is estimated. Actual cost depends on image count."
+            "note": "Pixtral cost is estimated. Actual cost depends on image count.",
         }
 
     def load_state(self) -> dict:
         """Load processing state for resumption"""
         if self.state_file.exists():
-            with open(self.state_file, 'r') as f:
+            with open(self.state_file) as f:
                 return json.load(f)
         return {"processed": [], "failed": [], "last_updated": None}
 
     def save_state(self, state: dict):
         """Save processing state"""
         state["last_updated"] = datetime.now().isoformat()
-        with open(self.state_file, 'w') as f:
+        with open(self.state_file, "w") as f:
             json.dump(state, f, indent=2)
 
     def process_document(
-        self,
-        osti_id: str,
-        analyze_charts: bool = True,
-        save_images: bool = True
+        self, osti_id: str, analyze_charts: bool = True, save_images: bool = True
     ) -> dict:
         """
         Process a single document through the full pipeline.
@@ -155,13 +159,13 @@ class BatchProcessor:
         if not doc:
             return {"error": f"Document {osti_id} not found in catalog"}
 
-        commodity = doc.get('commodity_category', '')
+        commodity = doc.get("commodity_category", "")
         pdf_path = self.triager._find_pdf(osti_id, commodity)
 
         if not pdf_path:
             return {"error": f"PDF not found for {osti_id}"}
 
-        # Set up output directory for images
+        # set up output directory for images
         output_dir = None
         if save_images:
             output_dir = EXTRACTED_IMAGES_DIR / osti_id
@@ -189,18 +193,14 @@ class BatchProcessor:
             "doi": doc.get("doi", ""),
             "publication_date": doc.get("publication_date", ""),
             "subjects": doc.get("subjects", []),
-
             # Extracted content
             "text": result.get("text", ""),
             "page_count": result.get("page_count", 0),
             "char_count": result.get("statistics", {}).get("total_chars", 0),
-
             # Tables as text
             "tables": [t.get("content", "") for t in result.get("tables", [])],
-
             # Chart analyses as text
             "chart_analyses": [],
-
             # Metadata
             "extraction_model": result.get("model", ""),
             "processed_at": datetime.now().isoformat(),
@@ -208,25 +208,27 @@ class BatchProcessor:
 
         # Add chart analyses
         for chart in result.get("chart_analyses", []):
-            finetune_record["chart_analyses"].append({
-                "page": chart.get("page"),
-                "description": chart.get("analysis", ""),
-            })
+            finetune_record["chart_analyses"].append(
+                {
+                    "page": chart.get("page"),
+                    "description": chart.get("analysis", ""),
+                }
+            )
 
         return finetune_record
 
     def process_batch(
         self,
-        osti_ids: List[str] = None,
+        osti_ids: list[str] | None = None,
         analyze_charts: bool = True,
         resume: bool = True,
-        progress_callback: Optional[Callable] = None
+        progress_callback: Callable | None = None,
     ) -> dict:
         """
         Process multiple documents in batch.
 
         Args:
-            osti_ids: List of document IDs (None = all OCR candidates)
+            osti_ids: list of document IDs (None = all OCR candidates)
             analyze_charts: Whether to analyze charts with Pixtral
             resume: Whether to resume from previous state
             progress_callback: Optional callback(current, total, message)
@@ -284,7 +286,7 @@ class BatchProcessor:
                 if (i + 1) % 5 == 0:
                     self.save_state(state)
 
-            except Exception as e:
+            except (OSError, ValueError, KeyError) as e:
                 logger.error(f"Error processing {osti_id}: {e}")
                 state["failed"].append(osti_id)
                 results["failed"].append({"osti_id": osti_id, "error": str(e)})
@@ -307,7 +309,7 @@ class BatchProcessor:
         osti_id = record.get("osti_id")
         output_file = BATCH_OUTPUT_DIR / f"{osti_id}.json"
 
-        with open(output_file, 'w') as f:
+        with open(output_file, "w") as f:
             json.dump(record, f, indent=2)
 
     def _generate_finetune_files(self):
@@ -318,9 +320,9 @@ class BatchProcessor:
             if json_file.name == "processing_state.json":
                 continue
             try:
-                with open(json_file, 'r') as f:
+                with open(json_file) as f:
                     records.append(json.load(f))
-            except:
+            except (OSError, json.JSONDecodeError):
                 pass
 
         if not records:
@@ -328,7 +330,7 @@ class BatchProcessor:
 
         # Generate JSONL for fine-tuning
         jsonl_path = FINETUNE_DATA_DIR / "documents.jsonl"
-        with open(jsonl_path, 'w') as f:
+        with open(jsonl_path, "w") as f:
             for record in records:
                 # Create fine-tuning format
                 finetune_entry = self._format_for_finetuning(record)
@@ -336,7 +338,7 @@ class BatchProcessor:
 
         # Generate summary markdown
         summary_path = FINETUNE_DATA_DIR / "extraction_summary.md"
-        with open(summary_path, 'w') as f:
+        with open(summary_path, "w") as f:
             f.write("# Document Extraction Summary\n\n")
             f.write(f"Generated: {datetime.now().isoformat()}\n\n")
             f.write(f"Total documents: {len(records)}\n\n")
@@ -367,37 +369,37 @@ class BatchProcessor:
 
         # Title and metadata
         content_parts.append(f"Title: {record.get('title', 'Unknown')}")
-        if record.get('authors'):
-            authors = ", ".join(record['authors'][:5])
+        if record.get("authors"):
+            authors = ", ".join(record["authors"][:5])
             content_parts.append(f"Authors: {authors}")
         content_parts.append(f"Commodity: {record.get('commodity', 'Unknown')}")
         content_parts.append("")
 
         # Abstract
-        if record.get('abstract'):
+        if record.get("abstract"):
             content_parts.append("Abstract:")
-            content_parts.append(record['abstract'])
+            content_parts.append(record["abstract"])
             content_parts.append("")
 
         # Main text
         content_parts.append("Content:")
-        content_parts.append(record.get('text', ''))
+        content_parts.append(record.get("text", ""))
 
         # Tables
-        if record.get('tables'):
+        if record.get("tables"):
             content_parts.append("")
             content_parts.append("Tables:")
-            for i, table in enumerate(record['tables'], 1):
+            for i, table in enumerate(record["tables"], 1):
                 content_parts.append(f"\nTable {i}:")
                 content_parts.append(table)
 
         # Chart analyses
-        if record.get('chart_analyses'):
+        if record.get("chart_analyses"):
             content_parts.append("")
             content_parts.append("Figure Descriptions:")
-            for i, chart in enumerate(record['chart_analyses'], 1):
+            for i, chart in enumerate(record["chart_analyses"], 1):
                 content_parts.append(f"\nFigure {i} (Page {chart.get('page', '?')}):")
-                content_parts.append(chart.get('description', ''))
+                content_parts.append(chart.get("description", ""))
 
         full_text = "\n".join(content_parts)
 
@@ -414,7 +416,7 @@ class BatchProcessor:
                 "char_count": len(full_text),
                 "chart_count": len(record.get("chart_analyses", [])),
                 "table_count": len(record.get("tables", [])),
-            }
+            },
         }
 
     def get_processing_status(self) -> dict:

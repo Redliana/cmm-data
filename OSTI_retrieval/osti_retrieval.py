@@ -15,7 +15,10 @@ Based on the CMM LLM Baseline Gold Q&A Methodology Framework.
 Retrieves DOE technical reports and journal preprints for critical minerals.
 """
 
+from __future__ import annotations
+
 import warnings
+
 warnings.warn(
     "This is a duplicate copy of osti_retrieval.py. "
     "The canonical version is at Globus_Sharing/OSTI_retrieval/osti_retrieval.py. "
@@ -24,18 +27,18 @@ warnings.warn(
     stacklevel=2,
 )
 
-import requests
 import json
 import time
-import os
-from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional
-import hashlib
+from pathlib import Path
+
+import requests
 
 # Configuration
 BASE_URL = "https://www.osti.gov/api/v1/records"
-OUTPUT_DIR = Path("/Users/wash198/Documents/Projects/Science_Projects/MPII_CMM/LLM_Fine_Tuning/Claude/OSTI_retrieval")
+OUTPUT_DIR = Path(
+    "/Users/wash198/Documents/Projects/Science_Projects/MPII_CMM/LLM_Fine_Tuning/Claude/OSTI_retrieval"
+)
 PDF_DIR = OUTPUT_DIR / "pdfs"
 METADATA_DIR = OUTPUT_DIR / "metadata"
 
@@ -53,7 +56,7 @@ COMMODITY_SEARCHES = {
             "heavy rare earth processing",
             "rare earth solvent extraction",
             "lanthanide separation chemistry",
-        ]
+        ],
     },
     "LREE": {
         "weight": 0.10,
@@ -63,7 +66,7 @@ COMMODITY_SEARCHES = {
             "light rare earth",
             "NdFeB permanent magnet",
             "rare earth oxide production",
-        ]
+        ],
     },
     "CO": {
         "weight": 0.12,
@@ -73,7 +76,7 @@ COMMODITY_SEARCHES = {
             "cobalt supply chain",
             "battery cathode cobalt",
             "cobalt hydrometallurgy",
-        ]
+        ],
     },
     "LI": {
         "weight": 0.12,
@@ -84,7 +87,7 @@ COMMODITY_SEARCHES = {
             "lithium-ion battery materials",
             "direct lithium extraction",
             "spodumene processing",
-        ]
+        ],
     },
     "GA": {
         "weight": 0.10,
@@ -94,7 +97,7 @@ COMMODITY_SEARCHES = {
             "gallium extraction byproduct",
             "III-V semiconductor materials",
             "gallium nitride",
-        ]
+        ],
     },
     "GR": {
         "weight": 0.10,
@@ -104,7 +107,7 @@ COMMODITY_SEARCHES = {
             "natural graphite battery",
             "graphite purification",
             "synthetic graphite production",
-        ]
+        ],
     },
     "NI": {
         "weight": 0.08,
@@ -114,7 +117,7 @@ COMMODITY_SEARCHES = {
             "nickel laterite processing",
             "high-purity nickel refining",
             "nickel cobalt manganese cathode",
-        ]
+        ],
     },
     "CU": {
         "weight": 0.08,
@@ -124,7 +127,7 @@ COMMODITY_SEARCHES = {
             "copper supply chain",
             "copper solvent extraction",
             "copper concentrate processing",
-        ]
+        ],
     },
     "GE": {
         "weight": 0.05,
@@ -134,7 +137,7 @@ COMMODITY_SEARCHES = {
             "germanium semiconductor",
             "infrared optics germanium",
             "germanium refining",
-        ]
+        ],
     },
     "OTH": {
         "weight": 0.10,
@@ -145,8 +148,8 @@ COMMODITY_SEARCHES = {
             "tungsten extraction",
             "critical minerals supply chain",
             "strategic minerals processing",
-        ]
-    }
+        ],
+    },
 }
 
 # Cross-cutting technical queries (sub-domain coverage)
@@ -180,7 +183,7 @@ SUBDOMAIN_QUERIES = {
         "strategic mineral stockpile",
         "mineral export controls",
         "domestic sourcing critical materials",
-    ]
+    ],
 }
 
 
@@ -192,10 +195,12 @@ class OSTIRetriever:
         self.pdf_dir = output_dir / "pdfs"
         self.metadata_dir = output_dir / "metadata"
         self.session = requests.Session()
-        self.session.headers.update({
-            "Accept": "application/json",
-            "User-Agent": "CMM-Research-Bot/1.0 (PNNL Critical Materials Research)"
-        })
+        self.session.headers.update(
+            {
+                "Accept": "application/json",
+                "User-Agent": "CMM-Research-Bot/1.0 (PNNL Critical Materials Research)",
+            }
+        )
 
         # Create directories
         self.pdf_dir.mkdir(parents=True, exist_ok=True)
@@ -208,7 +213,7 @@ class OSTIRetriever:
             "records_found": 0,
             "pdfs_downloaded": 0,
             "pdfs_skipped": 0,
-            "errors": 0
+            "errors": 0,
         }
 
     def _load_downloaded_ids(self) -> set:
@@ -216,18 +221,19 @@ class OSTIRetriever:
         ids = set()
         tracking_file = self.output_dir / "downloaded_ids.txt"
         if tracking_file.exists():
-            with open(tracking_file, 'r') as f:
-                ids = set(line.strip() for line in f if line.strip())
+            with open(tracking_file) as f:
+                ids = {line.strip() for line in f if line.strip()}
         return ids
 
     def _save_downloaded_id(self, osti_id: str):
         """Save newly downloaded OSTI ID to tracking file."""
         self.downloaded_ids.add(osti_id)
-        with open(self.output_dir / "downloaded_ids.txt", 'a') as f:
+        with open(self.output_dir / "downloaded_ids.txt", "a") as f:
             f.write(f"{osti_id}\n")
 
-    def search(self, query: str, max_results: int = MAX_RESULTS_PER_QUERY,
-               has_fulltext: bool = True) -> List[Dict]:
+    def search(
+        self, query: str, max_results: int = MAX_RESULTS_PER_QUERY, has_fulltext: bool = True
+    ) -> list[dict]:
         """Search OSTI for documents matching query."""
         all_records = []
         page = 1
@@ -238,7 +244,7 @@ class OSTIRetriever:
                 "q": query,
                 "has_fulltext": str(has_fulltext).lower(),
                 "rows": rows_per_page,
-                "page": page
+                "page": page,
             }
 
             try:
@@ -267,7 +273,7 @@ class OSTIRetriever:
         self.stats["records_found"] += len(all_records)
         return all_records[:max_results]
 
-    def download_pdf(self, record: Dict, commodity: str = "unknown") -> Optional[Path]:
+    def download_pdf(self, record: dict, commodity: str = "unknown") -> Path | None:
         """Download PDF for a record if available."""
         osti_id = record.get("osti_id")
 
@@ -302,7 +308,7 @@ class OSTIRetriever:
             response = self.session.get(fulltext_url, stream=True, timeout=60)
             response.raise_for_status()
 
-            with open(filepath, 'wb') as f:
+            with open(filepath, "wb") as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
 
@@ -311,7 +317,7 @@ class OSTIRetriever:
 
             # Save metadata alongside
             meta_file = commodity_dir / f"{osti_id}_metadata.json"
-            with open(meta_file, 'w') as f:
+            with open(meta_file, "w") as f:
                 json.dump(record, f, indent=2)
 
             time.sleep(REQUEST_DELAY)
@@ -331,9 +337,9 @@ class OSTIRetriever:
         config = COMMODITY_SEARCHES[commodity_code]
         queries = config["queries"]
 
-        print(f"\n{'='*60}")
-        print(f"Retrieving documents for {commodity_code} (weight: {config['weight']*100:.0f}%)")
-        print(f"{'='*60}")
+        print(f"\n{'=' * 60}")
+        print(f"Retrieving documents for {commodity_code} (weight: {config['weight'] * 100:.0f}%)")
+        print(f"{'=' * 60}")
 
         all_records = []
         seen_ids = set()
@@ -356,7 +362,7 @@ class OSTIRetriever:
         downloaded = 0
         for i, record in enumerate(all_records):
             if i % 10 == 0:
-                print(f"    Downloading {i+1}/{len(all_records)}...")
+                print(f"    Downloading {i + 1}/{len(all_records)}...")
 
             result = self.download_pdf(record, commodity_code)
             if result:
@@ -373,9 +379,9 @@ class OSTIRetriever:
 
         queries = SUBDOMAIN_QUERIES[subdomain_code]
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Retrieving documents for subdomain: {subdomain_code}")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         all_records = []
         seen_ids = set()
@@ -397,7 +403,7 @@ class OSTIRetriever:
         downloaded = 0
         for i, record in enumerate(all_records):
             if i % 10 == 0:
-                print(f"    Downloading {i+1}/{len(all_records)}...")
+                print(f"    Downloading {i + 1}/{len(all_records)}...")
 
             result = self.download_pdf(record, f"subdomain_{subdomain_code}")
             if result:
@@ -408,23 +414,23 @@ class OSTIRetriever:
 
     def retrieve_all(self, max_per_query: int = 50):
         """Retrieve documents for all commodities and subdomains."""
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("OSTI Document Retrieval for CMM Supply Chain Training Data")
         print(f"Started: {datetime.now().isoformat()}")
-        print("="*70)
+        print("=" * 70)
 
         # Commodities
-        for commodity in COMMODITY_SEARCHES.keys():
+        for commodity in COMMODITY_SEARCHES:
             self.retrieve_commodity(commodity, max_per_query)
 
         # Subdomains
-        for subdomain in SUBDOMAIN_QUERIES.keys():
+        for subdomain in SUBDOMAIN_QUERIES:
             self.retrieve_subdomain(subdomain, max_per_query)
 
         # Print summary
-        print("\n" + "="*70)
+        print("\n" + "=" * 70)
         print("RETRIEVAL SUMMARY")
-        print("="*70)
+        print("=" * 70)
         print(f"Queries executed: {self.stats['queries_executed']}")
         print(f"Total records found: {self.stats['records_found']}")
         print(f"PDFs downloaded: {self.stats['pdfs_downloaded']}")
@@ -434,12 +440,16 @@ class OSTIRetriever:
 
         # Save stats
         stats_file = self.output_dir / "retrieval_stats.json"
-        with open(stats_file, 'w') as f:
-            json.dump({
-                **self.stats,
-                "timestamp": datetime.now().isoformat(),
-                "total_downloaded_ids": len(self.downloaded_ids)
-            }, f, indent=2)
+        with open(stats_file, "w") as f:
+            json.dump(
+                {
+                    **self.stats,
+                    "timestamp": datetime.now().isoformat(),
+                    "total_downloaded_ids": len(self.downloaded_ids),
+                },
+                f,
+                indent=2,
+            )
 
         return self.stats
 
@@ -450,25 +460,27 @@ class OSTIRetriever:
         for commodity_dir in self.pdf_dir.iterdir():
             if commodity_dir.is_dir():
                 for meta_file in commodity_dir.glob("*_metadata.json"):
-                    with open(meta_file, 'r') as f:
+                    with open(meta_file) as f:
                         record = json.load(f)
-                        catalog.append({
-                            "osti_id": record.get("osti_id"),
-                            "title": record.get("title"),
-                            "authors": record.get("authors", []),
-                            "publication_date": record.get("publication_date"),
-                            "description": record.get("description", "")[:500],
-                            "subjects": record.get("subjects", []),
-                            "commodity_category": commodity_dir.name,
-                            "doi": record.get("doi"),
-                            "product_type": record.get("product_type"),
-                            "research_orgs": record.get("research_orgs", []),
-                            "sponsor_orgs": record.get("sponsor_orgs", [])
-                        })
+                        catalog.append(
+                            {
+                                "osti_id": record.get("osti_id"),
+                                "title": record.get("title"),
+                                "authors": record.get("authors", []),
+                                "publication_date": record.get("publication_date"),
+                                "description": record.get("description", "")[:500],
+                                "subjects": record.get("subjects", []),
+                                "commodity_category": commodity_dir.name,
+                                "doi": record.get("doi"),
+                                "product_type": record.get("product_type"),
+                                "research_orgs": record.get("research_orgs", []),
+                                "sponsor_orgs": record.get("sponsor_orgs", []),
+                            }
+                        )
 
         # Save catalog
         catalog_file = self.output_dir / "document_catalog.json"
-        with open(catalog_file, 'w') as f:
+        with open(catalog_file, "w") as f:
             json.dump(catalog, f, indent=2)
 
         print(f"\nExported catalog with {len(catalog)} documents to {catalog_file}")
@@ -480,9 +492,15 @@ def main():
     import argparse
 
     parser = argparse.ArgumentParser(description="OSTI Document Retrieval for CMM Research")
-    parser.add_argument("--commodity", "-c", help="Retrieve for specific commodity (e.g., HREE, LI, CO)")
-    parser.add_argument("--subdomain", "-s", help="Retrieve for specific subdomain (e.g., T-EC, S-ST)")
-    parser.add_argument("--all", "-a", action="store_true", help="Retrieve all commodities and subdomains")
+    parser.add_argument(
+        "--commodity", "-c", help="Retrieve for specific commodity (e.g., HREE, LI, CO)"
+    )
+    parser.add_argument(
+        "--subdomain", "-s", help="Retrieve for specific subdomain (e.g., T-EC, S-ST)"
+    )
+    parser.add_argument(
+        "--all", "-a", action="store_true", help="Retrieve all commodities and subdomains"
+    )
     parser.add_argument("--max-per-query", "-m", type=int, default=50, help="Max results per query")
     parser.add_argument("--catalog", action="store_true", help="Export metadata catalog only")
 

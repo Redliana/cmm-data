@@ -7,9 +7,11 @@ Usage: python scripts/build_wheel.py
 Output: dist/cmm_data-0.1.0-py3-none-any.whl
 """
 
+from __future__ import annotations
+
+import shutil
 import subprocess
 import sys
-import shutil
 from pathlib import Path
 
 
@@ -29,14 +31,26 @@ def main():
 
     # Change to project directory
     import os
+
     os.chdir(project_dir)
 
     # Step 1: Install build tools
     print("1. Installing build tools...")
-    subprocess.run([
-        sys.executable, "-m", "pip", "install",
-        "--upgrade", "pip", "build", "wheel", "setuptools", "--quiet"
-    ], check=True)
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "pip",
+            "install",
+            "--upgrade",
+            "pip",
+            "build",
+            "wheel",
+            "setuptools",
+            "--quiet",
+        ],
+        check=True,
+    )
     print("   Done.")
 
     # Step 2: Clean previous builds
@@ -58,7 +72,7 @@ def main():
 
     # Step 3: Build the package
     print("3. Building wheel and sdist...")
-    result = subprocess.run([sys.executable, "-m", "build"], check=True)
+    subprocess.run([sys.executable, "-m", "build"], check=True)
     print("   Done.")
 
     # Show results

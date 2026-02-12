@@ -6,6 +6,8 @@ Demonstrates basic usage of the cmm_data package.
 Run after installation: python scripts/quickstart.py
 """
 
+from __future__ import annotations
+
 import cmm_data
 
 
@@ -24,10 +26,10 @@ def main():
 
     catalog = cmm_data.get_data_catalog()
     for _, row in catalog.iterrows():
-        status = "[OK]" if row['available'] else "[--]"
+        status = "[OK]" if row["available"] else "[--]"
         print(f"  {status} {row['dataset']}: {row['name']}")
 
-    # 2. List Commodities
+    # 2. list Commodities
     print("\n" + "-" * 40)
     print("2. Commodity Codes")
     print("-" * 40)
@@ -43,7 +45,7 @@ def main():
 
     critical = cmm_data.list_critical_minerals()
     print(f"  Count: {len(critical)}")
-    print(f"  List: {', '.join(critical)}")
+    print(f"  list: {', '.join(critical)}")
 
     # 4. Load Sample Data
     print("\n" + "-" * 40)
@@ -54,8 +56,8 @@ def main():
         df = cmm_data.load_usgs_commodity("lithi", "world")
         print(f"\n  Columns: {list(df.columns)}")
         print(f"\n  Data ({len(df)} rows):")
-        print(df[['Country', 'Prod_t_est_2022', 'Reserves_t']].head(10).to_string(index=False))
-    except Exception as e:
+        print(df[["Country", "Prod_t_est_2022", "Reserves_t"]].head(10).to_string(index=False))
+    except (OSError, ValueError) as e:
         print(f"  [ERROR] {e}")
 
     # 5. Top Producers
@@ -69,13 +71,13 @@ def main():
         print("\n  Rank  Country         Production (t)")
         print("  " + "-" * 40)
         for i, (_, row) in enumerate(top.iterrows(), 1):
-            country = row['Country'][:15]
-            prod = row.get('Prod_t_est_2022_clean', row.get('Prod_t_est_2022', 'N/A'))
+            country = row["Country"][:15]
+            prod = row.get("Prod_t_est_2022_clean", row.get("Prod_t_est_2022", "N/A"))
             if isinstance(prod, (int, float)):
                 print(f"  {i:4d}  {country:15s}  {prod:>15,.0f}")
             else:
-                print(f"  {i:4d}  {country:15s}  {str(prod):>15s}")
-    except Exception as e:
+                print(f"  {i:4d}  {country:15s}  {prod!s:>15s}")
+    except (OSError, ValueError) as e:
         print(f"  [ERROR] {e}")
 
     # 6. Salient Statistics
@@ -91,7 +93,7 @@ def main():
         print(f"    Imports: {latest.get('Imports_t', 'N/A')} t")
         print(f"    Exports: {latest.get('Exports_t', 'N/A')} t")
         print(f"    Net Import Reliance: {latest.get('NIR_pct', 'N/A')}")
-    except Exception as e:
+    except (OSError, ValueError) as e:
         print(f"  [ERROR] {e}")
 
     print("\n" + "=" * 60)

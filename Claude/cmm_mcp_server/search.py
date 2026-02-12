@@ -3,23 +3,25 @@ Search functionality for CMM MCP Server
 Implements full-text search with SQLite FTS5 and similarity search with TF-IDF
 """
 
-import sqlite3
-import pickle
+from __future__ import annotations
+
 import json
-from pathlib import Path
-from typing import List, Optional, Tuple
 import logging
+import pickle
+import sqlite3
 
 import fitz  # PyMuPDF
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-
 from config import (
-    SEARCH_DB, TFIDF_VECTORS, INDEX_DIR, OSTI_CATALOG, OSTI_PDFS_DIR,
-    MAX_SEARCH_RESULTS
+    INDEX_DIR,
+    MAX_SEARCH_RESULTS,
+    OSTI_CATALOG,
+    OSTI_PDFS_DIR,
+    SEARCH_DB,
+    TFIDF_VECTORS,
 )
 from ocr import get_mistral_ocr
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 logger = logging.getLogger(__name__)
 
@@ -44,13 +46,13 @@ class SearchIndex:
         """Load existing search index and TF-IDF vectors"""
         if self.vectors_path.exists():
             try:
-                with open(self.vectors_path, 'rb') as f:
+                with open(self.vectors_path, "rb") as f:
                     data = pickle.load(f)
-                    self.vectorizer = data['vectorizer']
-                    self.tfidf_matrix = data['matrix']
-                    self.doc_ids = data['doc_ids']
+                    self.vectorizer = data["vectorizer"]
+                    self.tfidf_matrix = data["matrix"]
+                    self.doc_ids = data["doc_ids"]
                 logger.info(f"Loaded TF-IDF index with {len(self.doc_ids)} documents")
-            except Exception as e:
+            except (OSError, ValueError, pickle.UnpicklingError) as e:
                 logger.warning(f"Failed to load TF-IDF index: {e}")
 
     def is_indexed(self) -> bool:
@@ -60,16 +62,16 @@ class SearchIndex:
     def get_index_stats(self) -> dict:
         """Get index statistics"""
         stats = {
-            'indexed': self.is_indexed(),
-            'document_count': 0,
-            'fts_indexed': self.db_path.exists(),
-            'tfidf_indexed': self.tfidf_matrix is not None,
+            "indexed": self.is_indexed(),
+            "document_count": 0,
+            "fts_indexed": self.db_path.exists(),
+            "tfidf_indexed": self.tfidf_matrix is not None,
         }
 
         if self.db_path.exists():
             conn = sqlite3.connect(self.db_path)
             cursor = conn.execute("SELECT COUNT(*) FROM documents")
-            stats['document_count'] = cursor.fetchone()[0]
+            stats["document_count"] = cursor.fetchone()[0]
             conn.close()
 
         return stats
@@ -87,9 +89,9 @@ class SearchIndex:
         """
         # Load catalog
         if not OSTI_CATALOG.exists():
-            return {'error': 'Document catalog not found'}
+            return {"error": "Document catalog not found"}
 
-        with open(OSTI_CATALOG, 'r') as f:
+        with open(OSTI_CATALOG) as f:
             catalog = json.load(f)
 
         total_docs = len(catalog)
@@ -130,7 +132,7 @@ class SearchIndex:
 
         # Process each document
         for i, doc in enumerate(catalog):
-            osti_id = doc.get('osti_id')
+            osti_id = doc.get("osti_id")
             if not osti_id:
                 continue
 
@@ -138,11 +140,11 @@ class SearchIndex:
                 progress_callback(i, total_docs, f"Processing {osti_id}")
 
             # Get metadata
-            title = doc.get('title', '')
-            description = doc.get('description', '')
-            authors = ', '.join(doc.get('authors', []))
-            subjects = ', '.join(doc.get('subjects', []))
-            commodity = doc.get('commodity_category', '')
+            title = doc.get("title", "")
+            description = doc.get("description", "")
+            authors = ", ".join(doc.get("authors", []))
+            subjects = ", ".join(doc.get("subjects", []))
+            commodity = doc.get("commodity_category", "")
 
             # Extract PDF text
             content = self._extract_pdf_text(osti_id, commodity)
@@ -154,10 +156,13 @@ class SearchIndex:
                 content = ""  # Use empty string for missing PDFs
 
             # Insert into database
-            conn.execute("""
+            conn.execute(
+                """
                 INSERT INTO documents (osti_id, title, description, authors, subjects, commodity, content)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            """, (osti_id, title, description, authors, subjects, commodity, content))
+            """,
+                (osti_id, title, description, authors, subjects, commodity, content),
+            )
 
             # Store for TF-IDF
             full_text = f"{title} {description} {content}"
@@ -174,27 +179,28 @@ class SearchIndex:
         # Build TF-IDF index
         if texts:
             self.vectorizer = TfidfVectorizer(
-                max_features=10000,
-                stop_words='english',
-                ngram_range=(1, 2)
+                max_features=10000, stop_words="english", ngram_range=(1, 2)
             )
             self.tfidf_matrix = self.vectorizer.fit_transform(texts)
             self.doc_ids = doc_ids
 
             # Save TF-IDF data
-            with open(self.vectors_path, 'wb') as f:
-                pickle.dump({
-                    'vectorizer': self.vectorizer,
-                    'matrix': self.tfidf_matrix,
-                    'doc_ids': self.doc_ids
-                }, f)
+            with open(self.vectors_path, "wb") as f:
+                pickle.dump(
+                    {
+                        "vectorizer": self.vectorizer,
+                        "matrix": self.tfidf_matrix,
+                        "doc_ids": self.doc_ids,
+                    },
+                    f,
+                )
 
         return {
-            'total_documents': total_docs,
-            'indexed': indexed,
-            'errors': errors,
-            'fts_indexed': True,
-            'tfidf_indexed': True,
+            "total_documents": total_docs,
+            "indexed": indexed,
+            "errors": errors,
+            "fts_indexed": True,
+            "tfidf_indexed": True,
         }
 
     def _extract_pdf_text(self, osti_id: str, commodity: str, use_ocr_fallback: bool = True) -> str:
@@ -225,7 +231,7 @@ class SearchIndex:
             if text.strip():
                 return text
 
-        except Exception as e:
+        except (OSError, ValueError) as e:
             logger.warning(f"PyMuPDF failed for {pdf_path}: {e}")
 
         # Fallback to Mistral OCR if enabled and available
@@ -241,7 +247,7 @@ class SearchIndex:
 
         return ""
 
-    def search(self, query: str, limit: int = MAX_SEARCH_RESULTS) -> List[dict]:
+    def search(self, query: str, limit: int = MAX_SEARCH_RESULTS) -> list[dict]:
         """
         Full-text search across indexed documents.
 
@@ -250,15 +256,16 @@ class SearchIndex:
             limit: Maximum results to return
 
         Returns:
-            List of matching documents with relevance scores
+            list of matching documents with relevance scores
         """
         if not self.db_path.exists():
-            return [{'error': 'Search index not built. Use build_index first.'}]
+            return [{"error": "Search index not built. Use build_index first."}]
 
         conn = sqlite3.connect(self.db_path)
 
         # Use FTS5 search with BM25 ranking
-        cursor = conn.execute("""
+        cursor = conn.execute(
+            """
             SELECT
                 d.osti_id,
                 d.title,
@@ -270,22 +277,26 @@ class SearchIndex:
             WHERE documents_fts MATCH ?
             ORDER BY score
             LIMIT ?
-        """, (query, limit))
+        """,
+            (query, limit),
+        )
 
         results = []
         for row in cursor:
-            results.append({
-                'osti_id': row[0],
-                'title': row[1],
-                'description': row[2][:300] + '...' if len(row[2]) > 300 else row[2],
-                'commodity': row[3],
-                'relevance_score': abs(row[4]),  # BM25 returns negative scores
-            })
+            results.append(
+                {
+                    "osti_id": row[0],
+                    "title": row[1],
+                    "description": row[2][:300] + "..." if len(row[2]) > 300 else row[2],
+                    "commodity": row[3],
+                    "relevance_score": abs(row[4]),  # BM25 returns negative scores
+                }
+            )
 
         conn.close()
         return results
 
-    def find_similar(self, osti_id: str, limit: int = 5) -> List[dict]:
+    def find_similar(self, osti_id: str, limit: int = 5) -> list[dict]:
         """
         Find documents similar to a given document using TF-IDF cosine similarity.
 
@@ -294,13 +305,13 @@ class SearchIndex:
             limit: Number of similar documents to return
 
         Returns:
-            List of similar documents with similarity scores
+            list of similar documents with similarity scores
         """
         if self.tfidf_matrix is None:
-            return [{'error': 'Similarity index not built. Use build_index first.'}]
+            return [{"error": "Similarity index not built. Use build_index first."}]
 
         if osti_id not in self.doc_ids:
-            return [{'error': f'Document {osti_id} not found in index'}]
+            return [{"error": f"Document {osti_id} not found in index"}]
 
         # Get index of reference document
         ref_idx = self.doc_ids.index(osti_id)
@@ -320,27 +331,30 @@ class SearchIndex:
                 continue  # Skip self
 
             doc_id = self.doc_ids[idx]
-            results.append({
-                'osti_id': doc_id,
-                'similarity_score': float(similarities[idx]),
-            })
+            results.append(
+                {
+                    "osti_id": doc_id,
+                    "similarity_score": float(similarities[idx]),
+                }
+            )
 
         # Enrich with metadata
         if OSTI_CATALOG.exists():
-            with open(OSTI_CATALOG, 'r') as f:
+            with open(OSTI_CATALOG) as f:
                 catalog = json.load(f)
-                catalog_dict = {d['osti_id']: d for d in catalog}
+                catalog_dict = {d["osti_id"]: d for d in catalog}
 
             for result in results:
-                doc = catalog_dict.get(result['osti_id'], {})
-                result['title'] = doc.get('title', 'Unknown')
-                result['commodity'] = doc.get('commodity_category', 'Unknown')
+                doc = catalog_dict.get(result["osti_id"], {})
+                result["title"] = doc.get("title", "Unknown")
+                result["commodity"] = doc.get("commodity_category", "Unknown")
 
         return results
 
 
 # Singleton instance
 _search_index = None
+
 
 def get_search_index() -> SearchIndex:
     """Get or create SearchIndex singleton"""

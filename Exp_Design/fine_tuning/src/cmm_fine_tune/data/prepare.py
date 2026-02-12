@@ -122,9 +122,7 @@ def run_pipeline(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Prepare CMM training data from raw CSVs"
-    )
+    parser = argparse.ArgumentParser(description="Prepare CMM training data from raw CSVs")
     parser.add_argument(
         "--output-dir",
         type=Path,

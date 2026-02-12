@@ -1,6 +1,6 @@
 """Data catalog and inventory functions."""
 
-from typing import Dict, List, Optional
+from __future__ import annotations
 
 import pandas as pd
 
@@ -86,7 +86,7 @@ def get_data_catalog() -> pd.DataFrame:
     def get_path_safe(ds):
         try:
             return str(config.get_path(ds))
-        except Exception:
+        except (ValueError, KeyError):
             return None
 
     df["path"] = df["dataset"].map(get_path_safe)
@@ -94,27 +94,27 @@ def get_data_catalog() -> pd.DataFrame:
     return df
 
 
-def list_commodities() -> List[str]:
+def list_commodities() -> list[str]:
     """
-    List all available USGS commodity codes.
+    list all available USGS commodity codes.
 
     Returns:
-        List of commodity codes (e.g., ['abras', 'alumi', ...])
+        list of commodity codes (e.g., ['abras', 'alumi', ...])
     """
     return sorted(COMMODITY_NAMES.keys())
 
 
-def list_critical_minerals() -> List[str]:
+def list_critical_minerals() -> list[str]:
     """
-    List DOE critical minerals commodity codes.
+    list DOE critical minerals commodity codes.
 
     Returns:
-        List of critical mineral codes
+        list of critical mineral codes
     """
     return CRITICAL_MINERALS.copy()
 
 
-def get_commodity_info(code: str) -> Dict:
+def get_commodity_info(code: str) -> dict:
     """
     Get information about a commodity.
 
@@ -135,23 +135,20 @@ def get_commodity_info(code: str) -> Dict:
     }
 
 
-def search_all_datasets(
-    query: str,
-    datasets: Optional[List[str]] = None
-) -> pd.DataFrame:
+def search_all_datasets(query: str, datasets: list[str] | None = None) -> pd.DataFrame:
     """
     Search across multiple datasets.
 
     Args:
         query: Search query string
-        datasets: List of datasets to search (default: all)
+        datasets: list of datasets to search (default: all)
 
     Returns:
         DataFrame with search results from all datasets
     """
-    from .loaders.usgs_commodity import USGSCommodityLoader
     from .loaders.osti_docs import OSTIDocumentsLoader
     from .loaders.preprocessed import PreprocessedCorpusLoader
+    from .loaders.usgs_commodity import USGSCommodityLoader
 
     results = []
 
@@ -164,14 +161,16 @@ def search_all_datasets(
             # Search commodity names
             for code, name in COMMODITY_NAMES.items():
                 if query.lower() in name.lower() or query.lower() in code.lower():
-                    results.append({
-                        "dataset": "usgs_commodity",
-                        "type": "commodity",
-                        "id": code,
-                        "name": name,
-                        "match_field": "commodity_name",
-                    })
-        except Exception:
+                    results.append(
+                        {
+                            "dataset": "usgs_commodity",
+                            "type": "commodity",
+                            "id": code,
+                            "name": name,
+                            "match_field": "commodity_name",
+                        }
+                    )
+        except (OSError, ValueError):
             pass
 
     if "osti" in datasets:
@@ -179,14 +178,16 @@ def search_all_datasets(
             loader = OSTIDocumentsLoader()
             docs = loader.search_documents(query, limit=20)
             for _, row in docs.iterrows():
-                results.append({
-                    "dataset": "osti",
-                    "type": "document",
-                    "id": row.get("osti_id", ""),
-                    "name": row.get("title", ""),
-                    "match_field": "title/abstract",
-                })
-        except Exception:
+                results.append(
+                    {
+                        "dataset": "osti",
+                        "type": "document",
+                        "id": row.get("osti_id", ""),
+                        "name": row.get("title", ""),
+                        "match_field": "title/abstract",
+                    }
+                )
+        except (OSError, ValueError):
             pass
 
     if "preprocessed" in datasets:
@@ -194,20 +195,22 @@ def search_all_datasets(
             loader = PreprocessedCorpusLoader()
             docs = loader.search(query, limit=20)
             for _, row in docs.iterrows():
-                results.append({
-                    "dataset": "preprocessed",
-                    "type": "document",
-                    "id": row.get("id", ""),
-                    "name": row.get("title", str(row.get("text", ""))[:50]),
-                    "match_field": "text",
-                })
-        except Exception:
+                results.append(
+                    {
+                        "dataset": "preprocessed",
+                        "type": "document",
+                        "id": row.get("id", ""),
+                        "name": row.get("title", str(row.get("text", ""))[:50]),
+                        "match_field": "text",
+                    }
+                )
+        except (OSError, ValueError):
             pass
 
     return pd.DataFrame(results)
 
 
-def get_dataset_summary() -> Dict:
+def get_dataset_summary() -> dict:
     """
     Get a summary of all available data.
 

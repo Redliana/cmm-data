@@ -1,6 +1,8 @@
 """Time series visualizations."""
 
-from typing import Any, List, Optional
+from __future__ import annotations
+
+from typing import Any
 
 import pandas as pd
 
@@ -11,26 +13,26 @@ def _get_matplotlib():
     """Get matplotlib.pyplot, raising helpful error if not installed."""
     try:
         import matplotlib.pyplot as plt
+
         return plt
     except ImportError:
         raise ConfigurationError(
-            "matplotlib required for visualizations. "
-            "Install with: pip install cmm-data[viz]"
+            "matplotlib required for visualizations. Install with: pip install cmm-data[viz]"
         )
 
 
 def plot_commodity_timeseries(
     commodity_code: str,
-    metrics: Optional[List[str]] = None,
+    metrics: list[str] | None = None,
     figsize: tuple = (12, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot time series for a commodity's salient statistics.
 
     Args:
         commodity_code: Commodity code (e.g., 'lithi')
-        metrics: List of metrics to plot (default: production, imports, exports)
+        metrics: list of metrics to plot (default: production, imports, exports)
         figsize: Figure size tuple
         ax: Optional matplotlib axes
 
@@ -79,7 +81,7 @@ def plot_commodity_timeseries(
 def plot_price_trends(
     commodity_code: str,
     figsize: tuple = (10, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot price trends for a commodity.
@@ -130,7 +132,7 @@ def plot_price_trends(
 
 
 def plot_critical_minerals_comparison(
-    year: Optional[int] = None,
+    year: int | None = None,
     metric: str = "USprod_t",
     top_n: int = 15,
     figsize: tuple = (14, 8),
@@ -149,7 +151,7 @@ def plot_critical_minerals_comparison(
     """
     plt = _get_matplotlib()
 
-    from ..loaders.usgs_commodity import USGSCommodityLoader, CRITICAL_MINERALS
+    from ..loaders.usgs_commodity import CRITICAL_MINERALS, USGSCommodityLoader
 
     loader = USGSCommodityLoader()
 
@@ -168,12 +170,10 @@ def plot_critical_minerals_comparison(
             if col in row.columns:
                 value = row[col].iloc[0]
                 if pd.notna(value) and value > 0:
-                    data.append({
-                        "commodity": loader.get_commodity_name(code),
-                        "code": code,
-                        "value": value
-                    })
-        except Exception:
+                    data.append(
+                        {"commodity": loader.get_commodity_name(code), "code": code, "value": value}
+                    )
+        except (OSError, ValueError):
             continue
 
     if not data:
@@ -184,7 +184,7 @@ def plot_critical_minerals_comparison(
     plot_df = pd.DataFrame(data).nlargest(top_n, "value")
 
     fig, ax = plt.subplots(figsize=figsize)
-    bars = ax.barh(plot_df["commodity"], plot_df["value"], color="steelblue")
+    ax.barh(plot_df["commodity"], plot_df["value"], color="steelblue")
     ax.set_xlabel(metric.replace("_t", " (metric tons)").replace("_", " "))
     ax.set_title(f"Critical Minerals - {metric}")
     ax.invert_yaxis()

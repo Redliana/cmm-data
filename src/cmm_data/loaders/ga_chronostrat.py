@@ -1,15 +1,15 @@
 """Geoscience Australia Chronostratigraphic Model loader."""
 
+from __future__ import annotations
+
 import zipfile
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import numpy as np
 import pandas as pd
 
+from ..exceptions import ConfigurationError, DataNotFoundError
 from .base import BaseLoader
-from ..exceptions import DataNotFoundError, ConfigurationError
-
 
 # Surface names in the GA 3D model
 CHRONOSTRAT_SURFACES = [
@@ -50,7 +50,7 @@ class GAChronostratigraphicLoader(BaseLoader):
         "confidence": "149923_3D_Confidence_GEOTIFF*.zip",
     }
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available data formats."""
         if not self.data_path.exists():
             return []
@@ -62,11 +62,7 @@ class GAChronostratigraphicLoader(BaseLoader):
 
         return available
 
-    def load(
-        self,
-        surface: str = "Paleozoic_Top",
-        format: str = "xyz"
-    ) -> pd.DataFrame:
+    def load(self, surface: str = "Paleozoic_Top", format: str = "xyz") -> pd.DataFrame:
         """
         Load a surface from the chronostratigraphic model.
 
@@ -97,15 +93,13 @@ class GAChronostratigraphicLoader(BaseLoader):
         # Find XYZ zip file
         xyz_files = list(self.data_path.glob(self.FORMAT_PATTERNS["xyz"]))
         if not xyz_files:
-            raise DataNotFoundError(
-                "XYZ data not found. Download from GA eCat (record 149923)"
-            )
+            raise DataNotFoundError("XYZ data not found. Download from GA eCat (record 149923)")
 
         zip_path = xyz_files[0]
 
         # Search for surface file in zip
         with zipfile.ZipFile(zip_path, "r") as zf:
-            # List files and find matching surface
+            # list files and find matching surface
             surface_file = None
             for name in zf.namelist():
                 if surface.lower() in name.lower() and name.endswith(".xyz"):
@@ -113,22 +107,14 @@ class GAChronostratigraphicLoader(BaseLoader):
                     break
 
             if not surface_file:
-                available_surfaces = [
-                    n for n in zf.namelist() if n.endswith(".xyz")
-                ]
+                available_surfaces = [n for n in zf.namelist() if n.endswith(".xyz")]
                 raise DataNotFoundError(
                     f"Surface '{surface}' not found. Available: {available_surfaces}"
                 )
 
             # Read XYZ file
             with zf.open(surface_file) as f:
-                df = pd.read_csv(
-                    f,
-                    sep=r"\s+",
-                    names=["x", "y", "z"],
-                    header=None,
-                    comment="#"
-                )
+                df = pd.read_csv(f, sep=r"\s+", names=["x", "y", "z"], header=None, comment="#")
 
         df["surface"] = surface
 
@@ -141,8 +127,7 @@ class GAChronostratigraphicLoader(BaseLoader):
             import rasterio
         except ImportError:
             raise ConfigurationError(
-                "rasterio required for GeoTIFF loading. "
-                "Install with: pip install cmm-data[geo]"
+                "rasterio required for GeoTIFF loading. Install with: pip install cmm-data[geo]"
             )
 
         self._validate_path(self.data_path, "GA Chronostratigraphic directory")
@@ -150,9 +135,7 @@ class GAChronostratigraphicLoader(BaseLoader):
         # Find GeoTIFF zip file
         tiff_files = list(self.data_path.glob(self.FORMAT_PATTERNS["geotiff"]))
         if not tiff_files:
-            raise DataNotFoundError(
-                "GeoTIFF data not found. Download from GA eCat (record 149923)"
-            )
+            raise DataNotFoundError("GeoTIFF data not found. Download from GA eCat (record 149923)")
 
         zip_path = tiff_files[0]
 
@@ -171,11 +154,11 @@ class GAChronostratigraphicLoader(BaseLoader):
             extracted = zf.extract(surface_file, self.data_path / ".temp")
             return rasterio.open(extracted)
 
-    def list_surfaces(self) -> List[str]:
+    def list_surfaces(self) -> list[str]:
         """List available surface names."""
         return CHRONOSTRAT_SURFACES.copy()
 
-    def get_surface_extent(self, surface: str) -> Dict[str, float]:
+    def get_surface_extent(self, surface: str) -> dict[str, float]:
         """
         Get spatial extent of a surface.
 
@@ -197,12 +180,7 @@ class GAChronostratigraphicLoader(BaseLoader):
             "point_count": len(df),
         }
 
-    def get_depth_at_point(
-        self,
-        x: float,
-        y: float,
-        surface: str = "Basement"
-    ) -> Optional[float]:
+    def get_depth_at_point(self, x: float, y: float, surface: str = "Basement") -> float | None:
         """
         Get depth to a surface at a specific location.
 
@@ -217,7 +195,7 @@ class GAChronostratigraphicLoader(BaseLoader):
         df = self._load_xyz_surface(surface)
 
         # Find nearest point (simple approach)
-        distances = np.sqrt((df["x"] - x)**2 + (df["y"] - y)**2)
+        distances = np.sqrt((df["x"] - x) ** 2 + (df["y"] - y) ** 2)
         min_idx = distances.idxmin()
 
         # Return None if too far from any data point
@@ -226,7 +204,7 @@ class GAChronostratigraphicLoader(BaseLoader):
 
         return df.loc[min_idx, "z"]
 
-    def get_model_info(self) -> Dict:
+    def get_model_info(self) -> dict:
         """Get information about the 3D model."""
         return {
             "title": "Preliminary 3D Chronostratigraphic Model of Australia",
@@ -238,7 +216,7 @@ class GAChronostratigraphicLoader(BaseLoader):
             "url": "https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/149923",
         }
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the GA chronostratigraphic dataset."""
         base = super().describe()
         base.update(self.get_model_info())

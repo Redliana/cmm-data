@@ -1,13 +1,18 @@
 """Preprocessed corpus loader for LLM training data."""
 
+from __future__ import annotations
+
 import json
-from pathlib import Path
-from typing import Any, Dict, Generator, List, Optional
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
-from .base import BaseLoader
 from ..exceptions import DataNotFoundError
+from .base import BaseLoader
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from pathlib import Path
 
 
 class PreprocessedCorpusLoader(BaseLoader):
@@ -20,7 +25,7 @@ class PreprocessedCorpusLoader(BaseLoader):
 
     dataset_name = "preprocessed"
 
-    def list_available(self) -> List[str]:
+    def list_available(self) -> list[str]:
         """List available corpus files."""
         if not self.data_path.exists():
             return []
@@ -52,7 +57,7 @@ class PreprocessedCorpusLoader(BaseLoader):
             )
 
         records = []
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             for line in f:
                 try:
                     record = json.loads(line.strip())
@@ -66,10 +71,8 @@ class PreprocessedCorpusLoader(BaseLoader):
         return df
 
     def iter_documents(
-        self,
-        corpus_file: str = "unified_corpus.jsonl",
-        batch_size: Optional[int] = None
-    ) -> Generator[Dict[str, Any], None, None]:
+        self, corpus_file: str = "unified_corpus.jsonl", batch_size: int | None = None
+    ) -> Generator[dict[str, Any], None, None]:
         """
         Iterate over documents in the corpus.
 
@@ -84,7 +87,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         self._validate_path(file_path, f"Corpus file {corpus_file}")
 
         batch = []
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             for line in f:
                 try:
                     record = json.loads(line.strip())
@@ -102,7 +105,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         if batch_size and batch:
             yield batch
 
-    def get_corpus_stats(self, corpus_file: str = "unified_corpus.jsonl") -> Dict:
+    def get_corpus_stats(self, corpus_file: str = "unified_corpus.jsonl") -> dict:
         """
         Get statistics about the corpus.
 
@@ -140,12 +143,7 @@ class PreprocessedCorpusLoader(BaseLoader):
 
         return stats
 
-    def search(
-        self,
-        query: str,
-        fields: Optional[List[str]] = None,
-        limit: int = 100
-    ) -> pd.DataFrame:
+    def search(self, query: str, fields: list[str] | None = None, limit: int = 100) -> pd.DataFrame:
         """
         Search documents in the corpus.
 
@@ -165,9 +163,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         mask = pd.Series([False] * len(df))
         for field in fields:
             if field in df.columns:
-                field_mask = df[field].astype(str).str.contains(
-                    query, case=False, na=False
-                )
+                field_mask = df[field].astype(str).str.contains(query, case=False, na=False)
                 mask = mask | field_mask
 
         return df[mask].head(limit)
@@ -188,10 +184,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         return df
 
     def export_for_training(
-        self,
-        output_path: Path,
-        text_column: str = "text",
-        format: str = "jsonl"
+        self, output_path: Path, text_column: str = "text", format: str = "jsonl"
     ) -> int:
         """
         Export corpus for LLM training.
@@ -228,12 +221,12 @@ class PreprocessedCorpusLoader(BaseLoader):
 
         return count
 
-    def describe(self) -> Dict:
+    def describe(self) -> dict:
         """Describe the preprocessed corpus."""
         base = super().describe()
         try:
             stats = self.get_corpus_stats()
             base.update(stats)
-        except Exception:
+        except (OSError, ValueError):
             pass
         return base

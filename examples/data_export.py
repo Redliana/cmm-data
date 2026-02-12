@@ -5,9 +5,13 @@ Data export examples for cmm_data package.
 Shows how to export CMM data to various formats.
 """
 
-import cmm_data
-import pandas as pd
+from __future__ import annotations
+
 from pathlib import Path
+
+import pandas as pd
+
+import cmm_data
 
 
 def export_critical_minerals_summary(output_dir: Path):
@@ -23,7 +27,7 @@ def export_critical_minerals_summary(output_dir: Path):
         try:
             # World production
             world = loader.load_world_production(code)
-            world_total = world[world['Country'].str.contains('World', case=False, na=False)]
+            world_total = world[world["Country"].str.contains("World", case=False, na=False)]
 
             # Salient statistics
             salient = loader.load_salient_statistics(code)
@@ -31,19 +35,25 @@ def export_critical_minerals_summary(output_dir: Path):
 
             # Top producer
             top = loader.get_top_producers(code, top_n=1)
-            top_country = top.iloc[0]['Country'] if not top.empty else 'N/A'
+            top_country = top.iloc[0]["Country"] if not top.empty else "N/A"
 
-            summary_data.append({
-                'commodity_code': code,
-                'commodity_name': loader.get_commodity_name(code),
-                'top_producer': top_country,
-                'world_production_2022': world_total.iloc[0].get('Prod_t_est_2022', 'N/A') if not world_total.empty else 'N/A',
-                'world_reserves': world_total.iloc[0].get('Reserves_t', 'N/A') if not world_total.empty else 'N/A',
-                'us_imports_2022': latest.get('Imports_t', 'N/A'),
-                'us_exports_2022': latest.get('Exports_t', 'N/A'),
-                'net_import_reliance': latest.get('NIR_pct', 'N/A'),
-            })
-        except Exception as e:
+            summary_data.append(
+                {
+                    "commodity_code": code,
+                    "commodity_name": loader.get_commodity_name(code),
+                    "top_producer": top_country,
+                    "world_production_2022": world_total.iloc[0].get("Prod_t_est_2022", "N/A")
+                    if not world_total.empty
+                    else "N/A",
+                    "world_reserves": world_total.iloc[0].get("Reserves_t", "N/A")
+                    if not world_total.empty
+                    else "N/A",
+                    "us_imports_2022": latest.get("Imports_t", "N/A"),
+                    "us_exports_2022": latest.get("Exports_t", "N/A"),
+                    "net_import_reliance": latest.get("NIR_pct", "N/A"),
+                }
+            )
+        except (OSError, ValueError, KeyError) as e:
             print(f"  Warning: Error processing {code}: {e}")
             continue
 
@@ -67,10 +77,10 @@ def export_world_production_all(output_dir: Path):
     for code in commodities:
         try:
             df = loader.load_world_production(code)
-            df['commodity_code'] = code
-            df['commodity_name'] = loader.get_commodity_name(code)
+            df["commodity_code"] = code
+            df["commodity_name"] = loader.get_commodity_name(code)
             all_data.append(df)
-        except Exception:
+        except (OSError, ValueError):
             continue
 
     if all_data:
@@ -92,10 +102,10 @@ def export_salient_statistics_all(output_dir: Path):
     for code in commodities:
         try:
             df = loader.load_salient_statistics(code)
-            df['commodity_code'] = code
-            df['commodity_name'] = loader.get_commodity_name(code)
+            df["commodity_code"] = code
+            df["commodity_name"] = loader.get_commodity_name(code)
             all_data.append(df)
-        except Exception:
+        except (OSError, ValueError):
             continue
 
     if all_data:
@@ -124,7 +134,7 @@ def export_ore_deposits(output_dir: Path):
         geology.to_csv(output_file, index=False)
         print(f"  Saved: {output_file} ({len(geology)} rows)")
 
-    except Exception as e:
+    except (OSError, ValueError) as e:
         print(f"  Error: {e}")
 
 
@@ -142,33 +152,35 @@ def export_to_excel(output_dir: Path):
 
     output_file = output_dir / "cmm_data_export.xlsx"
 
-    with pd.ExcelWriter(output_file, engine='openpyxl') as writer:
+    with pd.ExcelWriter(output_file, engine="openpyxl") as writer:
         # Critical minerals summary
         critical = cmm_data.list_critical_minerals()
         summary_data = []
         for code in critical[:10]:  # First 10 for demo
             try:
                 df = loader.load_world_production(code)
-                top = df[~df['Country'].str.contains('World|total', case=False, na=False)].head(5)
-                top['commodity'] = loader.get_commodity_name(code)
-                summary_data.append(top[['commodity', 'Country', 'Prod_t_est_2022', 'Reserves_t']])
-            except Exception:
+                top = df[~df["Country"].str.contains("World|total", case=False, na=False)].head(5)
+                top["commodity"] = loader.get_commodity_name(code)
+                summary_data.append(top[["commodity", "Country", "Prod_t_est_2022", "Reserves_t"]])
+            except (OSError, ValueError):
                 continue
 
         if summary_data:
             combined = pd.concat(summary_data, ignore_index=True)
-            combined.to_excel(writer, sheet_name='Top Producers', index=False)
+            combined.to_excel(writer, sheet_name="Top Producers", index=False)
 
         # Commodity list
-        commodities_df = pd.DataFrame([
-            {'code': c, 'name': loader.get_commodity_name(c), 'is_critical': c in critical}
-            for c in loader.list_available()
-        ])
-        commodities_df.to_excel(writer, sheet_name='Commodities', index=False)
+        commodities_df = pd.DataFrame(
+            [
+                {"code": c, "name": loader.get_commodity_name(c), "is_critical": c in critical}
+                for c in loader.list_available()
+            ]
+        )
+        commodities_df.to_excel(writer, sheet_name="Commodities", index=False)
 
         # Data catalog
         catalog = cmm_data.get_data_catalog()
-        catalog.to_excel(writer, sheet_name='Data Catalog', index=False)
+        catalog.to_excel(writer, sheet_name="Data Catalog", index=False)
 
     print(f"  Saved: {output_file}")
 

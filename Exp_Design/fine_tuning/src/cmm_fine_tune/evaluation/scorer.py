@@ -51,9 +51,7 @@ def score_answer(gold: GoldQAPair, generated: str) -> ScoreResult:
         # No specific elements to check -- use ROUGE-L as proxy
         rouge_l = _compute_rouge_l(gold.reference_answer, generated)
         score = _rouge_to_rubric(rouge_l)
-        reasoning_parts.append(
-            f"No required elements specified; using ROUGE-L={rouge_l:.3f}"
-        )
+        reasoning_parts.append(f"No required elements specified; using ROUGE-L={rouge_l:.3f}")
         return ScoreResult(
             gold_id=gold.id,
             score=score,
@@ -136,9 +134,7 @@ def _rouge_to_rubric(rouge_l: float) -> float:
     return 0.0
 
 
-def score_all(
-    golds: list[GoldQAPair], generated_answers: list[str]
-) -> list[ScoreResult]:
+def score_all(golds: list[GoldQAPair], generated_answers: list[str]) -> list[ScoreResult]:
     """Score all generated answers against gold QA pairs."""
     assert len(golds) == len(generated_answers)
-    return [score_answer(g, a) for g, a in zip(golds, generated_answers)]
+    return [score_answer(g, a) for g, a in zip(golds, generated_answers, strict=False)]

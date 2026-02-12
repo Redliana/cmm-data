@@ -6,14 +6,15 @@ Run this script after installation to check that everything is working:
     python scripts/verify_installation.py
 """
 
+from __future__ import annotations
+
 import sys
-from pathlib import Path
 
 
 def print_header(text):
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f" {text}")
-    print('='*60)
+    print("=" * 60)
 
 
 def print_status(name, status, details=""):
@@ -30,6 +31,7 @@ def main():
     print("\n1. Checking package import...")
     try:
         import cmm_data
+
         print_status("cmm_data import", True, f"version {cmm_data.__version__}")
     except ImportError as e:
         print_status("cmm_data import", False, str(e))
@@ -56,9 +58,9 @@ def main():
     try:
         catalog = cmm_data.get_data_catalog()
         for _, row in catalog.iterrows():
-            print_status(row['dataset'], row['available'], row['name'])
+            print_status(row["dataset"], row["available"], row["name"])
 
-        available_count = catalog['available'].sum()
+        available_count = catalog["available"].sum()
         total_count = len(catalog)
         print(f"\n  Available: {available_count}/{total_count} datasets")
 
@@ -77,7 +79,7 @@ def main():
         ("OECDSupplyChainLoader", "oecd"),
     ]
 
-    for loader_name, dataset_key in loaders_to_check:
+    for loader_name, _dataset_key in loaders_to_check:
         try:
             loader_class = getattr(cmm_data, loader_name)
             loader = loader_class()
@@ -101,6 +103,7 @@ def main():
     # Visualization
     try:
         import matplotlib
+
         print_status("matplotlib (viz)", True, matplotlib.__version__)
     except ImportError:
         print_status("matplotlib (viz)", False, "pip install cmm-data[viz]")
@@ -108,12 +111,14 @@ def main():
     # Geospatial
     try:
         import geopandas
+
         print_status("geopandas (geo)", True, geopandas.__version__)
     except ImportError:
         print_status("geopandas (geo)", False, "pip install cmm-data[geo]")
 
     try:
         import rasterio
+
         print_status("rasterio (geo)", True, rasterio.__version__)
     except ImportError:
         print_status("rasterio (geo)", False, "pip install cmm-data[geo]")

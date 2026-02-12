@@ -53,7 +53,7 @@ def submit_batch_job(input_uri: str, monitor: bool = False) -> dict:
 
     output_uri = f"gs://{GCS_BUCKET}/{GCS_OUTPUT_PREFIX}"
 
-    print(f"Submitting batch job...")
+    print("Submitting batch job...")
     print(f"  Model: {GEMINI_MODEL}")
     print(f"  Input: {input_uri}")
     print(f"  Output: {output_uri}")
@@ -139,9 +139,7 @@ def poll_job(client=None, job_name: str | None = None) -> None:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(
-        description="Submit Vertex AI batch inference job"
-    )
+    parser = argparse.ArgumentParser(description="Submit Vertex AI batch inference job")
     parser.add_argument(
         "--monitor",
         action="store_true",

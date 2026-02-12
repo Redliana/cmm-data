@@ -55,8 +55,6 @@ def _build_prompt(question: str, tokenizer) -> str:
         {"role": "user", "content": question},
     ]
     if hasattr(tokenizer, "apply_chat_template"):
-        return tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
+        return tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
     # Fallback for tokenizers without chat template
     return f"System: {CMM_SYSTEM_PROMPT}\n\nUser: {question}\n\nAssistant:"
