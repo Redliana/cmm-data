@@ -7,11 +7,13 @@ for years 2020-2024 from ScienceBase catalog.
 Based on: https://www.sciencebase.gov/catalog/item/65a6e45fd34e5af967a46749
 """
 
+from __future__ import annotations
+
 import json
 import zipfile
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import dict, list
 
 import pandas as pd
 import requests
@@ -142,7 +144,7 @@ class USGSMCSDownloader:
             print(f"    ✗ Error extracting {zip_path}: {e}")
             return False
 
-    def download_year_data(self, year: int, item_id: Optional[str] = None) -> dict:
+    def download_year_data(self, year: int, item_id: str | None = None) -> dict:
         """
         Download USGS MCS data for a specific year.
 
@@ -284,7 +286,7 @@ class USGSMCSDownloader:
         Download USGS MCS data for all specified years.
 
         Args:
-            years: List of years to download
+            years: list of years to download
 
         Returns:
             Summary of downloads

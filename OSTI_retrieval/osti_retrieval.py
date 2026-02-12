@@ -15,6 +15,8 @@ Based on the CMM LLM Baseline Gold Q&A Methodology Framework.
 Retrieves DOE technical reports and journal preprints for critical minerals.
 """
 
+from __future__ import annotations
+
 import warnings
 
 warnings.warn(
@@ -29,7 +31,7 @@ import json
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import dict, list
 
 import requests
 
@@ -272,7 +274,7 @@ class OSTIRetriever:
         self.stats["records_found"] += len(all_records)
         return all_records[:max_results]
 
-    def download_pdf(self, record: dict, commodity: str = "unknown") -> Optional[Path]:
+    def download_pdf(self, record: dict, commodity: str = "unknown") -> Path | None:
         """Download PDF for a record if available."""
         osti_id = record.get("osti_id")
 

@@ -28,11 +28,12 @@ Or set API key as environment variable:
     python un_comtrade_query.py --reporter USA --partner CHN --commodity 2846 --year 2023
 """
 
+from __future__ import annotations
+
 import argparse
 import os
 import sys
 import warnings
-from typing import Optional
 
 import pandas as pd
 
@@ -49,7 +50,6 @@ except ImportError:
     print("Error: comtradeapicall package not found. Please install it with:")
     print("  pip install comtradeapicall")
     sys.exit(1)
-
 
 # CMM HS Codes (per UNCTAD mapping from CMM_API_MCP_Analysis.md)
 CMM_HS_CODES = {
@@ -99,7 +99,7 @@ COUNTRY_CODES = {
 class ComtradeQuery:
     """Class to handle UN Comtrade API queries for CMM data."""
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """
         Initialize ComtradeQuery instance.
 
@@ -311,7 +311,7 @@ Examples:
   # Save to CSV
   python un_comtrade_query.py --reporter USA --partner CHN --commodity 2846 --year 2023 --output results.csv
   
-  # List available CMM commodities
+  # list available CMM commodities
   python un_comtrade_query.py --list-commodities
         """,
     )
@@ -366,7 +366,7 @@ Examples:
 
     args = parser.parse_args()
 
-    # List commodities if requested
+    # list commodities if requested
     if args.list_commodities:
         print("\nAvailable CMM Commodities:")
         print("-" * 60)

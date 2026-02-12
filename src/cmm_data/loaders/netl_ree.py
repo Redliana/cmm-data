@@ -1,7 +1,9 @@
 """NETL REE and Coal geodatabase loader."""
 
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, dict, list
 
 import pandas as pd
 
@@ -56,7 +58,7 @@ class NETLREECoalLoader(BaseLoader):
         except Exception:
             return []
 
-    def load(self, layer: Optional[str] = None) -> pd.DataFrame:
+    def load(self, layer: str | None = None) -> pd.DataFrame:
         """
         Load data from the geodatabase.
 
@@ -78,7 +80,7 @@ class NETLREECoalLoader(BaseLoader):
                 "Install with: pip install cmm-data[geo]"
             )
 
-    def load_with_geometry(self, layer: Optional[str] = None) -> Any:
+    def load_with_geometry(self, layer: str | None = None) -> Any:
         """
         Load layer with geometry as GeoDataFrame.
 

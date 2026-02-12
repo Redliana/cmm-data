@@ -6,6 +6,8 @@ Run this script after installation to check that everything is working:
     python scripts/verify_installation.py
 """
 
+from __future__ import annotations
+
 import sys
 
 

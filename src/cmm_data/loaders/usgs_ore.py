@@ -1,6 +1,8 @@
 """USGS Ore Deposits database loader."""
 
-from typing import Dict, List, Optional
+from __future__ import annotations
+
+from typing import dict, list
 
 import pandas as pd
 
@@ -113,7 +115,7 @@ class USGSOreDepositsLoader(BaseLoader):
         """
         return self.load("Geology")
 
-    def load_geochemistry(self, elements: Optional[list[str]] = None) -> pd.DataFrame:
+    def load_geochemistry(self, elements: list[str] | None = None) -> pd.DataFrame:
         """
         Load combined geochemistry data.
 
@@ -206,9 +208,9 @@ class USGSOreDepositsLoader(BaseLoader):
 
     def search_deposits(
         self,
-        deposit_type: Optional[str] = None,
-        commodity: Optional[str] = None,
-        country: Optional[str] = None,
+        deposit_type: str | None = None,
+        commodity: str | None = None,
+        country: str | None = None,
     ) -> pd.DataFrame:
         """
         Search deposits by type, commodity, or country.

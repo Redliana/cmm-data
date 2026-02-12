@@ -4,6 +4,8 @@ Convert geodatabase to CSV and generate comprehensive schema documentation
 for all CSV files in the CMM data collection.
 """
 
+from __future__ import annotations
+
 import csv
 import json
 import re
@@ -257,7 +259,7 @@ def write_single_schema(f, schema):
     f.write(f"- **Columns:** {len(schema.get('columns', []))}\n\n")
 
     if schema.get("columns"):
-        f.write("| Column | Type | Sample Values |\n")
+        f.write("| Column | type | Sample Values |\n")
         f.write("|--------|------|---------------|\n")
         for col in schema["columns"][:30]:  # Limit to 30 columns
             samples = ", ".join(col.get("samples", [])[:2])

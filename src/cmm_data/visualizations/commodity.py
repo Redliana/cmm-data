@@ -1,6 +1,8 @@
 """Commodity data visualizations."""
 
-from typing import Any, Optional
+from __future__ import annotations
+
+from typing import Any
 
 import pandas as pd
 
@@ -26,7 +28,7 @@ def plot_world_production(
     year_col: str = "Prod_t_est_2022",
     country_col: str = "Country",
     figsize: tuple = (10, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot bar chart of world production by country.
@@ -82,9 +84,9 @@ def plot_world_production(
 def plot_production_timeseries(
     df: pd.DataFrame,
     commodity_name: str,
-    country: Optional[str] = None,
+    country: str | None = None,
     figsize: tuple = (10, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot production over time from salient statistics.
@@ -155,7 +157,7 @@ def plot_import_reliance(
     df: pd.DataFrame,
     commodity_name: str,
     figsize: tuple = (10, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot net import reliance over time.
@@ -213,7 +215,7 @@ def plot_multiple_commodities(
     Compare multiple commodities in a single chart.
 
     Args:
-        commodities: List of commodity codes
+        commodities: list of commodity codes
         data_type: 'world' or 'salient'
         metric: Metric to compare
         figsize: Figure size tuple

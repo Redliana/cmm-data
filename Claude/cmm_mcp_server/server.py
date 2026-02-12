@@ -16,13 +16,15 @@ Then configure in Claude Code:
     claude mcp add --transport stdio cmm-docs -- python /path/to/server.py
 """
 
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from typing import List, Optional
+from typing import list
 
 from batch_processor import get_batch_processor
 from config import COMMODITIES, SUBDOMAINS
@@ -38,16 +40,15 @@ mcp = FastMCP(
     version="1.0.0",
 )
 
-
 # =============================================================================
 # Document Tools
 # =============================================================================
 
 
 @mcp.tool()
-def list_documents(commodity: Optional[str] = None, limit: int = 50) -> list:
+def list_documents(commodity: str | None = None, limit: int = 50) -> list:
     """
-    List available documents from the OSTI collection.
+    list available documents from the OSTI collection.
 
     Args:
         commodity: Filter by commodity code (HREE, LREE, CO, LI, GA, GR, NI, CU, GE, OTH)
@@ -55,7 +56,7 @@ def list_documents(commodity: Optional[str] = None, limit: int = 50) -> list:
         limit: Maximum number of documents to return (default 50)
 
     Returns:
-        List of document summaries with OSTI ID, title, authors, and category
+        list of document summaries with OSTI ID, title, authors, and category
     """
     dm = get_document_manager()
     return dm.list_documents(commodity=commodity, limit=limit)
@@ -141,7 +142,7 @@ def search_documents(query: str, limit: int = 20) -> list:
         limit: Maximum results to return (default 20)
 
     Returns:
-        List of matching documents with relevance scores
+        list of matching documents with relevance scores
     """
     idx = get_search_index()
     return idx.search(query, limit=limit)
@@ -157,7 +158,7 @@ def find_similar(osti_id: str, limit: int = 5) -> list:
         limit: Number of similar documents to return (default 5)
 
     Returns:
-        List of similar documents with similarity scores
+        list of similar documents with similarity scores
     """
     idx = get_search_index()
     return idx.find_similar(osti_id, limit=limit)
@@ -200,7 +201,7 @@ def get_index_status() -> dict:
 
 
 @mcp.tool()
-def ocr_document(osti_id: str, commodity: Optional[str] = None) -> dict:
+def ocr_document(osti_id: str, commodity: str | None = None) -> dict:
     """
     Extract text from a PDF document using Mistral OCR.
 
@@ -237,7 +238,7 @@ def get_ocr_status() -> dict:
 
 
 @mcp.tool()
-def triage_documents(limit: Optional[int] = None, commodity: Optional[str] = None) -> dict:
+def triage_documents(limit: int | None = None, commodity: str | None = None) -> dict:
     """
     Analyze PDFs to identify candidates that would benefit from Mistral OCR.
 
@@ -329,7 +330,7 @@ def extract_document_full(osti_id: str, save_images: bool = True) -> dict:
     if not pdf_path:
         return {"error": f"PDF not found for {osti_id}"}
 
-    # Set up output directory for images
+    # set up output directory for images
     output_dir = None
     if save_images:
         output_dir = EXTRACTED_IMAGES_DIR / osti_id
@@ -346,7 +347,7 @@ def extract_document_full(osti_id: str, save_images: bool = True) -> dict:
 
 
 @mcp.tool()
-def analyze_chart(image_path: str, custom_prompt: Optional[str] = None) -> dict:
+def analyze_chart(image_path: str, custom_prompt: str | None = None) -> dict:
     """
     Analyze a chart/plot image using Pixtral Large to extract numerical data.
 
@@ -400,7 +401,7 @@ def extract_and_analyze_document(osti_id: str, analyze_charts: bool = True) -> d
     if not pdf_path:
         return {"error": f"PDF not found for {osti_id}"}
 
-    # Set up output directory
+    # set up output directory
     output_dir = EXTRACTED_IMAGES_DIR / osti_id
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -423,12 +424,12 @@ def extract_and_analyze_document(osti_id: str, analyze_charts: bool = True) -> d
 
 
 @mcp.tool()
-def estimate_batch_cost(osti_ids: Optional[list[str]] = None) -> dict:
+def estimate_batch_cost(osti_ids: list[str] | None = None) -> dict:
     """
     Estimate cost before running batch processing.
 
     Args:
-        osti_ids: List of document IDs (None = all 81 OCR candidates)
+        osti_ids: list of document IDs (None = all 81 OCR candidates)
 
     Returns:
         Cost estimate with page counts and pricing breakdown
@@ -439,7 +440,7 @@ def estimate_batch_cost(osti_ids: Optional[list[str]] = None) -> dict:
 
 @mcp.tool()
 def process_documents_batch(
-    osti_ids: Optional[list[str]] = None, analyze_charts: bool = True, resume: bool = True
+    osti_ids: list[str] | None = None, analyze_charts: bool = True, resume: bool = True
 ) -> dict:
     """
     Batch process documents for LLM fine-tuning.
@@ -450,7 +451,7 @@ def process_documents_batch(
     3. Output saved as JSONL for fine-tuning
 
     Args:
-        osti_ids: List of document IDs (None = all OCR candidates)
+        osti_ids: list of document IDs (None = all OCR candidates)
         analyze_charts: Whether to analyze images with Pixtral
         resume: Whether to resume from previous state
 
@@ -501,15 +502,15 @@ def process_single_for_finetune(osti_id: str, analyze_charts: bool = True) -> di
 
 
 @mcp.tool()
-def list_datasets(category: Optional[str] = None) -> list:
+def list_datasets(category: str | None = None) -> list:
     """
-    List available CSV datasets.
+    list available CSV datasets.
 
     Args:
         category: Optional category filter (e.g., "USGS", "LISA", "NETL")
 
     Returns:
-        List of available datasets with file counts and row counts
+        list of available datasets with file counts and row counts
     """
     dm = get_data_manager()
     return dm.list_datasets(category=category)
@@ -533,8 +534,8 @@ def get_schema(dataset: str) -> dict:
 @mcp.tool()
 def query_csv(
     dataset: str,
-    filters: Optional[dict] = None,
-    columns: Optional[list[str]] = None,
+    filters: dict | None = None,
+    columns: list[str] | None = None,
     limit: int = 100,
 ) -> dict:
     """
@@ -545,7 +546,7 @@ def query_csv(
         filters: Column filters (e.g., {"Year": 2023, "Element": "~lithium"})
                  Prefix with > or < for numeric comparisons
                  Prefix with ~ for contains/substring search
-        columns: List of columns to return (None for all)
+        columns: list of columns to return (None for all)
         limit: Maximum rows to return (default 100)
 
     Returns:

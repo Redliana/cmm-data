@@ -1,5 +1,7 @@
 """Basic tests for cmm_data package."""
 
+from __future__ import annotations
+
 
 def test_import():
     """Test that the package can be imported."""

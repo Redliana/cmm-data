@@ -5,6 +5,8 @@ This script demonstrates various ways to use the ComtradeQuery class
 to retrieve CMM trade flow data.
 """
 
+from __future__ import annotations
+
 import os
 
 from un_comtrade_query import CMM_HS_CODES, ComtradeQuery
@@ -157,7 +159,7 @@ def example_preview_mode():
     print()
 
 
-# Example 6: List all available CMM commodities
+# Example 6: list all available CMM commodities
 def example_list_commodities():
     """List all available CMM commodities."""
     print("Example 6: Available CMM Commodities")
@@ -180,7 +182,7 @@ if __name__ == "__main__":
         print("NOTE: UN_COMTRADE_API_KEY environment variable not set.")
         print("Some examples require an API key. You can:")
         print("  1. Register at https://comtradedeveloper.un.org/apis")
-        print("  2. Set the key: export UN_COMTRADE_API_KEY=your_key_here")
+        print("  2. set the key: export UN_COMTRADE_API_KEY=your_key_here")
         print()
 
     # Run examples (comment out those that require API key if not set)

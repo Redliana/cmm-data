@@ -3,9 +3,11 @@ Data tools for CMM MCP Server
 Handles CSV files and schema queries
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import List, Optional
+from typing import list
 
 import pandas as pd
 from config import MAX_CSV_ROWS, SCHEMAS_JSON
@@ -24,15 +26,15 @@ class DataManager:
         with open(SCHEMAS_JSON) as f:
             return json.load(f)
 
-    def list_datasets(self, category: Optional[str] = None) -> list[dict]:
+    def list_datasets(self, category: str | None = None) -> list[dict]:
         """
-        List available CSV datasets.
+        list available CSV datasets.
 
         Args:
             category: Optional category to filter by
 
         Returns:
-            List of dataset summaries
+            list of dataset summaries
         """
         results = []
 
@@ -53,7 +55,7 @@ class DataManager:
 
         return results
 
-    def get_schema(self, dataset: str) -> Optional[dict]:
+    def get_schema(self, dataset: str) -> dict | None:
         """
         Get schema/column information for a specific dataset.
 
@@ -76,7 +78,7 @@ class DataManager:
 
         return {"error": f"Dataset not found: {dataset}"}
 
-    def find_dataset_path(self, dataset: str) -> Optional[Path]:
+    def find_dataset_path(self, dataset: str) -> Path | None:
         """Find the full path to a dataset file"""
         for cat_name, cat_data in self.schemas.items():
             for schema in cat_data.get("schemas", []):
@@ -87,8 +89,8 @@ class DataManager:
     def query_csv(
         self,
         dataset: str,
-        filters: Optional[dict] = None,
-        columns: Optional[list[str]] = None,
+        filters: dict | None = None,
+        columns: list[str] | None = None,
         limit: int = MAX_CSV_ROWS,
     ) -> dict:
         """
@@ -97,7 +99,7 @@ class DataManager:
         Args:
             dataset: Dataset filename
             filters: Dictionary of column:value filters
-            columns: List of columns to return (None = all)
+            columns: list of columns to return (None = all)
             limit: Maximum rows to return
 
         Returns:

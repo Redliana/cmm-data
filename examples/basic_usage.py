@@ -3,6 +3,8 @@
 Basic usage examples for cmm_data package.
 """
 
+from __future__ import annotations
+
 import cmm_data
 
 # =============================================================================
@@ -17,14 +19,13 @@ print("=" * 60)
 catalog = cmm_data.get_data_catalog()
 print(catalog[["dataset", "name", "available"]])
 
-# List commodity codes
+# list commodity codes
 commodities = cmm_data.list_commodities()
 print(f"\nAvailable commodities ({len(commodities)}): {commodities[:5]}...")
 
-# List critical minerals
+# list critical minerals
 critical = cmm_data.list_critical_minerals()
 print(f"Critical minerals ({len(critical)}): {critical[:5]}...")
-
 
 # =============================================================================
 # 2. USGS COMMODITY DATA
@@ -56,7 +57,6 @@ print(top_cobalt[["Country", "Prod_t_est_2022"]])
 print(f"\n'raree' = {loader.get_commodity_name('raree')}")
 print(f"'lithi' = {loader.get_commodity_name('lithi')}")
 
-
 # =============================================================================
 # 3. USGS ORE DEPOSITS
 # =============================================================================
@@ -67,7 +67,7 @@ print("=" * 60)
 
 ore_loader = cmm_data.USGSOreDepositsLoader()
 
-# List available tables
+# list available tables
 tables = ore_loader.list_available()
 print(f"Available tables: {tables}")
 
@@ -85,7 +85,6 @@ try:
     print(f"\nREE samples: {len(ree)} records")
 except Exception as e:
     print(f"Error loading REE samples: {e}")
-
 
 # =============================================================================
 # 4. PREPROCESSED CORPUS
@@ -108,7 +107,6 @@ try:
 except Exception as e:
     print(f"Corpus not available: {e}")
 
-
 # =============================================================================
 # 5. OECD SUPPLY CHAIN
 # =============================================================================
@@ -119,7 +117,7 @@ print("=" * 60)
 
 oecd_loader = cmm_data.OECDSupplyChainLoader()
 
-# List available data
+# list available data
 available = oecd_loader.list_available()
 print(f"Available datasets: {available}")
 
@@ -138,7 +136,6 @@ try:
 except Exception as e:
     print(f"Error: {e}")
 
-
 # =============================================================================
 # 6. CROSS-DATASET SEARCH
 # =============================================================================
@@ -152,7 +149,6 @@ from cmm_data.catalog import search_all_datasets
 results = search_all_datasets("cobalt")
 print(f"Search results for 'cobalt': {len(results)} matches")
 print(results)
-
 
 # =============================================================================
 # 7. CONFIGURATION
@@ -171,7 +167,6 @@ status = config.validate()
 print("\nDataset availability:")
 for name, available in status.items():
     print(f"  {'[OK]' if available else '[--]'} {name}")
-
 
 print("\n" + "=" * 60)
 print("Done!")

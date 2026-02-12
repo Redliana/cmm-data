@@ -3,9 +3,10 @@ Document tools for CMM MCP Server
 Handles PDF reading, metadata, and citations
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import Optional
 
 import fitz  # PyMuPDF
 from config import COMMODITIES, MAX_PDF_CHARS, OSTI_CATALOG, OSTI_PDFS_DIR
@@ -35,16 +36,16 @@ class DocumentManager:
                 self.by_commodity[cat] = []
             self.by_commodity[cat].append(doc)
 
-    def list_documents(self, commodity: Optional[str] = None, limit: int = 50) -> list:
+    def list_documents(self, commodity: str | None = None, limit: int = 50) -> list:
         """
-        List documents, optionally filtered by commodity.
+        list documents, optionally filtered by commodity.
 
         Args:
             commodity: Filter by commodity code (e.g., "LI", "HREE")
             limit: Maximum number of documents to return
 
         Returns:
-            List of document summaries
+            list of document summaries
         """
         if commodity:
             commodity = commodity.upper()
@@ -70,7 +71,7 @@ class DocumentManager:
 
         return results
 
-    def get_metadata(self, osti_id: str) -> Optional[dict]:
+    def get_metadata(self, osti_id: str) -> dict | None:
         """
         Get full metadata for a document by OSTI ID.
 
@@ -82,7 +83,7 @@ class DocumentManager:
         """
         return self.by_id.get(osti_id)
 
-    def get_pdf_path(self, osti_id: str) -> Optional[Path]:
+    def get_pdf_path(self, osti_id: str) -> Path | None:
         """Find PDF file path for a given OSTI ID"""
         doc = self.by_id.get(osti_id)
         if not doc:

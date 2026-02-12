@@ -1,9 +1,11 @@
 """Preprocessed corpus loader for LLM training data."""
 
+from __future__ import annotations
+
 import json
-from pathlib import Path
-from typing import Any, Dict, List, Optional
 from collections.abc import Generator
+from pathlib import Path
+from typing import Any, dict, list
 
 import pandas as pd
 
@@ -67,7 +69,7 @@ class PreprocessedCorpusLoader(BaseLoader):
         return df
 
     def iter_documents(
-        self, corpus_file: str = "unified_corpus.jsonl", batch_size: Optional[int] = None
+        self, corpus_file: str = "unified_corpus.jsonl", batch_size: int | None = None
     ) -> Generator[dict[str, Any], None, None]:
         """
         Iterate over documents in the corpus.
@@ -139,9 +141,7 @@ class PreprocessedCorpusLoader(BaseLoader):
 
         return stats
 
-    def search(
-        self, query: str, fields: Optional[list[str]] = None, limit: int = 100
-    ) -> pd.DataFrame:
+    def search(self, query: str, fields: list[str] | None = None, limit: int = 100) -> pd.DataFrame:
         """
         Search documents in the corpus.
 

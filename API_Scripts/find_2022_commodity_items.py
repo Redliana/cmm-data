@@ -5,8 +5,10 @@ Since the 2022 release has individual commodity items, we need to find
 the catalog item ID for each CMM commodity.
 """
 
+from __future__ import annotations
+
 import json
-from typing import Dict
+from typing import dict
 
 import requests
 

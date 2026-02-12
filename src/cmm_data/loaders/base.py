@@ -1,12 +1,14 @@
 """Base loader class for all CMM data loaders."""
 
+from __future__ import annotations
+
 import hashlib
 import json
 import pickle
 import time
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, dict, list
 
 import pandas as pd
 
@@ -55,10 +57,10 @@ class BaseLoader(ABC):
     @abstractmethod
     def list_available(self) -> list[str]:
         """
-        List available data items in this dataset.
+        list available data items in this dataset.
 
         Returns:
-            List of available data item identifiers
+            list of available data item identifiers
         """
         pass
 
@@ -110,7 +112,7 @@ class BaseLoader(ABC):
         key_str = json.dumps(key_data, sort_keys=True, default=str)
         return hashlib.md5(key_str.encode()).hexdigest()
 
-    def _get_cached(self, key: str) -> Optional[Any]:
+    def _get_cached(self, key: str) -> Any | None:
         """
         Get a value from the cache.
 
@@ -187,7 +189,7 @@ class BaseLoader(ABC):
         if not path.exists():
             raise DataNotFoundError(f"{description} not found: {path}")
 
-    def _find_file(self, pattern: str, directory: Optional[Path] = None) -> Path:
+    def _find_file(self, pattern: str, directory: Path | None = None) -> Path:
         """
         Find a file matching a pattern.
 

@@ -10,11 +10,13 @@ Usage:
 3. Run the script to download all commodities
 """
 
+from __future__ import annotations
+
 import json
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import dict, list
 
 import requests
 
@@ -81,7 +83,7 @@ class USGSMCS2022Downloader:
             year: Year of the data
 
         Returns:
-            List of downloaded file paths
+            list of downloaded file paths
         """
         item_info = self.get_catalog_item(item_id)
         if not item_info:

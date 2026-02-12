@@ -3,11 +3,14 @@ Batch processing for OCR extraction and chart analysis.
 Converts scanned PDFs and scientific figures to text for LLM fine-tuning.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import time
+from collections.abc import Callable
 from datetime import datetime
-from typing import Callable, List, Optional
+from typing import list
 
 from config import INDEX_DIR
 from ocr import EXTRACTED_IMAGES_DIR, get_mistral_ocr, get_pdf_triager
@@ -57,7 +60,7 @@ class BatchProcessor:
         Estimate processing cost before running batch.
 
         Args:
-            osti_ids: List of document IDs to process (None = all OCR candidates)
+            osti_ids: list of document IDs to process (None = all OCR candidates)
 
         Returns:
             Cost estimate with page counts and pricing
@@ -160,7 +163,7 @@ class BatchProcessor:
         if not pdf_path:
             return {"error": f"PDF not found for {osti_id}"}
 
-        # Set up output directory for images
+        # set up output directory for images
         output_dir = None
         if save_images:
             output_dir = EXTRACTED_IMAGES_DIR / osti_id
@@ -217,13 +220,13 @@ class BatchProcessor:
         osti_ids: list[str] = None,
         analyze_charts: bool = True,
         resume: bool = True,
-        progress_callback: Optional[Callable] = None,
+        progress_callback: Callable | None = None,
     ) -> dict:
         """
         Process multiple documents in batch.
 
         Args:
-            osti_ids: List of document IDs (None = all OCR candidates)
+            osti_ids: list of document IDs (None = all OCR candidates)
             analyze_charts: Whether to analyze charts with Pixtral
             resume: Whether to resume from previous state
             progress_callback: Optional callback(current, total, message)

@@ -5,7 +5,9 @@ This script provides methods to search for or construct URLs for finding
 ScienceBase catalog items for years 2020-2022.
 """
 
-from typing import List, Optional
+from __future__ import annotations
+
+from typing import list
 
 import requests
 
@@ -19,7 +21,7 @@ def search_sciencebase(query: str, max_results: int = 10) -> list[dict]:
         max_results: Maximum number of results to return
 
     Returns:
-        List of item dictionaries
+        list of item dictionaries
     """
     # ScienceBase search endpoint (may vary)
     search_urls = [
@@ -42,7 +44,7 @@ def search_sciencebase(query: str, max_results: int = 10) -> list[dict]:
     return []
 
 
-def find_mcs_item_id(year: int) -> Optional[str]:
+def find_mcs_item_id(year: int) -> str | None:
     """
     Try to find ScienceBase catalog item ID for a given year.
 

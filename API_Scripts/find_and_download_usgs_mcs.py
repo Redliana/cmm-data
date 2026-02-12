@@ -7,11 +7,13 @@ and download the data.
 Based on: https://code.usgs.gov/sas/sdm/sciencebasepy
 """
 
+from __future__ import annotations
+
 import json
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List
+from typing import dict, list
 
 import requests
 
@@ -138,7 +140,7 @@ class USGSMCSAutoDownloader:
             year: Year of the data
 
         Returns:
-            List of downloaded file paths
+            list of downloaded file paths
         """
         item_info = self.sb.get_item(item_id)
         if not item_info:

@@ -8,12 +8,14 @@ Focus: Trade Flow questions (Q-TF sub-domain) - 10 questions total
 Years: 2020-2024 (covers both Stratum A and Stratum B temporal requirements)
 """
 
+from __future__ import annotations
+
 import json
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple
+from typing import dict, list, tuple
 
 import pandas as pd
 
@@ -30,7 +32,6 @@ ADDITIONAL_HS_CODES = {
 
 # Merge with existing codes
 ALL_CMM_CODES = {**CMM_HS_CODES, **ADDITIONAL_HS_CODES}
-
 
 # Gold Q&A Methodology Requirements
 # Based on CMM_LLM_Baseline_Gold_QA_Methodology.md Section 4.2
@@ -116,7 +117,7 @@ YEARS = [2020, 2021, 2022, 2023, 2024]
 class GoldQADataCollector:
     """Collect UN Comtrade data for Gold Q&A methodology requirements."""
 
-    def __init__(self, api_key: Optional[str] = None, output_dir: str = "gold_qa_data"):
+    def __init__(self, api_key: str | None = None, output_dir: str = "gold_qa_data"):
         """
         Initialize data collector.
 
@@ -188,9 +189,9 @@ class GoldQADataCollector:
 
         Args:
             commodity_name: Name of commodity (e.g., 'Cobalt')
-            hs_codes: List of HS codes for this commodity
-            countries: List of (reporter, partner) tuples
-            years: List of years to query
+            hs_codes: list of HS codes for this commodity
+            countries: list of (reporter, partner) tuples
+            years: list of years to query
             trade_flow: 'import', 'export', or 'both'
 
         Returns:
@@ -399,10 +400,10 @@ class GoldQADataCollector:
         Generate country pairs for a commodity based on key countries.
 
         Args:
-            key_countries: List of key countries for this commodity
+            key_countries: list of key countries for this commodity
 
         Returns:
-            List of (reporter, partner) tuples
+            list of (reporter, partner) tuples
         """
         pairs = []
 

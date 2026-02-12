@@ -6,6 +6,8 @@ Demonstrates basic usage of the cmm_data package.
 Run after installation: python scripts/quickstart.py
 """
 
+from __future__ import annotations
+
 import cmm_data
 
 
@@ -27,7 +29,7 @@ def main():
         status = "[OK]" if row["available"] else "[--]"
         print(f"  {status} {row['dataset']}: {row['name']}")
 
-    # 2. List Commodities
+    # 2. list Commodities
     print("\n" + "-" * 40)
     print("2. Commodity Codes")
     print("-" * 40)
@@ -43,7 +45,7 @@ def main():
 
     critical = cmm_data.list_critical_minerals()
     print(f"  Count: {len(critical)}")
-    print(f"  List: {', '.join(critical)}")
+    print(f"  list: {', '.join(critical)}")
 
     # 4. Load Sample Data
     print("\n" + "-" * 40)

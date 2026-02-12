@@ -1,7 +1,9 @@
 """OECD Supply Chain data loader."""
 
+from __future__ import annotations
+
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import dict, list
 
 import pandas as pd
 
@@ -91,7 +93,7 @@ class OECDSupplyChainLoader(BaseLoader):
             dataset: Dataset name
 
         Returns:
-            List of Path objects to PDF files
+            list of Path objects to PDF files
         """
         df = self.load(dataset)
         pdf_df = df[df["extension"] == ".pdf"]
@@ -110,7 +112,7 @@ class OECDSupplyChainLoader(BaseLoader):
         df = self.load("icio")
         return [Path(p) for p in df["path"]]
 
-    def load_icio_tables(self, year: Optional[int] = None) -> pd.DataFrame:
+    def load_icio_tables(self, year: int | None = None) -> pd.DataFrame:
         """
         Load ICIO tables if available (requires manual download).
 

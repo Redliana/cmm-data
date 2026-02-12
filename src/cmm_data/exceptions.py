@@ -1,5 +1,7 @@
 """Custom exceptions for the CMM Data package."""
 
+from __future__ import annotations
+
 
 class CMMDataError(Exception):
     """Base exception for CMM Data package."""

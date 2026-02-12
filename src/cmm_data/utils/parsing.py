@@ -1,13 +1,15 @@
 """Value parsing utilities for CMM data."""
 
+from __future__ import annotations
+
 import re
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Union, tuple
 
 import numpy as np
 import pandas as pd
 
 
-def parse_numeric_value(value: Any) -> Optional[float]:
+def parse_numeric_value(value: Any) -> float | None:
     """
     Parse a numeric value from USGS data, handling special codes.
 
@@ -63,7 +65,7 @@ def parse_numeric_value(value: Any) -> Optional[float]:
         return np.nan
 
 
-def parse_range(value: Any) -> tuple[Optional[float], Optional[float]]:
+def parse_range(value: Any) -> tuple[float | None, float | None]:
     """
     Parse a range value, returning (low, high) bounds.
 
@@ -71,7 +73,7 @@ def parse_range(value: Any) -> tuple[Optional[float], Optional[float]]:
         value: Value containing a range (e.g., '100-200', '>50', '<100')
 
     Returns:
-        Tuple of (low_bound, high_bound), with None for unbounded sides
+        tuple of (low_bound, high_bound), with None for unbounded sides
     """
     if value is None or pd.isna(value):
         return (None, None)
@@ -175,7 +177,7 @@ def standardize_country_name(name: str) -> str:
     return name_clean
 
 
-def extract_commodity_code(filename: str) -> Optional[str]:
+def extract_commodity_code(filename: str) -> str | None:
     """
     Extract commodity code from USGS filename.
 

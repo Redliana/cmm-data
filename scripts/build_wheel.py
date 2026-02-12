@@ -7,6 +7,8 @@ Usage: python scripts/build_wheel.py
 Output: dist/cmm_data-0.1.0-py3-none-any.whl
 """
 
+from __future__ import annotations
+
 import shutil
 import subprocess
 import sys

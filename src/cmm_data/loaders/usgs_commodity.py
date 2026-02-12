@@ -1,7 +1,9 @@
 """USGS Mineral Commodity Summaries data loader."""
 
+from __future__ import annotations
+
 import re
-from typing import Dict, List, Optional
+from typing import dict, list
 
 import pandas as pd
 
@@ -90,7 +92,7 @@ COMMODITY_NAMES = {
     "zirco-hafni": "Zirconium and Hafnium",
 }
 
-# DOE Critical Minerals List (2023)
+# DOE Critical Minerals list (2023)
 CRITICAL_MINERALS = [
     "alumi",
     "antim",
@@ -155,7 +157,7 @@ class USGSCommodityLoader(BaseLoader):
         """Get full commodity name from code."""
         return COMMODITY_NAMES.get(code, code.title())
 
-    def load(self, commodity: Optional[str] = None, data_type: str = "world") -> pd.DataFrame:
+    def load(self, commodity: str | None = None, data_type: str = "world") -> pd.DataFrame:
         """
         Load USGS commodity data.
 
@@ -182,7 +184,7 @@ class USGSCommodityLoader(BaseLoader):
             commodity: Commodity code (e.g., 'lithi', 'cobal', 'raree')
 
         Returns:
-            DataFrame with columns: Source, Country, Type, Prod_t_2021,
+            DataFrame with columns: Source, Country, type, Prod_t_2021,
             Prod_t_est_2022, Prod_notes, Reserves_t, Reserves_notes
         """
         cache_key = self._cache_key("world", commodity)

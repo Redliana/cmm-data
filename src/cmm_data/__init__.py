@@ -6,6 +6,8 @@ supply chain modeling, including USGS commodity data, ore deposits,
 OECD trade data, and geospatial resources.
 """
 
+from __future__ import annotations
+
 __version__ = "0.1.0"
 
 from .catalog import get_data_catalog, list_commodities, list_critical_minerals

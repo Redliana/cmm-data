@@ -7,11 +7,13 @@ This script downloads only CMM-relevant commodities from those releases.
 Based on methodology: CMM_LLM_Baseline_Gold_QA_Methodology.md
 """
 
+from __future__ import annotations
+
 import json
 import sys
 import time
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import dict, list
 
 import requests
 
@@ -136,7 +138,7 @@ class USGSMCSIndividualDownloader:
         return []
 
     def find_cmm_commodity_items(
-        self, parent_id: str, year: Optional[int] = None
+        self, parent_id: str, year: int | None = None
     ) -> dict[str, list[dict]]:
         """
         Find CMM-relevant commodity items from a parent catalog.
@@ -211,7 +213,7 @@ class USGSMCSIndividualDownloader:
             year: Year of the data
 
         Returns:
-            List of downloaded file paths
+            list of downloaded file paths
         """
         item_info = self.get_catalog_item(item_id)
         if not item_info:

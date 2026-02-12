@@ -5,9 +5,11 @@ Since MCS releases contain 5 years of historical data, we can extract
 2020 and 2021 data from the 2022, 2023, and 2024 releases.
 """
 
+from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import List
+from typing import list
 
 import pandas as pd
 

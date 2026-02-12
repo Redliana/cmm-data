@@ -1,6 +1,8 @@
 """Data catalog and inventory functions."""
 
-from typing import Dict, List, Optional
+from __future__ import annotations
+
+from typing import dict, list
 
 import pandas as pd
 
@@ -96,20 +98,20 @@ def get_data_catalog() -> pd.DataFrame:
 
 def list_commodities() -> list[str]:
     """
-    List all available USGS commodity codes.
+    list all available USGS commodity codes.
 
     Returns:
-        List of commodity codes (e.g., ['abras', 'alumi', ...])
+        list of commodity codes (e.g., ['abras', 'alumi', ...])
     """
     return sorted(COMMODITY_NAMES.keys())
 
 
 def list_critical_minerals() -> list[str]:
     """
-    List DOE critical minerals commodity codes.
+    list DOE critical minerals commodity codes.
 
     Returns:
-        List of critical mineral codes
+        list of critical mineral codes
     """
     return CRITICAL_MINERALS.copy()
 
@@ -135,13 +137,13 @@ def get_commodity_info(code: str) -> dict:
     }
 
 
-def search_all_datasets(query: str, datasets: Optional[list[str]] = None) -> pd.DataFrame:
+def search_all_datasets(query: str, datasets: list[str] | None = None) -> pd.DataFrame:
     """
     Search across multiple datasets.
 
     Args:
         query: Search query string
-        datasets: List of datasets to search (default: all)
+        datasets: list of datasets to search (default: all)
 
     Returns:
         DataFrame with search results from all datasets

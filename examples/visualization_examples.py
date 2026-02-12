@@ -5,6 +5,8 @@ Visualization examples for cmm_data package.
 Requires: pip install cmm-data[viz]
 """
 
+from __future__ import annotations
+
 import cmm_data
 
 # Check for matplotlib

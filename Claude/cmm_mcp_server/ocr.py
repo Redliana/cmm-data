@@ -4,11 +4,14 @@ Provides high-quality text extraction from PDFs using Mistral's OCR API
 Includes triage functionality to identify PDFs that would benefit from OCR
 """
 
+from __future__ import annotations
+
 import base64
 import json
 import logging
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable, List, Optional
+from typing import list
 
 import fitz  # PyMuPDF
 from config import INDEX_DIR, MISTRAL_API_KEY, OSTI_CATALOG, OSTI_PDFS_DIR
@@ -52,7 +55,7 @@ class MistralOCR:
             Dictionary with extracted content and metadata
         """
         if not self.is_available():
-            return {"error": "Mistral OCR not configured. Set MISTRAL_API_KEY in .env file."}
+            return {"error": "Mistral OCR not configured. set MISTRAL_API_KEY in .env file."}
 
         if not pdf_path.exists():
             return {"error": f"PDF file not found: {pdf_path}"}
@@ -100,7 +103,7 @@ class MistralOCR:
             logger.error(f"Mistral OCR failed for {pdf_path}: {e}")
             return {"error": str(e)}
 
-    def extract_text_by_osti_id(self, osti_id: str, commodity: Optional[str] = None) -> dict:
+    def extract_text_by_osti_id(self, osti_id: str, commodity: str | None = None) -> dict:
         """
         Extract text from a PDF by OSTI ID.
 
@@ -124,7 +127,7 @@ class MistralOCR:
 
         return result
 
-    def _find_pdf(self, osti_id: str, commodity: Optional[str] = None) -> Optional[Path]:
+    def _find_pdf(self, osti_id: str, commodity: str | None = None) -> Path | None:
         """Find PDF file by OSTI ID"""
         if commodity:
             # Search in specific commodity directory
@@ -142,7 +145,7 @@ class MistralOCR:
         return None
 
     def extract_full(
-        self, pdf_path: Path, table_format: str = "markdown", output_dir: Optional[Path] = None
+        self, pdf_path: Path, table_format: str = "markdown", output_dir: Path | None = None
     ) -> dict:
         """
         Full extraction with images, tables, and structured content.
@@ -156,12 +159,12 @@ class MistralOCR:
             Dictionary with:
             - text: Full extracted text
             - pages: Per-page content with markdown
-            - images: List of extracted images with metadata
-            - tables: List of extracted tables
+            - images: list of extracted images with metadata
+            - tables: list of extracted tables
             - statistics: Extraction statistics
         """
         if not self.is_available():
-            return {"error": "Mistral OCR not configured. Set MISTRAL_API_KEY in .env file."}
+            return {"error": "Mistral OCR not configured. set MISTRAL_API_KEY in .env file."}
 
         if not pdf_path.exists():
             return {"error": f"PDF file not found: {pdf_path}"}
@@ -289,7 +292,7 @@ class MistralOCR:
 
         return saved
 
-    def analyze_chart(self, image_source: str, prompt: Optional[str] = None) -> dict:
+    def analyze_chart(self, image_source: str, prompt: str | None = None) -> dict:
         """
         Analyze a chart/plot image using Pixtral Large to extract data.
 
@@ -358,7 +361,7 @@ Format the data points as a markdown table for easy parsing."""
             return {"error": str(e)}
 
     def extract_and_analyze_charts(
-        self, pdf_path: Path, output_dir: Optional[Path] = None, chart_prompt: Optional[str] = None
+        self, pdf_path: Path, output_dir: Path | None = None, chart_prompt: str | None = None
     ) -> dict:
         """
         Full extraction with automatic chart analysis.
@@ -430,7 +433,7 @@ class PDFTriager:
         - image_pages: Pages that are primarily images
         - text_quality: Quality score (0-1)
         - ocr_recommended: Whether OCR would help
-        - reasons: List of reasons for recommendation
+        - reasons: list of reasons for recommendation
         """
         result = {
             "pdf_path": str(pdf_path),
@@ -614,9 +617,9 @@ class PDFTriager:
 
     def triage_documents(
         self,
-        limit: Optional[int] = None,
-        commodity: Optional[str] = None,
-        progress_callback: Optional[Callable] = None,
+        limit: int | None = None,
+        commodity: str | None = None,
+        progress_callback: Callable | None = None,
     ) -> dict:
         """
         Triage all documents to identify OCR candidates.
@@ -698,7 +701,7 @@ class PDFTriager:
             },
         }
 
-    def _find_pdf(self, osti_id: str, commodity: Optional[str] = None) -> Optional[Path]:
+    def _find_pdf(self, osti_id: str, commodity: str | None = None) -> Path | None:
         """Find PDF file by OSTI ID"""
         if commodity:
             commodity_dir = OSTI_PDFS_DIR / commodity

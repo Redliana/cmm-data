@@ -14,6 +14,8 @@ This script tests:
 6. Utility functions
 """
 
+from __future__ import annotations
+
 import sys
 
 

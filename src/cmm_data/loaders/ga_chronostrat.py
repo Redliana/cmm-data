@@ -1,7 +1,9 @@
 """Geoscience Australia Chronostratigraphic Model loader."""
 
+from __future__ import annotations
+
 import zipfile
-from typing import Any, Dict, List, Optional
+from typing import Any, dict, list
 
 import numpy as np
 import pandas as pd
@@ -97,7 +99,7 @@ class GAChronostratigraphicLoader(BaseLoader):
 
         # Search for surface file in zip
         with zipfile.ZipFile(zip_path, "r") as zf:
-            # List files and find matching surface
+            # list files and find matching surface
             surface_file = None
             for name in zf.namelist():
                 if surface.lower() in name.lower() and name.endswith(".xyz"):
@@ -178,7 +180,7 @@ class GAChronostratigraphicLoader(BaseLoader):
             "point_count": len(df),
         }
 
-    def get_depth_at_point(self, x: float, y: float, surface: str = "Basement") -> Optional[float]:
+    def get_depth_at_point(self, x: float, y: float, surface: str = "Basement") -> float | None:
         """
         Get depth to a surface at a specific location.
 

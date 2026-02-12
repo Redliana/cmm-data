@@ -1,5 +1,7 @@
 """Central configuration for the Vertex AI batch analysis pipeline."""
 
+from __future__ import annotations
+
 from pathlib import Path
 
 # ---------------------------------------------------------------------------

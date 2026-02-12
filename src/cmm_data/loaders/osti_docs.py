@@ -1,7 +1,9 @@
 """OSTI document retrieval loader."""
 
+from __future__ import annotations
+
 import json
-from typing import Dict, List, Optional
+from typing import dict, list
 
 import pandas as pd
 
@@ -35,7 +37,7 @@ class OSTIDocumentsLoader(BaseLoader):
 
         return sorted(items)
 
-    def load(self, collection: Optional[str] = None) -> pd.DataFrame:
+    def load(self, collection: str | None = None) -> pd.DataFrame:
         """
         Load OSTI document metadata.
 
@@ -99,7 +101,7 @@ class OSTIDocumentsLoader(BaseLoader):
         return df
 
     def search_documents(
-        self, query: str, fields: Optional[list[str]] = None, limit: int = 100
+        self, query: str, fields: list[str] | None = None, limit: int = 100
     ) -> pd.DataFrame:
         """
         Search documents by keyword.
@@ -130,7 +132,7 @@ class OSTIDocumentsLoader(BaseLoader):
         results = df[mask].head(limit)
         return results
 
-    def get_document_text(self, doc_id: str) -> Optional[str]:
+    def get_document_text(self, doc_id: str) -> str | None:
         """
         Get full text of a document.
 

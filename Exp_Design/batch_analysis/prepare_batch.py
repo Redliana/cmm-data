@@ -94,7 +94,6 @@ RESPONSE_SCHEMA = {
     ],
 }
 
-
 # ---------------------------------------------------------------------------
 # System instruction
 # ---------------------------------------------------------------------------
@@ -120,7 +119,7 @@ Scoring guide (relevance_score 1-5):
 - 1: Paper has no meaningful connection to this cell's topic
 
 For L3 (Inferential) and L4 (Analytical) cells, the paper needs sufficient depth \
-for multi-step reasoning or synthesis questions. Set supports_l3_l4=true only if \
+for multi-step reasoning or synthesis questions. set supports_l3_l4=true only if \
 the paper goes beyond surface-level coverage."""
 
 

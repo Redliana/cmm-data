@@ -1,9 +1,11 @@
 """Mindat.org mineralogical database loader."""
 
+from __future__ import annotations
+
 import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Union, dict, list
 
 import pandas as pd
 
@@ -11,7 +13,7 @@ from ..exceptions import ConfigurationError, DataNotFoundError
 from .base import BaseLoader
 
 # Critical mineral elements for filtering Mindat queries
-# Based on DOE Critical Minerals List
+# Based on DOE Critical Minerals list
 CRITICAL_ELEMENTS = {
     "Li": "Lithium",
     "Co": "Cobalt",
@@ -135,7 +137,7 @@ class MindatLoader(BaseLoader):
 
     dataset_name = "mindat"
 
-    def __init__(self, config=None, api_key: Optional[str] = None):
+    def __init__(self, config=None, api_key: str | None = None):
         """
         Initialize the Mindat loader.
 
@@ -182,7 +184,7 @@ class MindatLoader(BaseLoader):
 
         return file_path
 
-    def _load_cached_data(self, data_type: str, identifier: str) -> Optional[list[dict]]:
+    def _load_cached_data(self, data_type: str, identifier: str) -> list[dict] | None:
         """Load data from cache if available."""
         file_path = self._get_data_file(data_type, identifier)
 
@@ -261,7 +263,7 @@ class MindatLoader(BaseLoader):
         element: str,
         ima_only: bool = True,
         save: bool = True,
-        fields: Optional[list[str]] = None,
+        fields: list[str] | None = None,
     ) -> list[dict[str, Any]]:
         """
         Fetch minerals containing a specific element from Mindat API.
@@ -273,7 +275,7 @@ class MindatLoader(BaseLoader):
             fields: Optional list of fields to retrieve
 
         Returns:
-            List of mineral dictionaries containing the specified element
+            list of mineral dictionaries containing the specified element
         """
         self._ensure_api_ready()
 
@@ -317,12 +319,12 @@ class MindatLoader(BaseLoader):
         Fetch minerals containing ALL specified elements.
 
         Args:
-            elements: List of element symbols
+            elements: list of element symbols
             ima_only: If True, only return IMA-approved minerals
             save: If True, cache results locally
 
         Returns:
-            List of mineral dictionaries
+            list of mineral dictionaries
         """
         self._ensure_api_ready()
 
@@ -378,7 +380,7 @@ class MindatLoader(BaseLoader):
             save: If True, cache results locally
 
         Returns:
-            List of matching mineral dictionaries
+            list of matching mineral dictionaries
         """
         self._ensure_api_ready()
 
@@ -401,7 +403,7 @@ class MindatLoader(BaseLoader):
             save: If True, cache results locally
 
         Returns:
-            List of IMA-approved mineral dictionaries
+            list of IMA-approved mineral dictionaries
         """
         self._ensure_api_ready()
 
@@ -463,7 +465,7 @@ class MindatLoader(BaseLoader):
             save: If True, cache results locally
 
         Returns:
-            List of locality dictionaries
+            list of locality dictionaries
         """
         self._ensure_api_ready()
 
@@ -486,7 +488,7 @@ class MindatLoader(BaseLoader):
             save: If True, cache results locally
 
         Returns:
-            List of locality dictionaries
+            list of locality dictionaries
         """
         self._ensure_api_ready()
 
@@ -502,13 +504,13 @@ class MindatLoader(BaseLoader):
         return results
 
     def fetch_critical_minerals_data(
-        self, elements: Optional[list[str]] = None, ima_only: bool = True, save: bool = True
+        self, elements: list[str] | None = None, ima_only: bool = True, save: bool = True
     ) -> dict[str, list[dict[str, Any]]]:
         """
         Fetch mineral data for all or specified critical elements.
 
         Args:
-            elements: List of element symbols (defaults to all critical elements)
+            elements: list of element symbols (defaults to all critical elements)
             ima_only: If True, only return IMA-approved minerals
             save: If True, cache results locally
 
@@ -535,15 +537,15 @@ class MindatLoader(BaseLoader):
     def load(
         self,
         data_type: str = "geomaterials",
-        element: Optional[str] = None,
-        identifier: Optional[str] = None,
+        element: str | None = None,
+        identifier: str | None = None,
         **kwargs,
     ) -> pd.DataFrame:
         """
         Load cached Mindat data as a DataFrame.
 
         Args:
-            data_type: Type of data ('geomaterials', 'localities', 'ima')
+            data_type: type of data ('geomaterials', 'localities', 'ima')
             element: Element symbol to load minerals for
             identifier: Specific data file identifier
             **kwargs: Additional filter parameters
@@ -634,9 +636,9 @@ class MindatLoader(BaseLoader):
 
     def query(
         self,
-        element: Optional[str] = None,
-        crystal_system: Optional[str] = None,
-        ima_status: Optional[str] = None,
+        element: str | None = None,
+        crystal_system: str | None = None,
+        ima_status: str | None = None,
         **kwargs,
     ) -> pd.DataFrame:
         """

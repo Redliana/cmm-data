@@ -22,6 +22,8 @@ Usage:
     python scripts/demo_recording.py
 """
 
+from __future__ import annotations
+
 import sys
 import time
 
@@ -80,7 +82,7 @@ def main():
     print(catalog.to_string())
     section_pause()
 
-    # List commodities
+    # list commodities
     print("\n\033[1;35m── Available Commodities ──\033[0m")
     print("\033[1;33m>>> \033[0m", end="")
     type_command("commodities = cmm_data.list_commodities()")

@@ -1,6 +1,8 @@
 """Geospatial visualizations."""
 
-from typing import Any, List, Optional
+from __future__ import annotations
+
+from typing import Any, list
 
 import pandas as pd
 
@@ -23,10 +25,10 @@ def plot_deposit_locations(
     df: pd.DataFrame,
     lat_col: str = "LATITUDE",
     lon_col: str = "LONGITUDE",
-    color_by: Optional[str] = None,
+    color_by: str | None = None,
     title: str = "Ore Deposit Locations",
     figsize: tuple = (12, 8),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot ore deposit locations on a map.
@@ -97,7 +99,7 @@ def plot_surface_depth(
     df: pd.DataFrame,
     title: str = "Surface Depth Profile",
     figsize: tuple = (12, 8),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot depth surface from GA chronostratigraphic data.
@@ -142,17 +144,17 @@ def plot_surface_depth(
 
 def plot_ree_distribution(
     df: pd.DataFrame,
-    elements: Optional[list[str]] = None,
+    elements: list[str] | None = None,
     title: str = "REE Distribution",
     figsize: tuple = (12, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot REE concentration distribution.
 
     Args:
         df: DataFrame with REE concentration data
-        elements: List of element symbols to include
+        elements: list of element symbols to include
         title: Chart title
         figsize: Figure size tuple
         ax: Optional matplotlib axes

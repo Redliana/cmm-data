@@ -1,6 +1,8 @@
 """Time series visualizations."""
 
-from typing import Any, List, Optional
+from __future__ import annotations
+
+from typing import Any, list
 
 import pandas as pd
 
@@ -21,16 +23,16 @@ def _get_matplotlib():
 
 def plot_commodity_timeseries(
     commodity_code: str,
-    metrics: Optional[list[str]] = None,
+    metrics: list[str] | None = None,
     figsize: tuple = (12, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot time series for a commodity's salient statistics.
 
     Args:
         commodity_code: Commodity code (e.g., 'lithi')
-        metrics: List of metrics to plot (default: production, imports, exports)
+        metrics: list of metrics to plot (default: production, imports, exports)
         figsize: Figure size tuple
         ax: Optional matplotlib axes
 
@@ -79,7 +81,7 @@ def plot_commodity_timeseries(
 def plot_price_trends(
     commodity_code: str,
     figsize: tuple = (10, 6),
-    ax: Optional[Any] = None,
+    ax: Any | None = None,
 ) -> Any:
     """
     Plot price trends for a commodity.
@@ -130,7 +132,7 @@ def plot_price_trends(
 
 
 def plot_critical_minerals_comparison(
-    year: Optional[int] = None,
+    year: int | None = None,
     metric: str = "USprod_t",
     top_n: int = 15,
     figsize: tuple = (14, 8),

@@ -3,11 +3,13 @@ Search functionality for CMM MCP Server
 Implements full-text search with SQLite FTS5 and similarity search with TF-IDF
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import pickle
 import sqlite3
-from typing import List
+from typing import list
 
 import fitz  # PyMuPDF
 from config import (
@@ -255,7 +257,7 @@ class SearchIndex:
             limit: Maximum results to return
 
         Returns:
-            List of matching documents with relevance scores
+            list of matching documents with relevance scores
         """
         if not self.db_path.exists():
             return [{"error": "Search index not built. Use build_index first."}]
@@ -304,7 +306,7 @@ class SearchIndex:
             limit: Number of similar documents to return
 
         Returns:
-            List of similar documents with similarity scores
+            list of similar documents with similarity scores
         """
         if self.tfidf_matrix is None:
             return [{"error": "Similarity index not built. Use build_index first."}]
