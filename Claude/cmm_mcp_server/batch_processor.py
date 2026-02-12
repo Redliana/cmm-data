@@ -8,12 +8,14 @@ from __future__ import annotations
 import json
 import logging
 import time
-from collections.abc import Callable
 from datetime import datetime
-from typing import list
+from typing import TYPE_CHECKING
 
 from config import INDEX_DIR
 from ocr import EXTRACTED_IMAGES_DIR, get_mistral_ocr, get_pdf_triager
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +57,7 @@ class BatchProcessor:
             time.sleep(min_interval - elapsed)
         self.last_request_time = time.time()
 
-    def estimate_cost(self, osti_ids: list[str] = None) -> dict:
+    def estimate_cost(self, osti_ids: list[str] | None = None) -> dict:
         """
         Estimate processing cost before running batch.
 
@@ -217,7 +219,7 @@ class BatchProcessor:
 
     def process_batch(
         self,
-        osti_ids: list[str] = None,
+        osti_ids: list[str] | None = None,
         analyze_charts: bool = True,
         resume: bool = True,
         progress_callback: Callable | None = None,

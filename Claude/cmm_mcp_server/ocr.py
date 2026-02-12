@@ -9,12 +9,14 @@ from __future__ import annotations
 import base64
 import json
 import logging
-from collections.abc import Callable
 from pathlib import Path
-from typing import list
+from typing import TYPE_CHECKING
 
 import fitz  # PyMuPDF
 from config import INDEX_DIR, MISTRAL_API_KEY, OSTI_CATALOG, OSTI_PDFS_DIR
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -329,12 +331,11 @@ Format the data points as a markdown table for easy parsing."""
                 else:
                     mime = "image/png"
                 image_url = f"data:{mime};base64,{img_data}"
+            # Assume it's already base64
+            elif not image_source.startswith("data:"):
+                image_url = f"data:image/png;base64,{image_source}"
             else:
-                # Assume it's already base64
-                if not image_source.startswith("data:"):
-                    image_url = f"data:image/png;base64,{image_source}"
-                else:
-                    image_url = image_source
+                image_url = image_source
 
             # Call Pixtral Large for chart analysis
             response = self.client.chat.complete(
@@ -486,7 +487,7 @@ class PDFTriager:
             self._evaluate_ocr_recommendation(result)
 
         except (OSError, ValueError) as e:
-            result["reasons"].append(f"Error analyzing PDF: {str(e)}")
+            result["reasons"].append(f"Error analyzing PDF: {e!s}")
             result["ocr_recommended"] = True
             result["priority"] = 5
 

@@ -13,7 +13,6 @@ import json
 import zipfile
 from datetime import datetime
 from pathlib import Path
-from typing import dict, list
 
 import pandas as pd
 import requests
@@ -90,7 +89,7 @@ class USGSMCSDownloader:
                 response = self.session.get(api_url, timeout=30)
                 if response.status_code == 200:
                     return response.json()
-            except requests.RequestException as e:
+            except requests.RequestException:
                 continue
 
         # If API fails, return empty dict - we'll use direct download URLs
@@ -218,7 +217,7 @@ class USGSMCSDownloader:
 
         if not result["downloaded_files"]:
             print(f"  ⚠ No files downloaded for {year}")
-            print(f"  Note: May need to manually download from:")
+            print("  Note: May need to manually download from:")
             print(f"    https://www.sciencebase.gov/catalog/item/{item_id}")
 
         result["status"] = "complete" if result["downloaded_files"] else "failed"
@@ -274,14 +273,14 @@ class USGSMCSDownloader:
                     try:
                         df = pd.read_csv(csv_file)
                         df.to_csv(dest_file, index=False)
-                        extracted[cmm_category] = extracted.get(cmm_category, []) + [str(dest_file)]
+                        extracted[cmm_category] = [*extracted.get(cmm_category, []), str(dest_file)]
                         print(f"    ✓ Extracted {len(df)} rows")
                     except (OSError, ValueError) as e:
                         print(f"    ✗ Error processing {csv_file}: {e}")
 
         return extracted
 
-    def download_all_years(self, years: list[int] = [2020, 2021, 2022, 2023, 2024]) -> dict:
+    def download_all_years(self, years: list[int] | None = None) -> dict:
         """
         Download USGS MCS data for all specified years.
 
@@ -291,6 +290,8 @@ class USGSMCSDownloader:
         Returns:
             Summary of downloads
         """
+        if years is None:
+            years = [2020, 2021, 2022, 2023, 2024]
         print("\n" + "=" * 80)
         print("USGS Mineral Commodity Summaries Data Download")
         print("=" * 80)
@@ -335,10 +336,10 @@ def main():
 Examples:
   # Download all years (2020-2024)
   python download_usgs_mcs.py --output-dir usgs_mcs_data
-  
+
   # Download specific year
   python download_usgs_mcs.py --year 2024 --output-dir usgs_mcs_data
-  
+
   # Download with ScienceBase item ID
   python download_usgs_mcs.py --year 2024 --item-id 65a6e45fd34e5af967a46749
         """,

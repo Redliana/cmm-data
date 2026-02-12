@@ -6,10 +6,13 @@ Handles PDF reading, metadata, and citations
 from __future__ import annotations
 
 import json
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 import fitz  # PyMuPDF
 from config import COMMODITIES, MAX_PDF_CHARS, OSTI_CATALOG, OSTI_PDFS_DIR
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class DocumentManager:
@@ -136,7 +139,7 @@ class DocumentManager:
             return "\n".join(text_parts)
 
         except (OSError, ValueError) as e:
-            return f"Error reading PDF: {str(e)}"
+            return f"Error reading PDF: {e!s}"
 
     def export_citation(self, osti_id: str, format: str = "bibtex") -> str:
         """

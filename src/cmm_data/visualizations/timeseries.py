@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, list
+from typing import Any
 
 import pandas as pd
 
@@ -184,7 +184,7 @@ def plot_critical_minerals_comparison(
     plot_df = pd.DataFrame(data).nlargest(top_n, "value")
 
     fig, ax = plt.subplots(figsize=figsize)
-    bars = ax.barh(plot_df["commodity"], plot_df["value"], color="steelblue")
+    ax.barh(plot_df["commodity"], plot_df["value"], color="steelblue")
     ax.set_xlabel(metric.replace("_t", " (metric tons)").replace("_", " "))
     ax.set_title(f"Critical Minerals - {metric}")
     ax.invert_yaxis()

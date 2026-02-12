@@ -72,7 +72,7 @@ def main():
 
     # Step 3: Build the package
     print("3. Building wheel and sdist...")
-    result = subprocess.run([sys.executable, "-m", "build"], check=True)
+    subprocess.run([sys.executable, "-m", "build"], check=True)
     print("   Done.")
 
     # Show results

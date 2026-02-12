@@ -13,7 +13,6 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import dict, list
 
 import requests
 
@@ -102,7 +101,7 @@ class USGSMCSIndividualDownloader:
                         return data
                     elif isinstance(data, dict) and "items" in data:
                         return data["items"]
-            except requests.RequestException as e:
+            except requests.RequestException:
                 continue
 
         # Alternative: Try to parse HTML page for child item links
@@ -323,7 +322,7 @@ def main():
 Examples:
   # Download 2022 data from parent catalog
   python download_usgs_mcs_individual.py --year 2022 --parent-id 5c8c03e4e4b0938824529f7d
-  
+
   # Download with specific data release ID (if known)
   python download_usgs_mcs_individual.py --year 2022 --release-id <ITEM_ID>
         """,

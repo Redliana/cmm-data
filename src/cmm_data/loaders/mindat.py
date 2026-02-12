@@ -4,13 +4,15 @@ from __future__ import annotations
 
 import json
 import os
-from pathlib import Path
-from typing import Any, Union, dict, list
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
 from ..exceptions import ConfigurationError, DataNotFoundError
 from .base import BaseLoader
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # Critical mineral elements for filtering Mindat queries
 # Based on DOE Critical Minerals list
@@ -174,7 +176,7 @@ class MindatLoader(BaseLoader):
         """Get the path to a cached data file."""
         return self.data_path / data_type / f"{identifier}.json"
 
-    def _save_data(self, data: Union[list, dict], data_type: str, identifier: str) -> Path:
+    def _save_data(self, data: list | dict, data_type: str, identifier: str) -> Path:
         """Save data to the cache directory."""
         file_path = self._get_data_file(data_type, identifier)
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -444,7 +446,7 @@ class MindatLoader(BaseLoader):
 
         # Filter for each critical element
         results = {}
-        for element in CRITICAL_ELEMENTS.keys():
+        for element in CRITICAL_ELEMENTS:
             filtered = self._filter_minerals_by_element(all_minerals, element)
             results[element] = filtered
 
@@ -653,10 +655,7 @@ class MindatLoader(BaseLoader):
         Returns:
             Filtered pandas.DataFrame
         """
-        if element:
-            df = self.load(element=element)
-        else:
-            df = self.load_all_critical_minerals()
+        df = self.load(element=element) if element else self.load_all_critical_minerals()
 
         if crystal_system and "crystalsystem" in df.columns:
             df = df[df["crystalsystem"].str.contains(crystal_system, case=False, na=False)]

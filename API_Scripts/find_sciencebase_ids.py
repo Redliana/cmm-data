@@ -7,8 +7,6 @@ ScienceBase catalog items for years 2020-2022.
 
 from __future__ import annotations
 
-from typing import list
-
 import requests
 
 
@@ -38,7 +36,7 @@ def search_sciencebase(query: str, max_results: int = 10) -> list[dict]:
                     return data["items"]
                 elif isinstance(data, list):
                     return data
-        except requests.RequestException as e:
+        except requests.RequestException:
             continue
 
     return []
@@ -94,8 +92,8 @@ def main():
             print(f"  ✓ Found: {item_id}")
             print(f"    URL: https://www.sciencebase.gov/catalog/item/{item_id}")
         else:
-            print(f"  ✗ Not found via search")
-            print(f"    Manual search: https://www.sciencebase.gov/catalog/")
+            print("  ✗ Not found via search")
+            print("    Manual search: https://www.sciencebase.gov/catalog/")
             print(f"    Search for: 'Mineral Commodity Summaries {year}'")
 
     print("\n" + "=" * 70)

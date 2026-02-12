@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any, dict, list
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
 from ..exceptions import ConfigurationError, DataNotFoundError
 from .base import BaseLoader
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class NETLREECoalLoader(BaseLoader):

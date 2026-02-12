@@ -8,7 +8,6 @@ the catalog item ID for each CMM commodity.
 from __future__ import annotations
 
 import json
-from typing import dict
 
 import requests
 
@@ -30,7 +29,7 @@ CMM_COMMODITIES_2022 = [
 ]
 
 
-def search_commodity_item(year: int, commodity: str, parent_id: str = None) -> dict:
+def search_commodity_item(year: int, commodity: str, parent_id: str | None = None) -> dict:
     """
     Search for a specific commodity's catalog item ID.
 
@@ -67,7 +66,7 @@ def search_commodity_item(year: int, commodity: str, parent_id: str = None) -> d
                             "title": item.get("title"),
                             "url": f"https://www.sciencebase.gov/catalog/item/{item.get('id')}",
                         }
-        except requests.RequestException as e:
+        except requests.RequestException:
             continue
 
     return None
@@ -96,8 +95,8 @@ def find_all_commodity_items(year: int = 2022) -> dict[str, dict]:
             print(f"  ✓ Found: {result['title']}")
             print(f"    ID: {result['item_id']}")
         else:
-            print(f"  ✗ Not found via search")
-            print(f"    Manual search: https://www.sciencebase.gov/catalog/")
+            print("  ✗ Not found via search")
+            print("    Manual search: https://www.sciencebase.gov/catalog/")
             print(f"    Search for: 'Mineral Commodity Summaries {year} {commodity}'")
 
     return results

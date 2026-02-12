@@ -9,7 +9,6 @@ import json
 import logging
 import pickle
 import sqlite3
-from typing import list
 
 import fitz  # PyMuPDF
 from config import (

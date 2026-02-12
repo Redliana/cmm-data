@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from config import (
     ALLOCATION_MATRIX_MD,
@@ -12,6 +12,9 @@ from config import (
     SUBDOMAIN_CATEGORY_PREFIX,
     SUBDOMAIN_DISPLAY,
 )
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 @dataclass

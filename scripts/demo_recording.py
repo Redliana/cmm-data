@@ -67,7 +67,7 @@ def main():
 
     # Version
     print("\033[1;33m>>> \033[0m", end="")
-    type_command(f'print(f"Version: {{cmm_data.__version__}}")')
+    type_command('print(f"Version: {cmm_data.__version__}")')
     print(f"Version: {cmm_data.__version__}")
     section_pause()
 
@@ -89,7 +89,7 @@ def main():
     commodities = cmm_data.list_commodities()
 
     print("\033[1;33m>>> \033[0m", end="")
-    type_command(f'print(f"Total commodities: {{len(commodities)}}")')
+    type_command('print(f"Total commodities: {len(commodities)}")')
     print(f"Total commodities: {len(commodities)}")
 
     print("\033[1;33m>>> \033[0m", end="")
@@ -104,7 +104,7 @@ def main():
     critical = cmm_data.list_critical_minerals()
 
     print("\033[1;33m>>> \033[0m", end="")
-    type_command(f'print(f"Critical minerals: {{len(critical)}}")')
+    type_command('print(f"Critical minerals: {len(critical)}")')
     print(f"Critical minerals: {len(critical)}")
 
     print("\033[1;33m>>> \033[0m", end="")

@@ -37,7 +37,7 @@ class TestRunner:
                 print(f"  [FAIL] {name}")
                 self.failed += 1
                 self.errors.append((name, "Test returned False"))
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             print(f"  [FAIL] {name}: {e}")
             self.failed += 1
             self.errors.append((name, str(e)))
@@ -58,7 +58,7 @@ class TestRunner:
         print(f"  Skipped: {self.skipped}")
 
         if self.errors:
-            print(f"\nErrors:")
+            print("\nErrors:")
             for name, error in self.errors:
                 print(f"  - {name}: {error}")
 

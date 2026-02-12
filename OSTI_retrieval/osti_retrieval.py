@@ -31,7 +31,6 @@ import json
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import dict, list
 
 import requests
 
@@ -223,7 +222,7 @@ class OSTIRetriever:
         tracking_file = self.output_dir / "downloaded_ids.txt"
         if tracking_file.exists():
             with open(tracking_file) as f:
-                ids = set(line.strip() for line in f if line.strip())
+                ids = {line.strip() for line in f if line.strip()}
         return ids
 
     def _save_downloaded_id(self, osti_id: str):
@@ -421,11 +420,11 @@ class OSTIRetriever:
         print("=" * 70)
 
         # Commodities
-        for commodity in COMMODITY_SEARCHES.keys():
+        for commodity in COMMODITY_SEARCHES:
             self.retrieve_commodity(commodity, max_per_query)
 
         # Subdomains
-        for subdomain in SUBDOMAIN_QUERIES.keys():
+        for subdomain in SUBDOMAIN_QUERIES:
             self.retrieve_subdomain(subdomain, max_per_query)
 
         # Print summary

@@ -312,10 +312,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    if args.local:
-        local_path = Path(args.local)
-    else:
-        local_path = download_batch_output()
+    local_path = Path(args.local) if args.local else download_batch_output()
 
     if not local_path.exists():
         print(f"File not found: {local_path}")
@@ -324,7 +321,7 @@ def main() -> None:
     print(f"Parsing {local_path} ...")
     evaluations, stats = parse_batch_results(local_path)
 
-    print(f"\n--- Parse Stats ---")
+    print("\n--- Parse Stats ---")
     print(f"Total lines: {stats['total_lines']}")
     print(f"Parsed OK: {stats['parsed_ok']}")
     print(f"  Complete: {stats['parsed_ok'] - stats['salvaged']}")

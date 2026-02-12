@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-from typing import dict, list
 
 import pandas as pd
 
@@ -59,10 +58,7 @@ class OSTIDocumentsLoader(BaseLoader):
             if json_path.exists():
                 with open(json_path) as f:
                     data = json.load(f)
-                if isinstance(data, list):
-                    df = pd.DataFrame(data)
-                else:
-                    df = pd.DataFrame([data])
+                df = pd.DataFrame(data) if isinstance(data, list) else pd.DataFrame([data])
             else:
                 raise DataNotFoundError(f"Collection '{collection}' not found")
         else:
@@ -72,10 +68,7 @@ class OSTIDocumentsLoader(BaseLoader):
                 try:
                     with open(json_file) as f:
                         data = json.load(f)
-                    if isinstance(data, list):
-                        df = pd.DataFrame(data)
-                    else:
-                        df = pd.DataFrame([data])
+                    df = pd.DataFrame(data) if isinstance(data, list) else pd.DataFrame([data])
                     df["_source_file"] = json_file.name
                     dfs.append(df)
                 except (json.JSONDecodeError, OSError):

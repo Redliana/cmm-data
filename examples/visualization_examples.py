@@ -7,6 +7,8 @@ Requires: pip install cmm-data[viz]
 
 from __future__ import annotations
 
+import sys
+
 import cmm_data
 
 # Check for matplotlib
@@ -18,7 +20,7 @@ except ImportError:
     print("Visualization requires matplotlib.")
     print("Install with: pip install cmm-data[viz]")
     VIZ_AVAILABLE = False
-    exit(1)
+    sys.exit(1)
 
 
 def example_world_production():

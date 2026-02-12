@@ -68,23 +68,23 @@ def write_report(report: EvaluationReport, output_dir: Path) -> None:
 
 def _render_markdown(report: EvaluationReport) -> str:
     lines = [
-        f"# CMM Evaluation Report",
-        f"",
+        "# CMM Evaluation Report",
+        "",
         f"**Model**: `{report.model_id}`",
     ]
     if report.adapter_path:
         lines.append(f"**Adapter**: `{report.adapter_path}`")
     lines.extend(
         [
-            f"",
-            f"## Summary",
-            f"",
-            f"| Metric | Value |",
-            f"|--------|-------|",
+            "",
+            "## Summary",
+            "",
+            "| Metric | Value |",
+            "|--------|-------|",
             f"| Total questions | {report.total_questions} |",
             f"| Mean score | {report.mean_score:.3f} |",
             f"| Mean ROUGE-L | {report.mean_rouge_l:.3f} |",
-            f"",
+            "",
         ]
     )
 

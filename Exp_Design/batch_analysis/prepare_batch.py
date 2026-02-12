@@ -13,7 +13,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import Counter
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from config import (
     COMMODITY_DISPLAY,
@@ -26,6 +26,9 @@ from config import (
     TEMPERATURE,
 )
 from matrix_parser import MatrixCell, get_relevant_cells, parse_matrix
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Structured output schema (Vertex AI responseSchema)
@@ -309,14 +312,14 @@ def prepare_batch(
             requests.append(request)
 
     # Print stats
-    print(f"\n--- Batch Preparation Stats ---")
+    print("\n--- Batch Preparation Stats ---")
     print(f"Total requests: {stats.get('total_requests', 0)}")
     print(f"  With abstract: {stats.get('has_abstract', 0)}")
     print(f"  OCR fallback: {stats.get('ocr_fallback', 0)}")
     print(f"  Limited metadata: {stats.get('limited_metadata', 0)}")
     print(f"  No relevant cells (skipped): {stats.get('no_relevant_cells', 0)}")
 
-    print(f"\nDocuments per category:")
+    print("\nDocuments per category:")
     for cat, count in sorted(cell_counts.items(), key=lambda x: -x[1]):
         cells = get_relevant_cells(matrix, cat)
         print(f"  {cat}: {count} docs x {len(cells)} cells each")

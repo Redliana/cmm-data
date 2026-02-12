@@ -122,32 +122,32 @@ def iter_corpus_documents(**kwargs):
 
 
 __all__ = [
-    # Version
-    "__version__",
     # Configuration
     "CMMDataConfig",
+    # Exceptions
+    "CMMDataError",
+    "ConfigurationError",
+    "DataNotFoundError",
+    "GAChronostratigraphicLoader",
+    "MindatLoader",
+    "NETLREECoalLoader",
+    "OECDSupplyChainLoader",
+    "OSTIDocumentsLoader",
+    "PreprocessedCorpusLoader",
+    # Loaders
+    "USGSCommodityLoader",
+    "USGSOreDepositsLoader",
+    # Version
+    "__version__",
     "configure",
     "get_config",
     # Catalog
     "get_data_catalog",
+    "iter_corpus_documents",
     "list_commodities",
     "list_critical_minerals",
-    # Exceptions
-    "CMMDataError",
-    "DataNotFoundError",
-    "ConfigurationError",
-    # Loaders
-    "USGSCommodityLoader",
-    "USGSOreDepositsLoader",
-    "OSTIDocumentsLoader",
-    "PreprocessedCorpusLoader",
-    "GAChronostratigraphicLoader",
-    "NETLREECoalLoader",
-    "OECDSupplyChainLoader",
-    "MindatLoader",
+    "load_ore_deposits",
     # Convenience functions
     "load_usgs_commodity",
-    "load_ore_deposits",
     "search_documents",
-    "iter_corpus_documents",
 ]

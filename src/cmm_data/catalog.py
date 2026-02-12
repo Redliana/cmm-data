@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import dict, list
-
 import pandas as pd
 
 from .config import get_config

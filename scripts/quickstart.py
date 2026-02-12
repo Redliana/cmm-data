@@ -76,7 +76,7 @@ def main():
             if isinstance(prod, (int, float)):
                 print(f"  {i:4d}  {country:15s}  {prod:>15,.0f}")
             else:
-                print(f"  {i:4d}  {country:15s}  {str(prod):>15s}")
+                print(f"  {i:4d}  {country:15s}  {prod!s:>15s}")
     except (OSError, ValueError) as e:
         print(f"  [ERROR] {e}")
 

@@ -24,8 +24,6 @@ from pathlib import Path
 # Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent))
 
-from typing import list
-
 from batch_processor import get_batch_processor
 from config import COMMODITIES, SUBDOMAINS
 from data_tools import get_data_manager

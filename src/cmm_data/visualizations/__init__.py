@@ -9,7 +9,7 @@ from .commodity import (
 )
 
 __all__ = [
-    "plot_world_production",
-    "plot_production_timeseries",
     "plot_import_reliance",
+    "plot_production_timeseries",
+    "plot_world_production",
 ]

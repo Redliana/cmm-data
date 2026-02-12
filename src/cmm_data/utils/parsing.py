@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Union, tuple
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -117,7 +117,7 @@ def parse_range(value: Any) -> tuple[float | None, float | None]:
 
 def clean_numeric_column(
     series: pd.Series, keep_original: bool = False
-) -> Union[pd.Series, pd.DataFrame]:
+) -> pd.Series | pd.DataFrame:
     """
     Clean a pandas Series containing numeric values with special codes.
 

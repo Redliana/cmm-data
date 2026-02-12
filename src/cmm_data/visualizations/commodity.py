@@ -2,11 +2,12 @@
 
 from __future__ import annotations
 
-from typing import Any
-
-import pandas as pd
+from typing import TYPE_CHECKING, Any
 
 from ..exceptions import ConfigurationError
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 def _get_matplotlib():

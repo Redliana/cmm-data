@@ -49,7 +49,7 @@ def main():
         else:
             print_status("Data root", False, "Not found or not configured")
             errors.append("Data root not configured")
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print_status("Configuration", False, str(e))
         errors.append("Configuration error")
 
@@ -66,7 +66,7 @@ def main():
 
         if available_count == 0:
             errors.append("No datasets available")
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print_status("Data catalog", False, str(e))
         errors.append("Cannot read data catalog")
 
@@ -79,13 +79,13 @@ def main():
         ("OECDSupplyChainLoader", "oecd"),
     ]
 
-    for loader_name, dataset_key in loaders_to_check:
+    for loader_name, _dataset_key in loaders_to_check:
         try:
             loader_class = getattr(cmm_data, loader_name)
             loader = loader_class()
             available = loader.list_available()
             print_status(loader_name, True, f"{len(available)} items")
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             print_status(loader_name, False, str(e))
 
     # 5. Test data loading
@@ -93,7 +93,7 @@ def main():
     try:
         df = cmm_data.load_usgs_commodity("lithi", "world")
         print_status("Load lithium data", True, f"{len(df)} rows")
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print_status("Load lithium data", False, str(e))
         errors.append("Cannot load sample data")
 

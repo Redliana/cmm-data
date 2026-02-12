@@ -3,14 +3,16 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Generator
-from pathlib import Path
-from typing import Any, dict, list
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
 from ..exceptions import DataNotFoundError
 from .base import BaseLoader
+
+if TYPE_CHECKING:
+    from collections.abc import Generator
+    from pathlib import Path
 
 
 class PreprocessedCorpusLoader(BaseLoader):

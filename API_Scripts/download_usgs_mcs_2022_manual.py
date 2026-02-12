@@ -16,7 +16,6 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import dict, list
 
 import requests
 
@@ -172,7 +171,7 @@ class USGSMCS2022Downloader:
                 summary["total_files"] += len(files)
                 print(f"  ✓ Downloaded {len(files)} files")
             else:
-                print(f"  ✗ No files downloaded")
+                print("  ✗ No files downloaded")
 
         summary["status"] = "complete" if summary["total_files"] > 0 else "failed"
 
@@ -251,7 +250,7 @@ Alternatively, use --item-ids-file to provide a JSON file with item IDs.
     print(f"Using {provided_ids}/{len(commodity_ids)} commodity item IDs")
 
     downloader = USGSMCS2022Downloader(output_dir=args.output_dir)
-    summary = downloader.download_all_commodities(commodity_ids, year=args.year)
+    downloader.download_all_commodities(commodity_ids, year=args.year)
 
 
 if __name__ == "__main__":

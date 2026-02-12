@@ -13,7 +13,6 @@ import json
 import sys
 import time
 from pathlib import Path
-from typing import dict, list
 
 import requests
 
@@ -241,7 +240,7 @@ class USGSMCSAutoDownloader:
                 summary["total_files"] += len(files)
                 print(f"  ✓ Downloaded {len(files)} files\n")
             else:
-                print(f"  ✗ No files downloaded\n")
+                print("  ✗ No files downloaded\n")
 
         summary["status"] = "complete" if summary["total_files"] > 0 else "failed"
 
@@ -284,7 +283,7 @@ def main():
 Examples:
   # Download 2022 data
   python find_and_download_usgs_mcs.py --year 2022 --release-id 6197ccbed34eb622f692ee1c
-  
+
   # Download 2021 data (once you have the release ID)
   python find_and_download_usgs_mcs.py --year 2021 --release-id <RELEASE_ID>
         """,
@@ -309,7 +308,7 @@ Examples:
     args = parser.parse_args()
 
     downloader = USGSMCSAutoDownloader(output_dir=args.output_dir)
-    summary = downloader.download_year(args.release_id, args.year)
+    downloader.download_year(args.release_id, args.year)
 
 
 if __name__ == "__main__":

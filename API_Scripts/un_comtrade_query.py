@@ -301,16 +301,16 @@ def main():
 Examples:
   # Query REE compounds trade between USA and China in 2023
   python un_comtrade_query.py --reporter USA --partner CHN --commodity 2846 --year 2023
-  
+
   # Query using commodity name
   python un_comtrade_query.py --reporter USA --partner CHN --commodity-name REE_compounds --year 2023
-  
+
   # Query only imports
   python un_comtrade_query.py --reporter USA --partner CHN --commodity 2846 --year 2023 --flow import
-  
+
   # Save to CSV
   python un_comtrade_query.py --reporter USA --partner CHN --commodity 2846 --year 2023 --output results.csv
-  
+
   # list available CMM commodities
   python un_comtrade_query.py --list-commodities
         """,
@@ -429,7 +429,7 @@ Examples:
             query.save_results(df, args.output)
             print(f"Results saved to: {args.output}")
 
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print(f"Error executing query: {e}")
         import traceback
 

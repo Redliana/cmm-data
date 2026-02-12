@@ -7,13 +7,15 @@ import json
 import pickle
 import time
 from abc import ABC, abstractmethod
-from pathlib import Path
-from typing import Any, dict, list
+from typing import TYPE_CHECKING, Any
 
 import pandas as pd
 
 from ..config import get_config
 from ..exceptions import DataNotFoundError
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 class BaseLoader(ABC):

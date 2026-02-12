@@ -15,7 +15,6 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import dict, list, tuple
 
 import pandas as pd
 
@@ -214,7 +213,6 @@ class GoldQADataCollector:
         skipped_count = 0
 
         # Map flow codes
-        flow_map = {"1": "M", "2": "X", "import": "M", "export": "X"}
         flows_to_query = []
         if trade_flow == "both":
             flows_to_query = ["M", "X"]
@@ -273,7 +271,7 @@ class GoldQADataCollector:
                                 else:
                                     print(f"    ✗ No data for flow {flow_code}")
                             else:
-                                print(f"    ✗ No data returned")
+                                print("    ✗ No data returned")
 
                             # Rate limiting: respect API limits (500 calls/day with key)
                             time.sleep(0.5)  # Small delay between queries
@@ -320,32 +318,30 @@ class GoldQADataCollector:
                 "skipped": skipped_count,
                 "dataframe": combined_df,
             }
+        elif not existing_df.empty:
+            print(f"\n  ✓ No new data needed - {len(existing_df)} records already exist")
+            return {
+                "commodity": commodity_name,
+                "total_records": len(existing_df),
+                "new_records": 0,
+                "filepath": str(
+                    self.output_dir / f"{commodity_name.lower().replace(' ', '_')}_trade_data.csv"
+                ),
+                "queries_executed": 0,
+                "skipped": skipped_count,
+                "dataframe": existing_df,
+            }
         else:
-            if not existing_df.empty:
-                print(f"\n  ✓ No new data needed - {len(existing_df)} records already exist")
-                return {
-                    "commodity": commodity_name,
-                    "total_records": len(existing_df),
-                    "new_records": 0,
-                    "filepath": str(
-                        self.output_dir
-                        / f"{commodity_name.lower().replace(' ', '_')}_trade_data.csv"
-                    ),
-                    "queries_executed": 0,
-                    "skipped": skipped_count,
-                    "dataframe": existing_df,
-                }
-            else:
-                print(f"\n  ✗ No data collected for {commodity_name}")
-                return {
-                    "commodity": commodity_name,
-                    "total_records": 0,
-                    "new_records": 0,
-                    "filepath": None,
-                    "queries_executed": query_count,
-                    "skipped": skipped_count,
-                    "dataframe": pd.DataFrame(),
-                }
+            print(f"\n  ✗ No data collected for {commodity_name}")
+            return {
+                "commodity": commodity_name,
+                "total_records": 0,
+                "new_records": 0,
+                "filepath": None,
+                "queries_executed": query_count,
+                "skipped": skipped_count,
+                "dataframe": pd.DataFrame(),
+            }
 
     def pull_all_gold_qa_data(self, use_preview: bool = False):
         """
@@ -474,10 +470,10 @@ def main():
 Examples:
   # Collect all data (requires API key)
   python pull_gold_qa_data.py --output-dir gold_qa_data
-  
+
   # Preview mode (no API key, limited data)
   python pull_gold_qa_data.py --preview --output-dir gold_qa_data_preview
-  
+
   # Specify custom API key
   python pull_gold_qa_data.py --api-key YOUR_KEY --output-dir gold_qa_data
         """,
@@ -513,7 +509,7 @@ Examples:
 
     # Collect all data
     try:
-        summary = collector.pull_all_gold_qa_data(use_preview=args.preview)
+        collector.pull_all_gold_qa_data(use_preview=args.preview)
 
         print("\n✓ Data collection complete!")
         print(f"Check {args.output_dir} for results.")
@@ -521,7 +517,7 @@ Examples:
     except KeyboardInterrupt:
         print("\n\nCollection interrupted by user.")
         sys.exit(1)
-    except Exception as e:  # noqa: BLE001
+    except Exception as e:
         print(f"\n✗ Error during collection: {e}")
         import traceback
 

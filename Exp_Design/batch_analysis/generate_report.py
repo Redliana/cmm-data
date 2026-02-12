@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import json
 from collections import defaultdict
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from config import (
     COMMODITY_CATEGORIES,
@@ -20,6 +20,9 @@ from config import (
     SUBDOMAIN_DISPLAY,
 )
 from matrix_parser import MatrixCell, parse_matrix
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def _load_paper_titles() -> dict[str, str]:
@@ -53,7 +56,7 @@ def _cell_lookup(matrix: list[MatrixCell]) -> dict[str, MatrixCell]:
 def generate_report() -> Path:
     """Generate the full recommendation report."""
     matrix = parse_matrix()
-    cell_map = _cell_lookup(matrix)
+    _cell_lookup(matrix)
     evaluations, rec_matrix, stats = _load_results()
     titles = _load_paper_titles()
 

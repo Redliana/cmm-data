@@ -219,7 +219,7 @@ def write_schema_markdown(schemas, output_file):
         )
         f.write("## Table of Contents\n\n")
 
-        for category in schemas.keys():
+        for category in schemas:
             f.write(f"- [{category}](#{category.lower().replace('_', '-')})\n")
 
         f.write("\n---\n\n")
@@ -279,18 +279,18 @@ def main():
     csv_output = BASE_DIR / "NETL_REE_Coal" / "geodatabase_csv"
 
     if gdb_path.exists():
-        print(f"\n1. Converting geodatabase to CSV...")
+        print("\n1. Converting geodatabase to CSV...")
         converted = convert_geodatabase_to_csv(gdb_path, csv_output)
         print(f"   Converted {len(converted)} layers")
     else:
         print(f"Geodatabase not found at {gdb_path}")
 
     # Generate schemas
-    print(f"\n2. Generating schemas for all CSV files...")
+    print("\n2. Generating schemas for all CSV files...")
     schemas = generate_all_schemas()
 
     # Write outputs
-    print(f"\n3. Writing schema documentation...")
+    print("\n3. Writing schema documentation...")
     schema_dir = BASE_DIR / "schemas"
     schema_dir.mkdir(exist_ok=True)
 

@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import list
 
 import pandas as pd
 from config import MAX_CSV_ROWS, SCHEMAS_JSON
@@ -80,7 +79,7 @@ class DataManager:
 
     def find_dataset_path(self, dataset: str) -> Path | None:
         """Find the full path to a dataset file"""
-        for cat_name, cat_data in self.schemas.items():
+        for _cat_name, cat_data in self.schemas.items():
             for schema in cat_data.get("schemas", []):
                 if schema.get("file") == dataset:
                     return Path(schema.get("path"))
@@ -152,7 +151,7 @@ class DataManager:
             }
 
         except (OSError, ValueError, KeyError) as e:
-            return {"error": f"Error reading dataset: {str(e)}"}
+            return {"error": f"Error reading dataset: {e!s}"}
 
     def read_csv_sample(self, dataset: str, n_rows: int = 10) -> dict:
         """
@@ -180,7 +179,7 @@ class DataManager:
             }
 
         except (OSError, ValueError) as e:
-            return {"error": f"Error reading dataset: {str(e)}"}
+            return {"error": f"Error reading dataset: {e!s}"}
 
     def get_statistics(self) -> dict:
         """Get data collection statistics"""
