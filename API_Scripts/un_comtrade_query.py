@@ -1,13 +1,28 @@
 """
 UN Comtrade API Query Tool for Critical Minerals and Materials (CMM)
 
-This script provides functions to query the UN Comtrade API for trade flow data
-related to critical minerals and materials, including rare earth elements,
-lithium, cobalt, graphite, gallium, and germanium.
+.. deprecated::
+    This standalone script is deprecated. Use the UNComtrade MCP Server instead,
+    which provides the same functionality (and more) as an MCP tool server:
 
-Usage:
+        Location: Data_Needs/UNComtrade_MCP/
+        Install:  cd Data_Needs/UNComtrade_MCP && pip install -e .
+        Run:      uncomtrade-mcp
+
+    The MCP server includes all HS codes from this script plus additional minerals,
+    supports async queries, provides country trade profiles, commodity summaries,
+    and integrates directly with Claude Code and Claude Desktop.
+
+    This file is kept for reference only and may be removed in a future cleanup.
+
+Original description:
+    This script provides functions to query the UN Comtrade API for trade flow data
+    related to critical minerals and materials, including rare earth elements,
+    lithium, cobalt, graphite, gallium, and germanium.
+
+Usage (deprecated):
     python un_comtrade_query.py --reporter USA --partner CHN --commodity 2846 --year 2023 --api-key YOUR_KEY
-    
+
 Or set API key as environment variable:
     export UN_COMTRADE_API_KEY=your_key_here
     python un_comtrade_query.py --reporter USA --partner CHN --commodity 2846 --year 2023
@@ -17,9 +32,17 @@ import os
 import sys
 import json
 import argparse
+import warnings
 import pandas as pd
 from typing import Optional, Dict, Any, List
 from datetime import datetime
+
+warnings.warn(
+    "un_comtrade_query.py is deprecated. Use the UNComtrade MCP Server instead "
+    "(Data_Needs/UNComtrade_MCP/). See module docstring for details.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 try:
     from comtradeapicall import getFinalData, previewFinalData
