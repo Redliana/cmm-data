@@ -1289,7 +1289,7 @@ MIT License - see [LICENSE](LICENSE) file.
 For questions, issues, or contributions:
 
 - **GitHub Issues**: https://github.com/PNNL-CMM/cmm-data/issues
-- **Email**: cmm@pnnl.gov
+- **Email**: Nancy.washton@pnnl.gov
 - **Organization**: Pacific Northwest National Laboratory
 
 ---
