@@ -11,7 +11,7 @@
 
 <p align="center">
   <b>A comprehensive Python package providing unified access to datasets for critical minerals supply chain modeling.</b><br>
-  Developed by Pacific Northwest National Laboratory (PNNL) for the Critical Minerals Modeling (CMM) project.
+  Developed by Nancy Washton.
 </p>
 
 <p align="center">
