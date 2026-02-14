@@ -150,3 +150,18 @@ cmm_exports/
 *.jpg
 *.jpeg
 !examples/*.png
+
+# Local secrets and packaged build artifacts
+.apikey.yaml
+dist/
+
+# Local document/binary spillover
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+*.tar
+*.tar.gz
+*.zip

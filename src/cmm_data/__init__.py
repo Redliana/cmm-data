@@ -16,6 +16,7 @@ from .exceptions import CMMDataError, ConfigurationError, DataNotFoundError
 
 
 # Lazy imports for loaders to avoid import overhead
+
 def __getattr__(name):
     if name == "USGSCommodityLoader":
         from .loaders.usgs_commodity import USGSCommodityLoader
@@ -49,10 +50,23 @@ def __getattr__(name):
         from .loaders.mindat import MindatLoader
 
         return MindatLoader
+    elif name == "BGSClient":
+        from .clients import BGSClient
+
+        return BGSClient
+    elif name == "CLAIMMClient":
+        from .clients import CLAIMMClient
+
+        return CLAIMMClient
+    elif name == "OSTIClient":
+        from .clients import OSTIClient
+
+        return OSTIClient
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 # Convenience functions
+
 def load_usgs_commodity(commodity: str, data_type: str = "world"):
     """
     Load USGS commodity data.
@@ -122,32 +136,36 @@ def iter_corpus_documents(**kwargs):
 
 
 __all__ = [
-    # Configuration
-    "CMMDataConfig",
-    # Exceptions
-    "CMMDataError",
-    "ConfigurationError",
-    "DataNotFoundError",
-    "GAChronostratigraphicLoader",
-    "MindatLoader",
-    "NETLREECoalLoader",
-    "OECDSupplyChainLoader",
-    "OSTIDocumentsLoader",
-    "PreprocessedCorpusLoader",
-    # Loaders
-    "USGSCommodityLoader",
-    "USGSOreDepositsLoader",
     # Version
     "__version__",
+    # Clients
+    "BGSClient",
+    "CLAIMMClient",
+    "OSTIClient",
+    # Configuration
+    "CMMDataConfig",
     "configure",
     "get_config",
     # Catalog
     "get_data_catalog",
-    "iter_corpus_documents",
     "list_commodities",
     "list_critical_minerals",
-    "load_ore_deposits",
+    # Exceptions
+    "CMMDataError",
+    "ConfigurationError",
+    "DataNotFoundError",
+    # Loaders
+    "USGSCommodityLoader",
+    "USGSOreDepositsLoader",
+    "OSTIDocumentsLoader",
+    "PreprocessedCorpusLoader",
+    "GAChronostratigraphicLoader",
+    "NETLREECoalLoader",
+    "OECDSupplyChainLoader",
+    "MindatLoader",
     # Convenience functions
     "load_usgs_commodity",
+    "load_ore_deposits",
     "search_documents",
+    "iter_corpus_documents",
 ]
