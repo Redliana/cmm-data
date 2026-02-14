@@ -44,14 +44,17 @@ jobs:
         make html
 
     - name: Setup Pages
+      if: ${{ vars.ENABLE_GITHUB_PAGES == 'true' }}
       uses: actions/configure-pages@v4
 
-    - name: Upload artifact
+    - name: Upload Pages artifact
+      if: ${{ vars.ENABLE_GITHUB_PAGES == 'true' }}
       uses: actions/upload-pages-artifact@v3
       with:
         path: 'docs/_build/html'
 
   deploy:
+    if: ${{ vars.ENABLE_GITHUB_PAGES == 'true' }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
