@@ -86,7 +86,7 @@ This package provides a unified Python API to access all these data sources with
 
 | Feature | Description |
 |---------|-------------|
-| **Unified API** | Single interface for 7 different data sources |
+| **Unified API** | Single interface for 8 different data sources |
 | **80+ Commodities** | Complete USGS Mineral Commodity Summaries coverage |
 | **Data Parsing** | Automatic handling of W (withheld), NA, ranges, and special codes |
 | **Caching** | Built-in memory and disk caching for performance |
@@ -104,6 +104,7 @@ This package provides a unified Python API to access all these data sources with
 | `GAChronostratigraphicLoader` | Geoscience Australia | 9 surfaces | GeoTIFF/XYZ |
 | `NETLREECoalLoader` | NETL | Variable | Geodatabase |
 | `OECDSupplyChainLoader` | OECD/IEA | Multiple | PDF/CSV |
+| `GoogleScholarLoader` | Google Scholar (SerpAPI) | Query-based | API |
 
 ### Visualization Functions
 

@@ -14,7 +14,6 @@ from .catalog import get_data_catalog, list_commodities, list_critical_minerals
 from .config import CMMDataConfig, configure, get_config
 from .exceptions import CMMDataError, ConfigurationError, DataNotFoundError
 
-
 # Lazy imports for loaders to avoid import overhead
 
 def __getattr__(name):
@@ -50,6 +49,10 @@ def __getattr__(name):
         from .loaders.mindat import MindatLoader
 
         return MindatLoader
+    elif name == "GoogleScholarLoader":
+        from .loaders.google_scholar import GoogleScholarLoader
+
+        return GoogleScholarLoader
     elif name == "BGSClient":
         from .clients import BGSClient
 
@@ -62,6 +65,10 @@ def __getattr__(name):
         from .clients import OSTIClient
 
         return OSTIClient
+    elif name == "GoogleScholarClient":
+        from .clients import GoogleScholarClient
+
+        return GoogleScholarClient
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
@@ -135,37 +142,57 @@ def iter_corpus_documents(**kwargs):
     yield from loader.iter_documents(**kwargs)
 
 
+def search_google_scholar(
+    query: str, year_from: int | None = None, year_to: int | None = None, num_results: int = 10
+):
+    """Search Google Scholar and return a DataFrame."""
+    import pandas as pd
+
+    from .clients import GoogleScholarClient
+
+    client = GoogleScholarClient()
+    result = client.search_scholar(
+        query=query, year_from=year_from, year_to=year_to, num_results=num_results
+    )
+    if result.error:
+        raise ValueError(result.error)
+    return pd.DataFrame(result.to_dict()["papers"])
+
+
 __all__ = [
-    # Version
-    "__version__",
     # Clients
     "BGSClient",
     "CLAIMMClient",
-    "OSTIClient",
     # Configuration
     "CMMDataConfig",
-    "configure",
-    "get_config",
-    # Catalog
-    "get_data_catalog",
-    "list_commodities",
-    "list_critical_minerals",
     # Exceptions
     "CMMDataError",
     "ConfigurationError",
     "DataNotFoundError",
+    "GAChronostratigraphicLoader",
+    "GoogleScholarClient",
+    "GoogleScholarLoader",
+    "MindatLoader",
+    "NETLREECoalLoader",
+    "OECDSupplyChainLoader",
+    "OSTIClient",
+    "OSTIDocumentsLoader",
+    "PreprocessedCorpusLoader",
     # Loaders
     "USGSCommodityLoader",
     "USGSOreDepositsLoader",
-    "OSTIDocumentsLoader",
-    "PreprocessedCorpusLoader",
-    "GAChronostratigraphicLoader",
-    "NETLREECoalLoader",
-    "OECDSupplyChainLoader",
-    "MindatLoader",
+    # Version
+    "__version__",
+    "configure",
+    "get_config",
+    # Catalog
+    "get_data_catalog",
+    "iter_corpus_documents",
+    "list_commodities",
+    "list_critical_minerals",
+    "load_ore_deposits",
     # Convenience functions
     "load_usgs_commodity",
-    "load_ore_deposits",
     "search_documents",
-    "iter_corpus_documents",
+    "search_google_scholar",
 ]
